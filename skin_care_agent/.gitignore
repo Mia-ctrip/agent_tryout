@@ -1,0 +1,31 @@
+# 后端：依赖 / 虚拟环境 / 缓存
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.ruff_cache/
+
+# 环境变量（含密钥）
+.env
+.env.local
+.env.*.local
+
+# 本地存储（用户图片等）
+backend/storage_local/
+storage_local/
+backend/storage_debug/
+
+# IDE
+.idea/
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# 日志
+*.log
+
+# 本地视觉模型资产（按 backend/dev_notes.md 下载）
+backend/model_assets/

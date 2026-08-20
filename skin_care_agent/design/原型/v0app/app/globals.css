@@ -1,0 +1,112 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+@import 'shadcn/tailwind.css';
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-brand: var(--brand);
+  --color-brand-foreground: var(--brand-foreground);
+  --color-lavender: var(--lavender);
+  --color-mint: var(--mint);
+  --color-mint-foreground: var(--mint-foreground);
+  --color-apricot: var(--apricot);
+  --color-apricot-foreground: var(--apricot-foreground);
+
+  --radius-card: 20px;
+  --radius-control: 14px;
+
+  --font-sans: var(--font-sans);
+}
+
+:root {
+  color-scheme: light;
+
+  /* 页面暖白背景 */
+  --background: #fffdf8;
+  /* 主文字深暖灰 */
+  --foreground: #5a5651;
+
+  --card: #ffffff;
+  --card-foreground: #5a5651;
+  --popover: #ffffff;
+  --popover-foreground: #5a5651;
+
+  /* 主要 CTA 深紫 */
+  --primary: #6f63b7;
+  --primary-foreground: #ffffff;
+
+  --secondary: #f2eff8;
+  --secondary-foreground: #5a5651;
+
+  --muted: #f6f4ee;
+  --muted-foreground: #8b867e;
+
+  --accent: #f2eff8;
+  --accent-foreground: #5a5651;
+
+  --destructive: #b98a7a;
+
+  /* 边框：低对比暖灰紫 */
+  --border: #e7e2ec;
+  --input: #e7e2ec;
+  --ring: #8f85ce;
+
+  /* 品牌紫鸢尾 */
+  --brand: #8f85ce;
+  --brand-foreground: #ffffff;
+  /* 淡薰衣草 */
+  --lavender: #f2eff8;
+  /* 清新薄荷 */
+  --mint: #c5dccc;
+  --mint-foreground: #3f5a49;
+  /* 杏金 */
+  --apricot: #ecd083;
+  --apricot-foreground: #6b551d;
+
+  --radius: 0.875rem;
+
+  --font-sans: -apple-system, BlinkMacSystemFont, 'PingFang SC',
+    'Microsoft YaHei', 'Segoe UI', sans-serif;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    background-color: var(--background);
+    -webkit-font-smoothing: antialiased;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-sans);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}

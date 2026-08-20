@@ -1,0 +1,135 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="2160" viewBox="0 0 1800 2160">
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#726C78"/>
+    </marker>
+    <style>
+      .bg{fill:#FFFDF8}.title{font:700 34px 'Microsoft YaHei',sans-serif;fill:#4F4A47}.sub{font:18px 'Microsoft YaHei',sans-serif;fill:#736D69}
+      .lane{fill:#F8F5F0;stroke:#DDD7CF;stroke-width:2}.user{fill:#F2EFF8;stroke:#8F85CE;stroke-width:3}.system{fill:#EDF5EF;stroke:#8FB29B;stroke-width:3}
+      .value{fill:#FFF6DD;stroke:#D6AF45;stroke-width:3}.muted{fill:#F3F1EE;stroke:#AAA39C;stroke-width:2}.future{fill:#FAF8F4;stroke:#AAA39C;stroke-width:2;stroke-dasharray:10 8}
+      .h{font:700 22px 'Microsoft YaHei',sans-serif;fill:#514C49}.t{font:18px 'Microsoft YaHei',sans-serif;fill:#5A5651}.small{font:16px 'Microsoft YaHei',sans-serif;fill:#6B6662}
+      .arrow{fill:none;stroke:#726C78;stroke-width:3;marker-end:url(#arrow)}.soft{fill:none;stroke:#A29BA5;stroke-width:2.5;stroke-dasharray:8 7;marker-end:url(#arrow)}
+      .tag{fill:#6F63B7}.tagtext{font:700 15px 'Microsoft YaHei',sans-serif;fill:#fff}.laneTitle{font:700 19px 'Microsoft YaHei',sans-serif;fill:#6F6965}
+    </style>
+  </defs>
+  <rect class="bg" width="1800" height="2160"/>
+  <text class="title" x="70" y="72">Skin Care App｜全局用户操作流程</text>
+  <text class="sub" x="70" y="108">用于产品评审与 vibe coding：只展开会改变产品逻辑的用户选择和系统判断</text>
+
+  <rect class="lane" x="55" y="145" width="1690" height="250" rx="26"/>
+  <text class="laneTitle" x="85" y="183">进入与导航</text>
+  <rect class="user" x="100" y="220" width="250" height="105" rx="18"/>
+  <text class="h" x="225" y="260" text-anchor="middle">首次进入 App</text>
+  <text class="t" x="225" y="292" text-anchor="middle">注册 / 登录</text>
+  <rect class="user" x="450" y="220" width="300" height="105" rx="18"/>
+  <text class="h" x="600" y="257" text-anchor="middle">接受总协议与隐私政策</text>
+  <text class="small" x="600" y="291" text-anchor="middle">相机、照片、AI 权限按需申请</text>
+  <rect class="user" x="850" y="205" width="340" height="135" rx="18"/>
+  <text class="h" x="1020" y="245" text-anchor="middle">观察首页</text>
+  <text class="t" x="1020" y="278" text-anchor="middle">核心主卡在前，生活背景次卡在后</text>
+  <text class="small" x="1020" y="308" text-anchor="middle">照片不自动展示｜无连续打卡压力</text>
+  <path class="arrow" d="M350 272 H450"/>
+  <path class="arrow" d="M750 272 H850"/>
+  <rect class="muted" x="1285" y="202" width="390" height="140" rx="18"/>
+  <text class="h" x="1480" y="242" text-anchor="middle">四个一级导航</text>
+  <text class="t" x="1480" y="278" text-anchor="middle">观察｜历程｜产品｜我的</text>
+  <text class="small" x="1480" y="310" text-anchor="middle">不设置独立 AI / 问答入口</text>
+  <path class="soft" d="M1190 272 H1285"/>
+
+  <rect class="lane" x="55" y="425" width="1690" height="500" rx="26"/>
+  <text class="laneTitle" x="85" y="463">观察首页：不对称双节奏入口</text>
+  <rect class="user" x="120" y="515" width="430" height="160" rx="20"/>
+  <rect class="tag" x="142" y="535" width="92" height="28" rx="14"/>
+  <text class="tagtext" x="188" y="555" text-anchor="middle">主要 CTA</text>
+  <text class="h" x="335" y="600" text-anchor="middle">记录现在的变化</text>
+  <text class="t" x="335" y="634" text-anchor="middle">一张引导照片起步</text>
+  <text class="small" x="335" y="663" text-anchor="middle">不要求先选产品，不默认三视角</text>
+  <rect class="user" x="685" y="515" width="430" height="160" rx="20"/>
+  <text class="h" x="900" y="585" text-anchor="middle">记录刚刚使用</text>
+  <text class="t" x="900" y="621" text-anchor="middle">从个人产品柜选择产品或组合</text>
+  <text class="small" x="900" y="654" text-anchor="middle">无需拍照，可独立于变化事件保存</text>
+  <rect class="user" x="1250" y="515" width="430" height="160" rx="20"/>
+  <text class="h" x="1465" y="585" text-anchor="middle">做一次完整记录</text>
+  <text class="t" x="1465" y="621" text-anchor="middle">用户主动拍摄正面 / 左侧 / 右侧</text>
+  <text class="small" x="1465" y="654" text-anchor="middle">建立更完整阶段证据，不设默认周期</text>
+  <rect class="user" x="685" y="735" width="430" height="135" rx="20"/>
+  <text class="h" x="900" y="780" text-anchor="middle">今天的生活背景</text>
+  <text class="t" x="900" y="816" text-anchor="middle">变化日补充，或记录“今天没有特别变化”</text>
+  <text class="small" x="900" y="846" text-anchor="middle">可选、可只填一项、不要求照片</text>
+  <path class="arrow" d="M1020 340 V440 H335 V515"/>
+  <path class="arrow" d="M1020 340 V455 H900 V515"/>
+  <path class="arrow" d="M1020 340 V440 H1465 V515"/>
+  <path class="soft" d="M1020 340 V715 H900 V735"/>
+
+  <rect class="lane" x="55" y="955" width="1690" height="730" rx="26"/>
+  <text class="laneTitle" x="85" y="993">核心证据闭环</text>
+  <rect class="system" x="120" y="1040" width="430" height="150" rx="20"/>
+  <text class="h" x="335" y="1082" text-anchor="middle">保存照片并确定事件归属</text>
+  <text class="t" x="335" y="1118" text-anchor="middle">自动续接活跃事件，或建立新事件</text>
+  <text class="small" x="335" y="1152" text-anchor="middle">暂停事件 / 不确定时再请用户确认</text>
+  <rect class="value" x="685" y="1040" width="430" height="150" rx="20"/>
+  <text class="h" x="900" y="1082" text-anchor="middle">生成区域事件卡片</text>
+  <text class="t" x="900" y="1118" text-anchor="middle">时间、区域、可比性、中性可见现象</text>
+  <text class="small" x="900" y="1152" text-anchor="middle">首次记录明确：这是后续比较的起点</text>
+  <rect class="user" x="1250" y="1040" width="430" height="150" rx="20"/>
+  <text class="h" x="1465" y="1082" text-anchor="middle">补充真实发生的使用</text>
+  <text class="t" x="1465" y="1118" text-anchor="middle">关联产品 / 组合、时间与可选区域</text>
+  <text class="small" x="1465" y="1152" text-anchor="middle">未关联产品不代表事件不完整</text>
+  <path class="arrow" d="M335 675 V1040"/>
+  <path class="arrow" d="M550 1115 H685"/>
+  <path class="arrow" d="M1115 1115 H1250"/>
+  <path class="soft" d="M900 675 V920 H1465 V1040"/>
+  <path class="soft" d="M1465 675 V900 H1070 V1040"/>
+
+  <rect class="user" x="1250" y="1270" width="430" height="145" rx="20"/>
+  <text class="h" x="1465" y="1314" text-anchor="middle">自主选择观察提醒</text>
+  <text class="t" x="1465" y="1350" text-anchor="middle">明天 / 3 天 / 7 天 / 自定义 / 不提醒</text>
+  <text class="small" x="1465" y="1383" text-anchor="middle">只提醒一次，忽略后不追催</text>
+  <rect class="user" x="685" y="1270" width="430" height="145" rx="20"/>
+  <text class="h" x="900" y="1314" text-anchor="middle">后续记录同一区域</text>
+  <text class="t" x="900" y="1350" text-anchor="middle">补充照片、可见变化和个人感受</text>
+  <text class="small" x="900" y="1383" text-anchor="middle">可从提醒进入，也可随时主动记录</text>
+  <rect class="system" x="120" y="1270" width="430" height="145" rx="20"/>
+  <text class="h" x="335" y="1314" text-anchor="middle">判断证据是否可比较</text>
+  <text class="t" x="335" y="1350" text-anchor="middle">区域、角度、距离、光线、质量、时间</text>
+  <text class="small" x="335" y="1383" text-anchor="middle">不足则保留事实，不强行比较</text>
+  <path class="arrow" d="M1465 1190 V1270"/>
+  <path class="arrow" d="M1250 1343 H1115"/>
+  <path class="arrow" d="M685 1343 H550"/>
+
+  <rect class="value" x="220" y="1500" width="560" height="125" rx="20"/>
+  <text class="h" x="500" y="1542" text-anchor="middle">阶段摘要</text>
+  <text class="t" x="500" y="1578" text-anchor="middle">同一区域 ≥2 次可比照片，且间隔 ≥7 天</text>
+  <text class="small" x="500" y="1608" text-anchor="middle">只描述可见维度，不概括整体好坏</text>
+  <rect class="value" x="1020" y="1500" width="560" height="125" rx="20"/>
+  <text class="h" x="1300" y="1542" text-anchor="middle">事实记录</text>
+  <text class="t" x="1300" y="1578" text-anchor="middle">证据不足、照片不可比或不足 7 天</text>
+  <text class="small" x="1300" y="1608" text-anchor="middle">仍保存日期、区域、使用和个人感受</text>
+  <path class="arrow" d="M335 1415 V1455 H500 V1500"/>
+  <path class="arrow" d="M335 1415 V1455 H1300 V1500"/>
+
+  <rect class="lane" x="55" y="1715" width="1690" height="360" rx="26"/>
+  <text class="laneTitle" x="85" y="1753">长期价值与用户控制</text>
+  <rect class="value" x="120" y="1810" width="430" height="165" rx="20"/>
+  <text class="h" x="335" y="1852" text-anchor="middle">历程与相似历史</text>
+  <text class="t" x="335" y="1888" text-anchor="middle">按区域事件回看，摘要优先</text>
+  <text class="small" x="335" y="1920" text-anchor="middle">照片默认遮盖；相似历史仅来自本人</text>
+  <text class="small" x="335" y="1948" text-anchor="middle">用户可标记“这条不像”</text>
+  <rect class="value" x="685" y="1810" width="430" height="165" rx="20"/>
+  <text class="h" x="900" y="1852" text-anchor="middle">个人产品反应记忆</text>
+  <text class="t" x="900" y="1888" text-anchor="middle">记忆刚开始 → 出现一些线索</text>
+  <text class="t" x="900" y="1920" text-anchor="middle">→ 形成个人规律</text>
+  <text class="small" x="900" y="1948" text-anchor="middle">组合独立归档，不输出产品推荐</text>
+  <rect class="muted" x="1250" y="1810" width="430" height="165" rx="20"/>
+  <text class="h" x="1465" y="1852" text-anchor="middle">我的：数据与隐私控制</text>
+  <text class="t" x="1465" y="1888" text-anchor="middle">授权、照片预览、导出、删除、注销</text>
+  <text class="small" x="1465" y="1920" text-anchor="middle">删除源记录后派生摘要与记忆重算</text>
+  <text class="small" x="1465" y="1948" text-anchor="middle">停止记录不等于痊愈或失败</text>
+  <path class="arrow" d="M500 1625 V1765 H335 V1810"/>
+  <path class="arrow" d="M500 1625 V1745 H900 V1810"/>
+  <path class="soft" d="M1300 1625 V1745 H900 V1810"/>
+  <path class="soft" d="M1480 342 V1785 H1465 V1810"/>
+
+  <rect class="future" x="260" y="2090" width="1280" height="50" rx="18"/>
+  <text class="small" x="900" y="2122" text-anchor="middle">MVP 外边界：跨日生活线索只积累原始背景；证据足够后的线索计算与展示留待后续版本</text>
+</svg>

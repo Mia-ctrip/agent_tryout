@@ -1,0 +1,112 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="2240" viewBox="0 0 1800 2240">
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L9,3 z" fill="#726C78"/></marker>
+    <style>
+      .bg{fill:#FFFDF8}.title{font:700 34px 'Microsoft YaHei',sans-serif;fill:#4F4A47}.sub{font:18px 'Microsoft YaHei',sans-serif;fill:#736D69}
+      .user{fill:#F2EFF8;stroke:#8F85CE;stroke-width:3}.system{fill:#EDF5EF;stroke:#8FB29B;stroke-width:3}.warn{fill:#FFF6DD;stroke:#D6AF45;stroke-width:3}
+      .error{fill:#FFF1EE;stroke:#C98B7D;stroke-width:3}.muted{fill:#F3F1EE;stroke:#AAA39C;stroke-width:2}.diamond{fill:#FFF6DD;stroke:#D6AF45;stroke-width:3}
+      .h{font:700 22px 'Microsoft YaHei',sans-serif;fill:#514C49}.t{font:18px 'Microsoft YaHei',sans-serif;fill:#5A5651}.small{font:16px 'Microsoft YaHei',sans-serif;fill:#6B6662}.label{font:700 16px 'Microsoft YaHei',sans-serif;fill:#6B6662}
+      .arrow{fill:none;stroke:#726C78;stroke-width:3;marker-end:url(#arrow)}.soft{fill:none;stroke:#A29BA5;stroke-width:2.5;stroke-dasharray:8 7;marker-end:url(#arrow)}
+    </style>
+  </defs>
+  <rect class="bg" width="1800" height="2240"/>
+  <text class="title" x="70" y="72">子流程 1｜记录现在的变化</text>
+  <text class="sub" x="70" y="108">核心目的：低负担保存真实证据，并把记录正确归入区域变化事件</text>
+
+  <rect class="user" x="650" y="150" width="500" height="105" rx="20"/>
+  <text class="h" x="900" y="193" text-anchor="middle">观察首页 → 记录现在的变化</text>
+  <text class="t" x="900" y="228" text-anchor="middle">一张照片即可开始</text>
+
+  <polygon class="diamond" points="900,310 1110,410 900,510 690,410"/>
+  <text class="h" x="900" y="397" text-anchor="middle">对应功能是否已授权？</text>
+  <text class="small" x="900" y="427" text-anchor="middle">相机 / 照片 / AI 分别按需处理</text>
+  <path class="arrow" d="M900 255 V310"/>
+  <text class="label" x="1125" y="395">未授权</text>
+  <rect class="warn" x="1240" y="330" width="450" height="160" rx="20"/>
+  <text class="h" x="1465" y="372" text-anchor="middle">说明数据用途并由用户选择</text>
+  <text class="t" x="1465" y="408" text-anchor="middle">允许相机 / 相册｜仅保存照片、不启用 AI</text>
+  <text class="small" x="1465" y="440" text-anchor="middle">拒绝只限制对应能力，不阻止进入 App</text>
+  <text class="small" x="1465" y="468" text-anchor="middle">不反复弹窗，可稍后在“我的”开启</text>
+  <path class="arrow" d="M1110 410 H1240"/>
+  <path class="soft" d="M1465 490 V555 H1110"/>
+  <text class="label" x="910" y="540">已具备拍摄或选图条件</text>
+
+  <rect class="user" x="650" y="565" width="500" height="130" rx="20"/>
+  <text class="h" x="900" y="607" text-anchor="middle">拍摄或选择一张当前照片</text>
+  <text class="t" x="900" y="643" text-anchor="middle">轮廓、角度、距离和光线提示</text>
+  <text class="small" x="900" y="674" text-anchor="middle">引导不覆盖皮肤细节，也不修改原图</text>
+  <path class="arrow" d="M900 510 V565"/>
+
+  <polygon class="diamond" points="900,760 1100,850 900,940 700,850"/>
+  <text class="h" x="900" y="838" text-anchor="middle">文件可读取且上传成功？</text>
+  <text class="small" x="900" y="869" text-anchor="middle">损坏 / 格式异常 / 上传失败</text>
+  <path class="arrow" d="M900 695 V760"/>
+  <text class="label" x="1120" y="835">否</text>
+  <rect class="error" x="1260" y="785" width="410" height="135" rx="20"/>
+  <text class="h" x="1465" y="829" text-anchor="middle">明确说明未保存</text>
+  <text class="t" x="1465" y="864" text-anchor="middle">重新拍摄或重新选择</text>
+  <text class="small" x="1465" y="895" text-anchor="middle">不得显示“保存成功”</text>
+  <path class="arrow" d="M1100 850 H1260"/>
+  <path class="arrow" d="M1465 785 V735 H1160 V630 H1150"/>
+  <text class="label" x="910" y="975">是</text>
+
+  <polygon class="diamond" points="900,1000 1120,1100 900,1200 680,1100"/>
+  <text class="h" x="900" y="1083" text-anchor="middle">照片质量属于哪一档？</text>
+  <text class="small" x="900" y="1115" text-anchor="middle">不可用｜建议调整｜具备比较条件</text>
+  <path class="arrow" d="M900 940 V1000"/>
+
+  <rect class="warn" x="90" y="1250" width="470" height="165" rx="20"/>
+  <text class="h" x="325" y="1294" text-anchor="middle">目标不可见 / 严重模糊或曝光异常</text>
+  <text class="t" x="325" y="1330" text-anchor="middle">明确建议重拍</text>
+  <text class="small" x="325" y="1362" text-anchor="middle">用户仍可选择“只保存原始记录”</text>
+  <text class="small" x="325" y="1390" text-anchor="middle">但不做可见现象整理和连续比较</text>
+  <rect class="warn" x="665" y="1250" width="470" height="165" rx="20"/>
+  <text class="h" x="900" y="1294" text-anchor="middle">轻微角度 / 距离 / 光线偏差</text>
+  <text class="t" x="900" y="1330" text-anchor="middle">给出可跳过的调整建议</text>
+  <text class="small" x="900" y="1362" text-anchor="middle">用户可重拍，也可继续保存</text>
+  <text class="small" x="900" y="1390" text-anchor="middle">不要求补齐三视角</text>
+  <rect class="system" x="1240" y="1250" width="470" height="165" rx="20"/>
+  <text class="h" x="1475" y="1294" text-anchor="middle">区域可识别且细节基本可见</text>
+  <text class="t" x="1475" y="1330" text-anchor="middle">进入中性观察与可比性处理</text>
+  <text class="small" x="1475" y="1362" text-anchor="middle">保存质量结果和必要元数据</text>
+  <text class="small" x="1475" y="1390" text-anchor="middle">不向用户输出质量评分</text>
+  <path class="arrow" d="M740 1155 L325 1250"/>
+  <path class="arrow" d="M900 1200 V1250"/>
+  <path class="arrow" d="M1060 1155 L1475 1250"/>
+
+  <rect class="system" x="650" y="1490" width="500" height="155" rx="20"/>
+  <text class="h" x="900" y="1532" text-anchor="middle">确定区域与当前可见事实</text>
+  <text class="t" x="900" y="1568" text-anchor="middle">AI 可用：建议区域与中性可见现象</text>
+  <text class="t" x="900" y="1601" text-anchor="middle">AI 不可用 / 未授权：手动选区或未分类</text>
+  <text class="small" x="900" y="1630" text-anchor="middle">多处变化或不确定时，才请用户确认或画圈</text>
+  <path class="soft" d="M325 1415 V1568 H650"/>
+  <path class="arrow" d="M900 1415 V1490"/>
+  <path class="arrow" d="M1475 1415 V1568 H1150"/>
+
+  <polygon class="diamond" points="900,1710 1150,1810 900,1910 650,1810"/>
+  <text class="h" x="900" y="1774" text-anchor="middle">同一区域事件匹配结果</text>
+  <text class="small" x="900" y="1808" text-anchor="middle">活跃且高确定性｜无匹配</text>
+  <text class="small" x="900" y="1838" text-anchor="middle">仅有暂停事件或归属不确定</text>
+  <path class="arrow" d="M900 1645 V1710"/>
+
+  <rect class="system" x="80" y="1970" width="480" height="135" rx="20"/>
+  <text class="h" x="320" y="2014" text-anchor="middle">自动续接正在追踪的事件</text>
+  <text class="t" x="320" y="2050" text-anchor="middle">用户之后仍可修改归属</text>
+  <rect class="system" x="660" y="1970" width="480" height="135" rx="20"/>
+  <text class="h" x="900" y="2014" text-anchor="middle">建立新的区域变化事件</text>
+  <text class="t" x="900" y="2050" text-anchor="middle">一张符合基本要求的照片即可成立</text>
+  <rect class="user" x="1240" y="1970" width="480" height="135" rx="20"/>
+  <text class="h" x="1480" y="2005" text-anchor="middle">照片先保存，再由用户确认</text>
+  <text class="t" x="1480" y="2040" text-anchor="middle">继续之前的变化｜作为新变化保存</text>
+  <text class="small" x="1480" y="2072" text-anchor="middle">不确定时不阻塞原始证据保存</text>
+  <path class="arrow" d="M700 1870 L320 1970"/>
+  <path class="arrow" d="M900 1910 V1970"/>
+  <path class="arrow" d="M1100 1870 L1480 1970"/>
+
+  <rect class="warn" x="260" y="2145" width="1280" height="70" rx="20"/>
+  <text class="h" x="900" y="2175" text-anchor="middle">可靠持久化成功后，才生成基础事件卡片并提示“已保存”</text>
+  <text class="small" x="900" y="2203" text-anchor="middle">卡片至少包含时间、区域、原始照片状态和可比性；首次记录说明它是后续比较的起点</text>
+  <path class="arrow" d="M320 2105 V2145"/>
+  <path class="arrow" d="M900 2105 V2145"/>
+  <path class="arrow" d="M1480 2105 V2145"/>
+</svg>

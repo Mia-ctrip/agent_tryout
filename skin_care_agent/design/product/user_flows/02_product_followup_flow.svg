@@ -1,0 +1,105 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="2300" viewBox="0 0 1800 2300">
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L9,3 z" fill="#726C78"/></marker>
+    <style>
+      .bg{fill:#FFFDF8}.title{font:700 34px 'Microsoft YaHei',sans-serif;fill:#4F4A47}.sub{font:18px 'Microsoft YaHei',sans-serif;fill:#736D69}
+      .user{fill:#F2EFF8;stroke:#8F85CE;stroke-width:3}.system{fill:#EDF5EF;stroke:#8FB29B;stroke-width:3}.value{fill:#FFF6DD;stroke:#D6AF45;stroke-width:3}
+      .muted{fill:#F3F1EE;stroke:#AAA39C;stroke-width:2}.diamond{fill:#FFF6DD;stroke:#D6AF45;stroke-width:3}
+      .h{font:700 22px 'Microsoft YaHei',sans-serif;fill:#514C49}.t{font:18px 'Microsoft YaHei',sans-serif;fill:#5A5651}.small{font:16px 'Microsoft YaHei',sans-serif;fill:#6B6662}.label{font:700 16px 'Microsoft YaHei',sans-serif;fill:#6B6662}
+      .arrow{fill:none;stroke:#726C78;stroke-width:3;marker-end:url(#arrow)}.soft{fill:none;stroke:#A29BA5;stroke-width:2.5;stroke-dasharray:8 7;marker-end:url(#arrow)}
+    </style>
+  </defs>
+  <rect class="bg" width="1800" height="2300"/>
+  <text class="title" x="70" y="72">子流程 2｜产品使用与后续观察</text>
+  <text class="sub" x="70" y="108">核心目的：记录真实发生的使用，再用后续证据整理“后来怎样”，不把时间先后当成疗效</text>
+
+  <rect class="user" x="130" y="165" width="500" height="125" rx="20"/>
+  <text class="h" x="380" y="210" text-anchor="middle">入口 A：记录刚刚使用</text>
+  <text class="t" x="380" y="246" text-anchor="middle">可从观察首页或产品页进入</text>
+  <text class="small" x="380" y="274" text-anchor="middle">无需已有变化事件，也不要求拍照</text>
+  <rect class="user" x="1170" y="165" width="500" height="125" rx="20"/>
+  <text class="h" x="1420" y="210" text-anchor="middle">入口 B：事件详情 → 补充实际使用</text>
+  <text class="t" x="1420" y="246" text-anchor="middle">使用记录直接关联当前事件</text>
+  <text class="small" x="1420" y="274" text-anchor="middle">未补充产品也不影响事件成立</text>
+
+  <rect class="user" x="650" y="370" width="500" height="135" rx="20"/>
+  <text class="h" x="900" y="414" text-anchor="middle">从个人产品柜或平台产品库选择</text>
+  <text class="t" x="900" y="450" text-anchor="middle">名称搜索或包装辅助识别</text>
+  <text class="small" x="900" y="480" text-anchor="middle">选择准确品牌、浓度、规格和剂型版本</text>
+  <path class="arrow" d="M380 290 V330 H900 V370"/>
+  <path class="arrow" d="M1420 290 V330 H900 V370"/>
+
+  <polygon class="diamond" points="900,575 1110,670 900,765 690,670"/>
+  <text class="h" x="900" y="656" text-anchor="middle">产品库中有准确条目？</text>
+  <text class="small" x="900" y="687" text-anchor="middle">包装识别结果不直接写入公共库</text>
+  <path class="arrow" d="M900 505 V575"/>
+  <text class="label" x="1115" y="650">没有</text>
+  <rect class="user" x="1220" y="595" width="480" height="150" rx="20"/>
+  <text class="h" x="1460" y="637" text-anchor="middle">提交名称或包装照片</text>
+  <text class="t" x="1460" y="673" text-anchor="middle">立即建立“信息补充中”的临时产品</text>
+  <text class="small" x="1460" y="705" text-anchor="middle">可以立刻记录使用，不等待平台校验</text>
+  <text class="small" x="1460" y="733" text-anchor="middle">后续匹配标准条目时保留既有记录</text>
+  <path class="arrow" d="M1110 670 H1220"/>
+  <text class="label" x="910" y="805">有</text>
+
+  <rect class="user" x="650" y="835" width="500" height="160" rx="20"/>
+  <text class="h" x="900" y="878" text-anchor="middle">记录实际发生的使用</text>
+  <text class="t" x="900" y="914" text-anchor="middle">选择单个产品或多个产品组合</text>
+  <text class="t" x="900" y="947" text-anchor="middle">真实使用时间｜区域推荐补充但可跳过</text>
+  <text class="small" x="900" y="977" text-anchor="middle">组合证据独立保存，不归因到单一产品</text>
+  <path class="arrow" d="M900 765 V835"/>
+  <path class="soft" d="M1460 745 V795 H1150 V875"/>
+
+  <polygon class="diamond" points="900,1070 1110,1160 900,1250 690,1160"/>
+  <text class="h" x="900" y="1147" text-anchor="middle">是否已有明确的变化事件？</text>
+  <text class="small" x="900" y="1178" text-anchor="middle">保存不依赖事件存在</text>
+  <path class="arrow" d="M900 995 V1070"/>
+  <rect class="system" x="100" y="1090" width="470" height="140" rx="20"/>
+  <text class="h" x="335" y="1134" text-anchor="middle">有关联事件</text>
+  <text class="t" x="335" y="1170" text-anchor="middle">作为该事件的实际使用节点保存</text>
+  <text class="small" x="335" y="1201" text-anchor="middle">仍不形成因果或治疗判断</text>
+  <rect class="system" x="1230" y="1090" width="470" height="140" rx="20"/>
+  <text class="h" x="1465" y="1134" text-anchor="middle">无事件或用户未选择区域</text>
+  <text class="t" x="1465" y="1170" text-anchor="middle">独立保存使用事实，不自动建事件</text>
+  <text class="small" x="1465" y="1201" text-anchor="middle">后续有时间、区域接近事件时才建议关联</text>
+  <path class="arrow" d="M690 1160 H570"/>
+  <path class="arrow" d="M1110 1160 H1230"/>
+
+  <rect class="user" x="650" y="1330" width="500" height="155" rx="20"/>
+  <text class="h" x="900" y="1374" text-anchor="middle">用户自主选择观察提醒</text>
+  <text class="t" x="900" y="1410" text-anchor="middle">明天｜3 天｜7 天｜自定义｜不提醒</text>
+  <text class="small" x="900" y="1442" text-anchor="middle">提醒观察变化，不提醒用药；一次后自动消失</text>
+  <text class="small" x="900" y="1470" text-anchor="middle">也可以不设提醒，之后随时主动回到事件</text>
+  <path class="soft" d="M335 1230 V1285 H900 V1330"/>
+  <path class="soft" d="M1465 1230 V1285 H900 V1330"/>
+
+  <rect class="user" x="650" y="1560" width="500" height="160" rx="20"/>
+  <text class="h" x="900" y="1604" text-anchor="middle">后续记录同一区域</text>
+  <text class="t" x="900" y="1640" text-anchor="middle">按对应角度、距离和光线提示补充照片</text>
+  <text class="t" x="900" y="1673" text-anchor="middle">选择个人感受：刺痛 / 瘙痒 / 紧绷 / 干燥等</text>
+  <text class="small" x="900" y="1704" text-anchor="middle">“没有特别感受”与“未记录”分开保存</text>
+  <path class="arrow" d="M900 1485 V1560"/>
+
+  <polygon class="diamond" points="900,1795 1140,1900 900,2005 660,1900"/>
+  <text class="h" x="900" y="1864" text-anchor="middle">满足阶段摘要门槛？</text>
+  <text class="t" x="900" y="1899" text-anchor="middle">同一区域至少 2 次可比较照片</text>
+  <text class="t" x="900" y="1932" text-anchor="middle">起点与后续记录间隔不少于 7 天</text>
+  <text class="small" x="900" y="1962" text-anchor="middle">七天不是疗程、提醒周期或事件结束时间</text>
+  <path class="arrow" d="M900 1720 V1795"/>
+
+  <rect class="value" x="110" y="2075" width="650" height="165" rx="20"/>
+  <text class="h" x="435" y="2118" text-anchor="middle">满足：生成中性阶段摘要</text>
+  <text class="t" x="435" y="2154" text-anchor="middle">分别描述泛红范围、局部表面、新的可见现象</text>
+  <text class="small" x="435" y="2186" text-anchor="middle">使用明确才关联具体产品；组合只关联组合</text>
+  <text class="small" x="435" y="2214" text-anchor="middle">不得概括为整体变好、变差、有效或无效</text>
+  <rect class="muted" x="1040" y="2075" width="650" height="165" rx="20"/>
+  <text class="h" x="1365" y="2118" text-anchor="middle">不满足：只展示事实</text>
+  <text class="t" x="1365" y="2154" text-anchor="middle">日期、区域、实际使用、个人感受、单次现象</text>
+  <text class="small" x="1365" y="2186" text-anchor="middle">照片不可比时明确说明暂不比较</text>
+  <text class="small" x="1365" y="2214" text-anchor="middle">不适可以立即呈现，但不能宣布产品导致过敏</text>
+  <path class="arrow" d="M700 1970 L435 2075"/>
+  <path class="arrow" d="M1100 1970 L1365 2075"/>
+
+  <rect class="muted" x="350" y="2260" width="1100" height="28" rx="14"/>
+  <text class="small" x="900" y="2281" text-anchor="middle">之后，多段独立事件进入“历程与个人产品反应记忆”流程；新证据可更新旧倾向</text>
+</svg>

@@ -1,0 +1,119 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="2280" viewBox="0 0 1800 2280">
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L9,3 z" fill="#726C78"/></marker>
+    <style>
+      .bg{fill:#FFFDF8}.title{font:700 34px 'Microsoft YaHei',sans-serif;fill:#4F4A47}.sub{font:18px 'Microsoft YaHei',sans-serif;fill:#736D69}
+      .user{fill:#F2EFF8;stroke:#8F85CE;stroke-width:3}.system{fill:#EDF5EF;stroke:#8FB29B;stroke-width:3}.value{fill:#FFF6DD;stroke:#D6AF45;stroke-width:3}
+      .muted{fill:#F3F1EE;stroke:#AAA39C;stroke-width:2}.danger{fill:#FFF1EE;stroke:#C98B7D;stroke-width:3}.future{fill:#FAF8F4;stroke:#AAA39C;stroke-width:2;stroke-dasharray:10 8}
+      .h{font:700 22px 'Microsoft YaHei',sans-serif;fill:#514C49}.t{font:18px 'Microsoft YaHei',sans-serif;fill:#5A5651}.small{font:16px 'Microsoft YaHei',sans-serif;fill:#6B6662}.label{font:700 16px 'Microsoft YaHei',sans-serif;fill:#6B6662}
+      .arrow{fill:none;stroke:#726C78;stroke-width:3;marker-end:url(#arrow)}.soft{fill:none;stroke:#A29BA5;stroke-width:2.5;stroke-dasharray:8 7;marker-end:url(#arrow)}
+    </style>
+  </defs>
+  <rect class="bg" width="1800" height="2280"/>
+  <text class="title" x="70" y="72">子流程 3｜历程、相似历史与个人产品反应记忆</text>
+  <text class="sub" x="70" y="108">核心目的：让用户从自己的证据中找回“过去发生过什么”，而不是获得产品推荐或医学结论</text>
+
+  <rect class="user" x="160" y="165" width="560" height="140" rx="20"/>
+  <text class="h" x="440" y="208" text-anchor="middle">历程入口</text>
+  <text class="t" x="440" y="244" text-anchor="middle">区域变化事件时间线与阶段摘要</text>
+  <text class="small" x="440" y="276" text-anchor="middle">不使用评分仪表盘、连续打卡日历或照片轮播</text>
+  <rect class="user" x="1080" y="165" width="560" height="140" rx="20"/>
+  <text class="h" x="1360" y="208" text-anchor="middle">产品入口</text>
+  <text class="t" x="1360" y="244" text-anchor="middle">平台产品库 + 个人外用产品柜</text>
+  <text class="small" x="1360" y="276" text-anchor="middle">每个产品以“个人反应记忆卡”呈现</text>
+
+  <rect class="user" x="120" y="400" width="640" height="245" rx="22"/>
+  <text class="h" x="440" y="445" text-anchor="middle">进入变化事件详情</text>
+  <text class="t" x="440" y="482" text-anchor="middle">1. 区域、开始日期和中性记录状态</text>
+  <text class="t" x="440" y="515" text-anchor="middle">2. 最近可见变化摘要与事件节点</text>
+  <text class="t" x="440" y="548" text-anchor="middle">3. 实际使用、个人感受、折叠的生活背景</text>
+  <text class="t" x="440" y="581" text-anchor="middle">4. 默认收起的原始照片证据</text>
+  <text class="small" x="440" y="618" text-anchor="middle">可继续记录、补充使用、改提醒或停止继续记录</text>
+  <rect class="user" x="1040" y="400" width="640" height="245" rx="22"/>
+  <text class="h" x="1360" y="445" text-anchor="middle">进入产品详情</text>
+  <text class="t" x="1360" y="482" text-anchor="middle">1. 产品基本信息与当前证据状态</text>
+  <text class="t" x="1360" y="515" text-anchor="middle">2. 依据事件数量、主要区域、变化摘要</text>
+  <text class="t" x="1360" y="548" text-anchor="middle">3. 用户主动记录的感受与组合使用</text>
+  <text class="t" x="1360" y="581" text-anchor="middle">4. 默认收起的事件与照片依据</text>
+  <text class="small" x="1360" y="618" text-anchor="middle">可纠正产品匹配、补个人备注或记录刚刚使用</text>
+  <path class="arrow" d="M440 305 V400"/>
+  <path class="arrow" d="M1360 305 V400"/>
+
+  <rect class="system" x="120" y="745" width="640" height="190" rx="22"/>
+  <text class="h" x="440" y="790" text-anchor="middle">匹配个人相似历史</text>
+  <text class="t" x="440" y="827" text-anchor="middle">只检索用户自己的记录</text>
+  <text class="t" x="440" y="860" text-anchor="middle">区域一致 + 基本可比性是硬门槛</text>
+  <text class="small" x="440" y="892" text-anchor="middle">中性标签筛选；图像特征只辅助排序</text>
+  <text class="small" x="440" y="920" text-anchor="middle">不显示相似度分数，不按产品效果排序</text>
+  <rect class="system" x="1040" y="745" width="640" height="190" rx="22"/>
+  <text class="h" x="1360" y="790" text-anchor="middle">汇总产品或组合的独立事件证据</text>
+  <text class="t" x="1360" y="827" text-anchor="middle">实际使用是否明确｜是否满足七天阶段门槛</text>
+  <text class="t" x="1360" y="860" text-anchor="middle">记录是否可比｜变化倾向是否相近</text>
+  <text class="small" x="1360" y="892" text-anchor="middle">组合记录独立归档，不拆给单一产品</text>
+  <text class="small" x="1360" y="920" text-anchor="middle">不适事实可立即呈现，不作过敏因果判断</text>
+  <path class="arrow" d="M440 645 V745"/>
+  <path class="arrow" d="M1360 645 V745"/>
+
+  <rect class="user" x="120" y="1030" width="640" height="155" rx="22"/>
+  <text class="h" x="440" y="1074" text-anchor="middle">用户查看相似历史候选</text>
+  <text class="t" x="440" y="1110" text-anchor="middle">先看摘要，历史照片保持遮盖</text>
+  <text class="small" x="440" y="1142" text-anchor="middle">可标记“这条不像”，只调整以后展示</text>
+  <text class="small" x="440" y="1170" text-anchor="middle">不删除、不改写任何原始记录</text>
+  <polygon class="value" points="1360,1005 1600,1110 1360,1215 1120,1110"/>
+  <text class="h" x="1360" y="1074" text-anchor="middle">有效独立事件证据量</text>
+  <text class="t" x="1360" y="1110" text-anchor="middle">1 段｜2 段或不一致</text>
+  <text class="t" x="1360" y="1143" text-anchor="middle">≥3 段且满足全部门槛</text>
+  <text class="small" x="1360" y="1173" text-anchor="middle">数量达到不代表自动形成规律</text>
+  <path class="arrow" d="M440 935 V1030"/>
+  <path class="arrow" d="M1360 935 V1005"/>
+
+  <polygon class="value" points="440,1280 650,1370 440,1460 230,1370"/>
+  <text class="h" x="440" y="1357" text-anchor="middle">用户主动查看原图？</text>
+  <text class="small" x="440" y="1388" text-anchor="middle">照片不自动揭开</text>
+  <rect class="user" x="80" y="1535" width="420" height="135" rx="20"/>
+  <text class="h" x="290" y="1578" text-anchor="middle">再次确认后显示原始证据</text>
+  <text class="t" x="290" y="1614" text-anchor="middle">可对照，但不修改、不美化照片</text>
+  <text class="small" x="290" y="1644" text-anchor="middle">用户随时可以收起</text>
+  <rect class="muted" x="560" y="1535" width="420" height="135" rx="20"/>
+  <text class="h" x="770" y="1578" text-anchor="middle">继续只看摘要</text>
+  <text class="t" x="770" y="1614" text-anchor="middle">不影响理解事件与产品记忆</text>
+  <text class="small" x="770" y="1644" text-anchor="middle">历史不会主动追赶用户</text>
+  <path class="arrow" d="M360 1450 L290 1535"/>
+  <path class="arrow" d="M520 1450 L770 1535"/>
+
+  <rect class="value" x="1050" y="1310" width="620" height="115" rx="20"/>
+  <text class="h" x="1360" y="1353" text-anchor="middle">记忆刚开始</text>
+  <text class="t" x="1360" y="1388" text-anchor="middle">只有 1 段有效事件或少量使用事实，不判断倾向</text>
+  <rect class="value" x="1050" y="1480" width="620" height="135" rx="20"/>
+  <text class="h" x="1360" y="1523" text-anchor="middle">出现一些线索</text>
+  <text class="t" x="1360" y="1559" text-anchor="middle">已有 2 段，或更多但结果不一致 / 不可比 / 混杂较多</text>
+  <text class="small" x="1360" y="1590" text-anchor="middle">继续开放地表达“目前的记录显示”</text>
+  <rect class="value" x="1050" y="1670" width="620" height="155" rx="20"/>
+  <text class="h" x="1360" y="1713" text-anchor="middle">形成个人规律</text>
+  <text class="t" x="1360" y="1749" text-anchor="middle">同一产品或组合 ≥3 段有效独立事件</text>
+  <text class="small" x="1360" y="1781" text-anchor="middle">每段满足阶段门槛、使用明确、记录可比、倾向相近</text>
+  <text class="small" x="1360" y="1809" text-anchor="middle">只代表个人历史，不代表医学疗效判断</text>
+  <path class="arrow" d="M1235 1190 L1180 1310"/>
+  <path class="arrow" d="M1360 1215 V1480"/>
+  <path class="arrow" d="M1485 1190 L1540 1670"/>
+
+  <rect class="danger" x="150" y="1875" width="1500" height="180" rx="22"/>
+  <text class="h" x="900" y="1920" text-anchor="middle">用户更正或删除源记录</text>
+  <text class="t" x="900" y="1957" text-anchor="middle">更正事件归属 / 产品匹配｜删除照片｜删除整条记录｜停止继续记录</text>
+  <text class="small" x="900" y="1991" text-anchor="middle">删除照片：同步删除图像特征、照片分析和相似匹配；独立填写的使用与感受事实可保留</text>
+  <text class="small" x="900" y="2023" text-anchor="middle">删除或更正源记录：相关阶段摘要、相似历史和产品记忆立即失效并重算，证据状态允许退回</text>
+  <path class="soft" d="M290 1670 V1875"/>
+  <path class="soft" d="M770 1670 V1840 H900 V1875"/>
+  <path class="soft" d="M1360 1825 V1875"/>
+
+  <rect class="muted" x="150" y="2110" width="700" height="105" rx="20"/>
+  <text class="h" x="500" y="2152" text-anchor="middle">用户控制始终有效</text>
+  <text class="t" x="500" y="2188" text-anchor="middle">导出、删除、撤回授权、注销；停止记录不等于痊愈</text>
+  <rect class="future" x="950" y="2110" width="700" height="105" rx="20"/>
+  <text class="h" x="1300" y="2152" text-anchor="middle">MVP 外：双向生活线索</text>
+  <text class="t" x="1300" y="2188" text-anchor="middle">当前只保存变化日与平稳日背景，不生成跨日结论</text>
+  <path class="arrow" d="M900 2055 V2080 H500 V2110"/>
+  <path class="soft" d="M900 2055 V2080 H1300 V2110"/>
+
+  <text class="small" x="900" y="2260" text-anchor="middle">全流程禁止：诊断、病因断言、产品推荐、疗程建议、产品排名、皮肤评分和因果结论</text>
+</svg>
