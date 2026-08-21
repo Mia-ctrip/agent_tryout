@@ -14,7 +14,7 @@
 
 适合复用的是认证、协议、账号隔离、存储、签名 URL、请求幂等模式、通用 AI gateway、Expo 基础和相机权限封装。旧三视角 CheckIn、医学化分析、皮肤指数趋势、Patch lineage、聊天和旧日记不能直接进入新流程。
 
-产品切片、四栏导航、个人产品范围和 `observation_scope` 方向已经由用户确认。书面 MVP 规格已经更新为 REVIEW，等待用户复核；当前没有 ACTIVE 实施计划。
+产品切片、四栏导航、个人产品范围和 `observation_scope` 方向已经由用户确认。书面 MVP 规格已转为 ACTIVE；准备阶段＋切片 1 的实施计划已经生成，但尚未开始执行。
 
 ## 验证口径
 
@@ -133,11 +133,14 @@
 ## 当前工作状态
 
 - 文档治理：已建立唯一入口，历史噪音资料已从当前 fork 清除；
-- MVP 规格：`design/product/skin_care_app_mvp_spec.md`，状态 REVIEW；
-- ACTIVE 实施计划：无；
-- 当前阻塞：需要用户复核书面 MVP 规格；
-- 下一步：用户确认规格后，将其状态改为 ACTIVE，并使用 `superpowers:writing-plans` 生成唯一 ACTIVE 切片实施计划；
-- 禁止动作：在计划生成并获准执行前，不根据旧迁移方案继续开发。
+- MVP 规格：`design/product/skin_care_app_mvp_spec.md`，状态 ACTIVE；
+- ACTIVE 实施计划：`docs/superpowers/plans/2026-08-21-full-face-observation-slice-1.md`；
+- 当前计划范围：准备阶段＋切片 1；
+- 当前执行进度：尚未开始，代码和迁移仍停留在核验基线；
+- 当前阻塞：无；
+- Slice 2 进入门禁：切片 1 前端、后端、数据库和异步 AI 全部实现，技术验收有证据，并由用户明确确认验收通过；
+- 下一步：用户选择执行方式后，从计划 Task 1 开始；
+- 禁止动作：不得跳到切片 2、区域能力或旧迁移方案。
 
 ## 更新规则
 

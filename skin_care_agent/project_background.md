@@ -10,7 +10,7 @@
 
 | 要回答的问题 | 权威来源 | 状态 |
 |---|---|---|
-| 当前 MVP 做什么、如何工作、如何验收 | `design/product/skin_care_app_mvp_spec.md` | REVIEW，等待用户书面复核 |
+| 当前 MVP 做什么、如何工作、如何验收 | `design/product/skin_care_app_mvp_spec.md` | ACTIVE，唯一产品事实源 |
 | 现在已经实现什么、验证到哪里、下一步是什么 | `docs/current_status.md` | ACTIVE，唯一进度视图 |
 | 如何配置和运行本地环境 | `docs/environment_setup.md` | ACTIVE |
 | 当前执行哪些任务 | `docs/current_status.md` 指定的唯一 ACTIVE 计划 | 尚未生成 |
@@ -55,7 +55,7 @@ Skin Care Agent 是面向希望长期回看皮肤外观变化用户的个人记�
 5. 全脸前后变化与阶段趋势；
 6. 公开测试就绪。
 
-当前正在进行书面规格复核。复核通过前不生成或执行 ACTIVE 实施计划。
+书面规格已经确认。当前只执行 `docs/current_status.md` 指定的唯一 ACTIVE 实施计划。
 
 ## 旧实现边界
 
