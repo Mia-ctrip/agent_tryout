@@ -1,0 +1,54 @@
+skin_care_agent/project_background.md
+  s_386cd94455d8d2::t_3fc0298e1e2f6a 13,58
+skin_care_agent/design/product/skin_care_app_mvp_spec.md
+  s_e72e574415ec4d::t_c66f2308d8898c 319-331
+  s_386cd94455d8d2::t_3fc0298e1e2f6a 3,20
+skin_care_agent/docs/current_status.md
+  s_e72e574415ec4d::t_20998b4d6d20b7 141
+  s_386cd94455d8d2::t_3fc0298e1e2f6a 17,136-140,142-143
+skin_care_agent/docs/superpowers/plans/2026-08-21-full-face-observation-slice-1.md
+  s_e72e574415ec4d::t_413bad465d9d20 71-83
+  s_e72e574415ec4d::t_67d9c6ceeaa0f8 140-149
+  s_e72e574415ec4d::t_41025fc21b2a15 162-186,194-196
+  s_e72e574415ec4d::t_203a86af58390f 27-44
+  s_e72e574415ec4d::t_ed02ad35c63420 58-70
+  s_e72e574415ec4d::t_8f7ecefdbbbf57 187-193
+  s_e72e574415ec4d::t_d06f7678f122ef 1-26,45
+  s_e72e574415ec4d::t_c1562530712417 46-57
+  s_e72e574415ec4d::t_e9048b2657dfd6 98-109
+  s_e72e574415ec4d::t_8d6eefe659397c 84-97
+  s_e72e574415ec4d::t_d77dc6b3843573 110-127
+  s_e72e574415ec4d::t_4f31f4cf83823b 150-161
+  s_e72e574415ec4d::t_11601bdcfaa24a 128-139
+skin_care_agent/backend/.env.example
+  h_e5cd53142b29a8 72
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.40-trip",
+  "base_commit_sha": "a89f173aaaa918028065088b5d2eb32d8b590f03",
+  "prompts": {},
+  "humans": {
+    "h_e5cd53142b29a8": {
+      "author": "yumeifeng <yumeifeng@trip.com>"
+    }
+  },
+  "sessions": {
+    "s_386cd94455d8d2": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0236f-c888-7863-80a5-93894e505ea9",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "yumeifeng <yumeifeng@trip.com>"
+    },
+    "s_e72e574415ec4d": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a01f5d-e7e4-7e43-a1b4-41d387ac4c7f",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "yumeifeng <yumeifeng@trip.com>"
+    }
+  }
+}
