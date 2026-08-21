@@ -1,0 +1,32 @@
+skin_care_agent/AGENTS.md
+  h_e5cd53142b29a8 42-88
+.gitignore
+  s_e72e574415ec4d::t_db85acea100887 1
+skin_care_agent/ai_gateaway_proxy/model/service_entity.py
+  h_e5cd53142b29a8 1
+skin_care_agent/ai_gateaway_proxy/factory.py
+  h_e5cd53142b29a8 1
+skin_care_agent/ai_gateaway_proxy/model/model_types.py
+  h_e5cd53142b29a8 1
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.40-trip",
+  "base_commit_sha": "662951bee878a4f3f06d4268ea6e741d7c21b981",
+  "prompts": {},
+  "humans": {
+    "h_e5cd53142b29a8": {
+      "author": "yumeifeng <yumeifeng@trip.com>"
+    }
+  },
+  "sessions": {
+    "s_e72e574415ec4d": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a01f5d-e7e4-7e43-a1b4-41d387ac4c7f",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "yumeifeng <yumeifeng@trip.com>"
+    }
+  }
+}
