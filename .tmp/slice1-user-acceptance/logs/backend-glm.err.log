@@ -1,0 +1,85 @@
+INFO:     Started server process [13348]
+INFO:     Waiting for application startup.
+2026-08-22 18:27:39,570 [INFO] skin_care_agent: App starting up. env=dev
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8080 (Press CTRL+C to quit)
+2026-08-22 18:28:18,052 [INFO] skin_care_agent.ai_gateway: [trace=-] gateway.provider.request seq=1 provider=glm model=glm-4.6v task=vision_analyze
+2026-08-22 18:28:25,297 [INFO] httpx: HTTP Request: POST https://open.bigmodel.cn/api/paas/v4/chat/completions "HTTP/1.1 200 OK"
+2026-08-22 18:28:25,308 [INFO] skin_care_agent.ai_gateway: [trace=-] gateway.provider.ok seq=1 provider=glm model=glm-4.6v latency_ms=7250 tokens_in=1869 tokens_out=195 text_preview={
+  "main_locations": ["额头", "脸颊", "鼻部", "下巴"],
+  "estimated_amount": "少量",
+  "distribution": "散在",
+
+2026-08-22 18:43:20,901 [INFO] skin_care_agent.ai_gateway: [trace=-] gateway.provider.request seq=1 provider=glm model=glm-4.6v task=vision_analyze
+2026-08-22 18:43:26,755 [INFO] httpx: HTTP Request: POST https://open.bigmodel.cn/api/paas/v4/chat/completions "HTTP/1.1 200 OK"
+2026-08-22 18:43:26,765 [INFO] skin_care_agent.ai_gateway: [trace=-] gateway.provider.ok seq=1 provider=glm model=glm-4.6v latency_ms=5875 tokens_in=1869 tokens_out=218 text_preview={
+  "main_locations": ["额头", "脸颊", "下巴"],
+  "estimated_amount": "少量",
+  "distribution": "散在",
+  "cov
+2026-08-22 19:09:41,451 [INFO] skin_care_agent.ai_gateway: [trace=-] gateway.provider.request seq=1 provider=glm model=glm-4.6v task=vision_analyze
+2026-08-22 19:09:42,351 [INFO] skin_care_agent.ai_gateway: [trace=-] gateway.provider.request seq=1 provider=glm model=glm-4.6v task=vision_analyze
+2026-08-22 19:09:43,324 [INFO] skin_care_agent.ai_gateway: [trace=-] gateway.provider.request seq=1 provider=glm model=glm-4.6v task=vision_analyze
+2026-08-22 19:09:44,294 [INFO] skin_care_agent.ai_gateway: [trace=-] gateway.provider.request seq=1 provider=glm model=glm-4.6v task=vision_analyze
+2026-08-22 19:09:45,342 [INFO] skin_care_agent.ai_gateway: [trace=-] gateway.provider.request seq=1 provider=glm model=glm-4.6v task=vision_analyze
+2026-08-22 19:09:49,481 [INFO] httpx: HTTP Request: POST https://open.bigmodel.cn/api/paas/v4/chat/completions "HTTP/1.1 200 OK"
+2026-08-22 19:09:49,490 [INFO] skin_care_agent.ai_gateway: [trace=-] gateway.provider.ok seq=1 provider=glm model=glm-4.6v latency_ms=8046 tokens_in=2560 tokens_out=131 text_preview={
+  "main_locations": ["脸颊、下巴"],
+  "estimated_amount": "较多",
+  "distribution": "散在",
+  "coverage": "
+2026-08-22 19:09:49,490 [INFO] skin_care_agent.ai_gateway: [trace=-] gateway.provider.request seq=2 provider=glm model=glm-4.6v task=vision_analyze
+2026-08-22 19:09:49,902 [INFO] httpx: HTTP Request: POST https://open.bigmodel.cn/api/paas/v4/chat/completions "HTTP/1.1 200 OK"
+2026-08-22 19:09:49,911 [INFO] skin_care_agent.ai_gateway: [trace=-] gateway.provider.ok seq=1 provider=glm model=glm-4.6v latency_ms=7561 tokens_in=2560 tokens_out=142 text_preview={
+  "main_locations": ["鼻翼两侧", "脸颊", "下巴"],
+  "estimated_amount": "较多",
+  "distribution": "散在",
+  "c
+2026-08-22 19:09:49,911 [INFO] skin_care_agent.ai_gateway: [trace=-] gateway.provider.request seq=2 provider=glm model=glm-4.6v task=vision_analyze
+2026-08-22 19:09:50,310 [INFO] httpx: HTTP Request: POST https://open.bigmodel.cn/api/paas/v4/chat/completions "HTTP/1.1 200 OK"
+2026-08-22 19:09:50,322 [INFO] skin_care_agent.ai_gateway: [trace=-] gateway.provider.ok seq=1 provider=glm model=glm-4.6v latency_ms=7000 tokens_in=2560 tokens_out=148 text_preview={
+  "main_locations": ["脸颊", "额头", "下巴"],
+  "estimated_amount": "较多",
+  "distribution": "散在",
+  "cov
+2026-08-22 19:09:50,886 [INFO] httpx: HTTP Request: POST https://open.bigmodel.cn/api/paas/v4/chat/completions "HTTP/1.1 200 OK"
+2026-08-22 19:09:50,898 [INFO] skin_care_agent.ai_gateway: [trace=-] gateway.provider.ok seq=1 provider=glm model=glm-4.6v latency_ms=6609 tokens_in=2560 tokens_out=168 text_preview={
+  "main_locations": ["额头", "脸颊", "下巴"],
+  "estimated_amount": "少量",
+  "distribution": "散在",
+  "cov
+2026-08-22 19:09:53,137 [INFO] httpx: HTTP Request: POST https://open.bigmodel.cn/api/paas/v4/chat/completions "HTTP/1.1 200 OK"
+2026-08-22 19:09:53,140 [INFO] skin_care_agent.ai_gateway: [trace=-] gateway.provider.ok seq=1 provider=glm model=glm-4.6v latency_ms=7796 tokens_in=2560 tokens_out=131 text_preview={
+  "main_locations": ["脸颊", "鼻部", "下巴"],
+  "estimated_amount": "较多",
+  "distribution": "散在",
+  "cov
+2026-08-22 19:09:53,142 [INFO] skin_care_agent.ai_gateway: [trace=-] gateway.provider.request seq=2 provider=glm model=glm-4.6v task=vision_analyze
+2026-08-22 19:09:57,950 [INFO] httpx: HTTP Request: POST https://open.bigmodel.cn/api/paas/v4/chat/completions "HTTP/1.1 200 OK"
+2026-08-22 19:09:57,958 [INFO] skin_care_agent.ai_gateway: [trace=-] gateway.provider.ok seq=2 provider=glm model=glm-4.6v latency_ms=8046 tokens_in=2630 tokens_out=163 text_preview={
+  "main_locations": ["鼻翼两侧、脸颊、下巴"],
+  "estimated_amount": "较多",
+  "distribution": "散在",
+  "coverag
+2026-08-22 19:09:57,960 [WARNING] skin_care_agent.ai_gateway: [trace=-] gateway.all_failed task=vision_analyze attempts=1
+2026-08-22 19:09:58,117 [INFO] httpx: HTTP Request: POST https://open.bigmodel.cn/api/paas/v4/chat/completions "HTTP/1.1 200 OK"
+2026-08-22 19:09:58,127 [INFO] skin_care_agent.ai_gateway: [trace=-] gateway.provider.ok seq=2 provider=glm model=glm-4.6v latency_ms=8640 tokens_in=2630 tokens_out=110 text_preview={
+  "main_locations": ["脸颊、下巴"],
+  "estimated_amount": "较多",
+  "distribution": "散在",
+  "coverage": "
+2026-08-22 19:09:58,127 [WARNING] skin_care_agent.ai_gateway: [trace=-] gateway.all_failed task=vision_analyze attempts=1
+2026-08-22 19:09:58,777 [INFO] httpx: HTTP Request: POST https://open.bigmodel.cn/api/paas/v4/chat/completions "HTTP/1.1 200 OK"
+2026-08-22 19:09:58,783 [INFO] skin_care_agent.ai_gateway: [trace=-] gateway.provider.ok seq=2 provider=glm model=glm-4.6v latency_ms=5640 tokens_in=2630 tokens_out=124 text_preview={
+  "main_locations": ["脸颊、鼻翼两侧、下巴"],
+  "estimated_amount": "较多",
+  "distribution": "散在",
+  "coverag
+2026-08-22 19:09:58,787 [WARNING] skin_care_agent.ai_gateway: [trace=-] gateway.all_failed task=vision_analyze attempts=1
+2026-08-22 19:17:49,392 [INFO] skin_care_agent.ai_gateway: [trace=-] gateway.provider.request seq=1 provider=glm model=glm-4.6v task=vision_analyze
+2026-08-22 19:17:54,779 [INFO] httpx: HTTP Request: POST https://open.bigmodel.cn/api/paas/v4/chat/completions "HTTP/1.1 200 OK"
+2026-08-22 19:17:54,787 [INFO] skin_care_agent.ai_gateway: [trace=-] gateway.provider.ok seq=1 provider=glm model=glm-4.6v latency_ms=5390 tokens_in=2772 tokens_out=131 text_preview={
+  "main_locations": ["脸颊", "下巴"],
+  "estimated_amount": "较多",
+  "distribution": "散在",
+  "coverage"
