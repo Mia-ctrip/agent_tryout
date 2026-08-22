@@ -1,0 +1,5 @@
+INFO:     Started server process [12612]
+INFO:     Waiting for application startup.
+2026-08-22 15:36:50,581 [INFO] skin_care_agent: App starting up. env=dev
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8080 (Press CTRL+C to quit)
