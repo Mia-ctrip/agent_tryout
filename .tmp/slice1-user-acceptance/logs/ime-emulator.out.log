@@ -1,0 +1,167 @@
+INFO         | Android emulator version 36.6.11.0 (build_id 15507667) (CL:N/A)
+INFO         | Graphics backend: gfxstream
+INFO         | Found systemPath D:\Users\yumeifeng\AppData\Local\Android\Sdk\system-images\android-36\google_apis_playstore\x86_64\
+INFO         | Guest usage of host flag 'VulkanVirtualQueue' will be ignored.
+INFO         | Increasing RAM size to 2560MB
+INFO         | IPv4 server found: 172.20.10.1
+INFO         | Ignore IPv6 address: 7096:7401:5b02:0:7096:7401:5b02:0
+INFO         | Ignore IPv6 address: 7096:7401:5b02:0:7096:7401:5b02:0
+INFO         | Ignore IPv6 address: 7096:7401:5b02:0:7096:7401:5b02:0
+INFO         | Ignore IPv6 address: a0a2:7401:5b02:0:7096:7401:5b02:0
+INFO         | Ignore IPv6 address: a0a2:7401:5b02:0:7096:7401:5b02:0
+INFO         | Ignore IPv6 address: a0a2:7401:5b02:0:7096:7401:5b02:0
+INFO         | Ignore IPv6 address: a0a8:7401:5b02:0:7096:7401:5b02:0
+INFO         | Ignore IPv6 address: a0a8:7401:5b02:0:7096:7401:5b02:0
+INFO         | Ignore IPv6 address: a0a8:7401:5b02:0:7096:7401:5b02:0
+INFO         | Ignore IPv6 address: a0ae:7401:5b02:0:7096:7401:5b02:0
+INFO         | Ignore IPv6 address: a0ae:7401:5b02:0:7096:7401:5b02:0
+INFO         | Ignore IPv6 address: a8b8:7401:5b02:0:7096:7401:5b02:0
+INFO         | Ignore IPv6 address: a8b8:7401:5b02:0:7096:7401:5b02:0
+INFO         | Ignore IPv6 address: a8b8:7401:5b02:0:7096:7401:5b02:0
+INFO         | Ignore IPv6 address: a0be:7401:5b02:0:7096:7401:5b02:0
+INFO         | Ignore IPv6 address: a0be:7401:5b02:0:7096:7401:5b02:0
+INFO         | Ignore IPv6 address: a0be:7401:5b02:0:7096:7401:5b02:0
+INFO         | Guest GLES Driver: Auto (ext controls)
+INFO         | emuglConfig_init: vulkan_mode_selected:host gles_mode_selected:host
+INFO         | emuglConfig_get_vulkan_hardware_gpu_support_info: Found physical GPU 'AMD Radeon (TM) Graphics', type: VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU, apiVersion: 1.3.302, driverVersion: 2.0.331
+
+INFO         | Enabled VulkanAllocateDeviceMemoryOnly feature for gpu vendor AMD Radeon (TM) Graphics on Linux
+
+INFO         | Checking system compatibility:
+INFO         |   Checking: hasCompatibleHypervisor
+INFO         |      Ok: Hypervisor compatibility to run avd: `Pixel_8` are met
+INFO         |   Checking: hasSufficientSystem
+INFO         |      Ok: System requirements to run avd: `Pixel_8` are met
+INFO         |   Checking: hasSufficientHwGpu
+INFO         |      Ok: Hardware GPU requirements to run avd: `Pixel_8` are passed
+INFO         |   Checking: hasSufficientDiskSpace
+INFO         |      Ok: Disk space requirements to run avd: `Pixel_8` are met
+INFO         | Storing crashdata in: D:\Users\YUMEIF~1\AppData\Local\Temp\\AndroidEmulator\emu-crash-36.6.11.db, detection is enabled for process: 20600
+INFO         | Initializing gfxstream backend
+INFO         | startOpenglesRendererImpl: gpu info
+INFO         | GPU #1
+  Make: 1002
+  Model: AMD Radeon (TM) Graphics
+  Device ID: 1900
+
+INFO         | Disabling implicit Vulkan layers to avoid compatibility issues. Set VK_LOADER_LAYERS_DISABLE manually to disable this behavior.
+INFO         | SharedLibrary::open for [D:\Users\yumeifeng\AppData\Local\Android\Sdk\emulator\qemu\windows-x86_64\lib64\vulkan\vulkan-1.dll]
+INFO         | SharedLibrary::open for [D:\Users\yumeifeng\AppData\Local\Android\Sdk\emulator\lib64\vulkan\vulkan-1.dll]
+INFO         | Added library: D:\Users\yumeifeng\AppData\Local\Android\Sdk\emulator\lib64\vulkan\vulkan-1.dll
+INFO         | Selecting Vulkan device: AMD Radeon (TM) Graphics, Version: 1.3.302
+INFO         | Using Vulkan externalMemoryMode: OpaqueWin32 for VkEmulation
+INFO         | Initializing VkEmulation features:
+INFO         |     glInteropSupported: true
+INFO         |     useDeferredCommands: true
+INFO         |     createResourceWithRequirements: true
+INFO         |     useVulkanComposition: false
+INFO         |     useVulkanNativeSwapchain: false
+INFO         |     enable guestRenderDoc: false
+INFO         |     ASTC LDR emulation mode: Gpu
+INFO         |     enable ETC2 emulation: true
+INFO         |     enable Ycbcr emulation: false
+INFO         |     guestVulkanOnly: false
+INFO         |     useDedicatedAllocations: false
+INFO         |     guestVulkanMaxApiVersion: 1.3.0
+INFO         |     enableProtectedMemoryEmulation: false
+INFO         | Graphics Adapter Vendor Google (ATI Technologies Inc.)
+INFO         | Graphics Adapter Android Emulator OpenGL ES Translator (AMD Radeon (TM) Graphics)
+INFO         | Graphics API Version OpenGL ES 3.0 (4.5.0 Core Profile Context 24.30.30.09.250807)
+INFO         | Graphics API Extensions GL_OES_EGL_sync GL_OES_EGL_image GL_OES_EGL_image_external GL_OES_depth24 GL_OES_depth32 GL_OES_element_index_uint GL_OES_texture_float GL_OES_texture_float_linear GL_OES_compressed_paletted_texture GL_OES_compressed_ETC1_RGB8_texture GL_OES_depth_texture GL_OES_texture_half_float GL_OES_texture_half_float_linear GL_OES_packed_depth_stencil GL_OES_vertex_half_float GL_OES_texture_npot GL_OES_rgb8_rgba8 GL_OVR_multiview2 GL_EXT_color_buffer_float GL_EXT_color_buffer_half_float GL_EXT_texture_format_BGRA8888 GL_APPLE_texture_format_BGRA8888 GL_EXT_texture_buffer 
+INFO         | Graphics Device Extensions N/A
+INFO         | Disabling sparse binding feature support
+INFO         | Sending adb public key [QAAAAK31Sbnbye65msHZeuv6ZCQO0KxSJSRV6rcY2XEKP6onU3vZXFbODxjbiAYyrrPg6xAsziMOoYYHLn5w+cCQMheh6QXPK2qImqQE3RbI6GAl8q2kz1rLUfnEqoAtQhmOQQyK5MNGLOcy+Jh0AE3/1rLC3TxI0ocJnzipYz7Q7Zb3BBv4FV9lYTDKP0+K7Me/+xLH78Dz1W7ZYM4IDSkl2PXapyIifmSMxuyVne9dMDx4Vk9vSlYNk3DSUmQi7JcpOQS9MlohZVZBgXrdgh5CFVqpcJgA+Y6gaulyfHVmHlLQjMmxa/AFJHwejiUwKqOJOc748TnIf2ef4IQbyOoWKQEiVZC7xAlUUbLFHfNvIwlBhFc7VSFFxSvL46Fl16veDJuZ1IfKJEM6eDQ7uzwB+Q6Ql3aeOPoFrc99yQReyKlXQzsV8HcPecF4Hjr2ObZGi5Vvqtny+82nVL+pV2tsfrdZWFDOlvLTwa5+ka8eIAbKGPo5vr7ncOdxqFhatBOES/5FYamlKbC+cs5cLxQy8ctmjCnCgK145/ekJYtcJpsSk41rnspnKY5n/x6d2ukHhFFCM2dP5FgBpvpGsAYpV3JQ39EgqVDFhs9M39wfKsK+VyjgiolryDUvFG0sl7ZR7OiMdMm7jvKWnOcqYqKBNPJuwwxxD4qAPIcKDdzDc0n+Ymy5pwEAAQA= @unknown]
+INFO         | Userspace boot properties:
+INFO         |   androidboot.boot_devices=pci0000:00/0000:00:03.0 pci0000:00/0000:00:06.0
+INFO         |   androidboot.dalvik.vm.heapsize=576m
+INFO         |   androidboot.debug.hwui.renderer=skiagl
+INFO         |   androidboot.debug.sf.nobootanimation=1
+INFO         |   androidboot.hardware=ranchu
+INFO         |   androidboot.hardware.gltransport=pipe
+INFO         |   androidboot.hardware.vulkan=ranchu
+INFO         |   androidboot.logcat=*:V
+INFO         |   androidboot.opengles.version=196609
+INFO         |   androidboot.qemu=1
+INFO         |   androidboot.qemu.adb.pubkey=QAAAAK31Sbnbye65msHZeuv6ZCQO0KxSJSRV6rcY2XEKP6onU3vZXFbODxjbiAYyrrPg6xAsziMOoYYHLn5w+cCQMheh6QXPK2qImqQE3RbI6GAl8q2kz1rLUfnEqoAtQhmOQQyK5MNGLOcy+Jh0AE3/1rLC3TxI0ocJnzipYz7Q7Zb3BBv4FV9lYTDKP0+K7Me/+xLH78Dz1W7ZYM4IDSkl2PXapyIifmSMxuyVne9dMDx4Vk9vSlYNk3DSUmQi7JcpOQS9MlohZVZBgXrdgh5CFVqpcJgA+Y6gaulyfHVmHlLQjMmxa/AFJHwejiUwKqOJOc748TnIf2ef4IQbyOoWKQEiVZC7xAlUUbLFHfNvIwlBhFc7VSFFxSvL46Fl16veDJuZ1IfKJEM6eDQ7uzwB+Q6Ql3aeOPoFrc99yQReyKlXQzsV8HcPecF4Hjr2ObZGi5Vvqtny+82nVL+pV2tsfrdZWFDOlvLTwa5+ka8eIAbKGPo5vr7ncOdxqFhatBOES/5FYamlKbC+cs5cLxQy8ctmjCnCgK145/ekJYtcJpsSk41rnspnKY5n/x6d2ukHhFFCM2dP5FgBpvpGsAYpV3JQ39EgqVDFhs9M39wfKsK+VyjgiolryDUvFG0sl7ZR7OiMdMm7jvKWnOcqYqKBNPJuwwxxD4qAPIcKDdzDc0n+Ymy5pwEAAQA= @unknown
+INFO         |   androidboot.qemu.avd_name=Pixel_8
+INFO         |   androidboot.qemu.camera_hq_edge_processing=0
+INFO         |   androidboot.qemu.camera_protocol_ver=1
+INFO         |   androidboot.qemu.cpuvulkan.version=4206592
+INFO         |   androidboot.qemu.gltransport.drawFlushInterval=800
+INFO         |   androidboot.qemu.gltransport.name=pipe
+INFO         |   androidboot.qemu.hwcodec.avcdec=2
+INFO         |   androidboot.qemu.hwcodec.hevcdec=2
+INFO         |   androidboot.qemu.hwcodec.vpxdec=2
+INFO         |   androidboot.qemu.settings.system.screen_off_timeout=2147483647
+INFO         |   androidboot.qemu.skin=pixel_8
+INFO         |   androidboot.qemu.virtiowifi=1
+INFO         |   androidboot.qemu.vsync=60
+INFO         |   androidboot.serialno=EMULATOR36X6X11X0
+INFO         |   androidboot.vbmeta.digest=43d61dbc053c8dbf3adaff951e5bdfcf174ece9dd24ffe8e6120f951cb412b2a
+INFO         |   androidboot.vbmeta.hash_alg=sha256
+INFO         |   androidboot.vbmeta.size=6784
+INFO         |   androidboot.veritymode=enforcing
+WHPX on Windows 10.0.26200 detected.
+Windows Hypervisor Platform accelerator is operational
+INFO         | Monitoring duration of emulator setup.
+WARNING      | The emulator now requires a signed jwt token for gRPC access! Use the -grpc flag if you really want an open unprotected grpc port
+INFO         | Using security allow list from: D:\Users\yumeifeng\AppData\Local\Android\Sdk\emulator\lib\emulator_access.json
+INFO         | The active JSON Web Key Sets can be found here: D:\Users\yumeifeng\AppData\Local\Temp\avd\running\20600\jwks\da59e405-7ec1-4160-9f13-2496a8353100\active.jwk
+INFO         | Scanning D:\Users\yumeifeng\AppData\Local\Temp\avd\running\20600\jwks\da59e405-7ec1-4160-9f13-2496a8353100 for jwk keys.
+INFO         | Started GRPC server at 127.0.0.1:8554, security: Local, auth: +token
+INFO         | Advertising in: D:\Users\yumeifeng\AppData\Local\Temp\avd\running\pid_20600.ini
+INFO         | Successfully initialized netsim WiFi
+INFO         | Activated packet streamer for bluetooth emulation
+INFO         | Activated packet streamer for uwb emulation
+INFO         | Setting display: 0 configuration to: 1080x2400, dpi: 420x420 
+INFO         | setDisplayActiveConfig: id:0, 1080x2400
+INFO         | emulatorSetupEnvironment: Environment scene is not required
+ERROR        | MultiDisplayPipe is not up yet. Please try again.
+USER_INFO    | Emulator is performing a full startup. This may take upto two minutes, or more.
+INFO         | GPU Vendor=[Google (ATI Technologies Inc.)]
+INFO         | GPU Renderer=[Android Emulator OpenGL ES Translator (AMD Radeon (TM) Graphics)]
+INFO         | GPU Version=[OpenGL ES 3.0 (4.5.0 Core Profile Context 24.30.30.09.250807)]
+WARNING      | adb command 'D:\Users\yumeifeng\AppData\Local\Android\Sdk\platform-tools\adb.exe -s emulator-5554 shell am broadcast -a com.android.emulator.multidisplay.START -n com.android.emulator.multidisplay/.MultiDisplayServiceReceiver --user 0 ' failed: 'adb.exe: device offline'
+WARNING      | adb command 'D:\Users\yumeifeng\AppData\Local\Android\Sdk\platform-tools\adb.exe -s emulator-5554 shell am broadcast -a com.android.emulator.multidisplay.START -n com.android.emulator.multidisplay/.MultiDisplayServiceReceiver --user 0 ' failed: 'adb.exe: device offline'
+WARNING      | adb command 'D:\Users\yumeifeng\AppData\Local\Android\Sdk\platform-tools\adb.exe -s emulator-5554 shell am broadcast -a com.android.emulator.multidisplay.START -n com.android.emulator.multidisplay/.MultiDisplayServiceReceiver --user 0 ' failed: 'adb.exe: device offline'
+WARNING      | adb command 'D:\Users\yumeifeng\AppData\Local\Android\Sdk\platform-tools\adb.exe -s emulator-5554 shell am broadcast -a com.android.emulator.multidisplay.START -n com.android.emulator.multidisplay/.MultiDisplayServiceReceiver --user 0 ' failed: 'adb.exe: device offline'
+WARNING      | adb command 'D:\Users\yumeifeng\AppData\Local\Android\Sdk\platform-tools\adb.exe -s emulator-5554 shell am broadcast -a com.android.emulator.multidisplay.START -n com.android.emulator.multidisplay/.MultiDisplayServiceReceiver --user 0 ' failed: 'adb.exe: device offline'
+WARNING      | adb command 'D:\Users\yumeifeng\AppData\Local\Android\Sdk\platform-tools\adb.exe -s emulator-5554 shell am broadcast -a com.android.emulator.multidisplay.START -n com.android.emulator.multidisplay/.MultiDisplayServiceReceiver --user 0 ' failed: 'adb.exe: device offline'
+WARNING      | adb command 'D:\Users\yumeifeng\AppData\Local\Android\Sdk\platform-tools\adb.exe -s emulator-5554 shell am broadcast -a com.android.emulator.multidisplay.START -n com.android.emulator.multidisplay/.MultiDisplayServiceReceiver --user 0 ' failed: 'adb.exe: device offline'
+WARNING      | adb command 'D:\Users\yumeifeng\AppData\Local\Android\Sdk\platform-tools\adb.exe -s emulator-5554 shell am broadcast -a com.android.emulator.multidisplay.START -n com.android.emulator.multidisplay/.MultiDisplayServiceReceiver --user 0 ' failed: 'adb.exe: device offline'
+WARNING      | adb command 'D:\Users\yumeifeng\AppData\Local\Android\Sdk\platform-tools\adb.exe -s emulator-5554 shell am broadcast -a com.android.emulator.multidisplay.START -n com.android.emulator.multidisplay/.MultiDisplayServiceReceiver --user 0 ' failed: 'adb.exe: device offline'
+WARNING      | adb command 'D:\Users\yumeifeng\AppData\Local\Android\Sdk\platform-tools\adb.exe -s emulator-5554 shell am broadcast -a com.android.emulator.multidisplay.START -n com.android.emulator.multidisplay/.MultiDisplayServiceReceiver --user 0 ' failed: 'adb.exe: device offline'
+WARNING      | adb command 'D:\Users\yumeifeng\AppData\Local\Android\Sdk\platform-tools\adb.exe -s emulator-5554 shell am broadcast -a com.android.emulator.multidisplay.START -n com.android.emulator.multidisplay/.MultiDisplayServiceReceiver --user 0 ' failed: 'adb.exe: device offline'
+WARNING      | adb command 'D:\Users\yumeifeng\AppData\Local\Android\Sdk\platform-tools\adb.exe -s emulator-5554 shell am broadcast -a com.android.emulator.multidisplay.START -n com.android.emulator.multidisplay/.MultiDisplayServiceReceiver --user 0 ' failed: 'cmd: Can't find service: activity'
+WARNING      | adb command 'D:\Users\yumeifeng\AppData\Local\Android\Sdk\platform-tools\adb.exe -s emulator-5554 shell am broadcast -a com.android.emulator.multidisplay.START -n com.android.emulator.multidisplay/.MultiDisplayServiceReceiver --user 0 ' failed: 'cmd: Can't find service: activity'
+WARNING      | adb command 'D:\Users\yumeifeng\AppData\Local\Android\Sdk\platform-tools\adb.exe -s emulator-5554 shell am broadcast -a com.android.emulator.multidisplay.START -n com.android.emulator.multidisplay/.MultiDisplayServiceReceiver --user 0 ' failed: 'cmd: Can't find service: activity'
+WARNING      | adb command 'D:\Users\yumeifeng\AppData\Local\Android\Sdk\platform-tools\adb.exe -s emulator-5554 shell am broadcast -a com.android.emulator.multidisplay.START -n com.android.emulator.multidisplay/.MultiDisplayServiceReceiver --user 0 ' failed: 'cmd: Can't find service: activity'
+WARNING      | adb command 'D:\Users\yumeifeng\AppData\Local\Android\Sdk\platform-tools\adb.exe -s emulator-5554 shell am broadcast -a com.android.emulator.multidisplay.START -n com.android.emulator.multidisplay/.MultiDisplayServiceReceiver --user 0 ' failed: 'Broadcasting: Intent { act=com.android.emulator.multidisplay.START flg=0x400000 cmp=com.android.emulator.multidisplay/.MultiDisplayServiceReceiver }
+
+Exception occurred while executing 'broadcast':
+java.lang.IllegalStateException: Cannot broadcast before boot completed
+	at com.android.server.am.BroadcastController.verifyBroadcastLocked(BroadcastController.java:1898)
+	at com.android.server.am.BroadcastController.broadcastIntentWithFeature(BroadcastController.java:720)
+	at com.android.server.am.ActivityManagerService.broadcastIntentWithFeature(ActivityManagerService.java:14408)
+	at com.android.server.am.ActivityManagerShellCommand.runSendBroadcast(ActivityManagerShellCommand.java:1075)
+	at com.android.server.am.ActivityManagerShellCommand.onCommand(ActivityManagerShellCommand.java:280)
+	at com.android.modules.utils.BasicShellCommandHandler.exec(BasicShellCommandHandler.java:97)
+	at android.os.ShellCommand.exec(ShellCommand.java:38)
+	at com.android.server.am.ActivityManagerService.onShellCommand(ActivityManagerService.java:10418)
+	at android.os.Binder.shellCommand(Binder.java:1151)
+	at android.os.Binder.onTransact(Binder.java:953)
+	at android.app.IActivityManager$Stub.onTransact(IActivityManager.java:5739)
+	at com.android.server.am.ActivityManagerService.onTransact(ActivityManagerService.java:2735)
+	at android.os.Binder.execTransactInternal(Binder.java:1426)
+	at android.os.Binder.execTransact(Binder.java:1365)'
+INFO         | Boot completed in 23533 ms
+INFO         | Increasing screen off timeout, logcat buffer size to 2M.
+INFO         | Wait for emulator (pid 20600) 20 seconds to shutdown gracefully before kill;you can set environment variable ANDROID_EMULATOR_WAIT_TIME_BEFORE_KILL(in seconds) to change the default value (20 seconds)
+
+INFO         | Saving with gfxstream=1
+INFO         | GPU Vendor=[Google (ATI Technologies Inc.)]
+INFO         | GPU Renderer=[Android Emulator OpenGL ES Translator (AMD Radeon (TM) Graphics)]
+INFO         | GPU Version=[OpenGL ES 3.0 (4.5.0 Core Profile Context 24.30.30.09.250807)]
+INFO         | Saving snapshot 'default_boot' using 794 ms
+INFO         | removeAll
+WARNING      | Netsim Wifi localhost:49282 is gone due to CANCELLED
