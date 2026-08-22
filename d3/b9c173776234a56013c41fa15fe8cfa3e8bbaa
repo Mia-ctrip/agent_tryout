@@ -1,0 +1,50 @@
+.tmp/slice1-user-acceptance/glm-mobile-8080.xml
+  s_e72e574415ec4d::t_76c280260c5497 1
+.tmp/slice1-user-acceptance/logs/expo-glm.out.log
+  s_e72e574415ec4d::t_9fcad2b3c308b4 17-33
+  s_e72e574415ec4d::t_e9dca6a4f2313f 1-4
+.tmp/slice1-user-acceptance/glm-detail.xml
+  s_e72e574415ec4d::t_be1c6bc4699562 1
+.tmp/slice1-user-acceptance/glm-ready.xml
+  s_e72e574415ec4d::t_c05a0a07c134e3 1
+.tmp/slice1-user-acceptance/glm-history.xml
+  s_e72e574415ec4d::t_9c48aec67ee031 1
+.tmp/slice1-user-acceptance/logs/backend-glm.out.log
+  s_e72e574415ec4d::t_70fb54e098a6f8 13-17
+  s_e72e574415ec4d::t_773dc94bf0ceea 22
+  s_e72e574415ec4d::t_1825cd5fa59a1c 38-42
+  s_e72e574415ec4d::t_e412f1ce3bf6bb 83
+  s_e72e574415ec4d::t_625fb35baab37a 58
+  s_e72e574415ec4d::t_586659cc19f415 53-57
+  s_e72e574415ec4d::t_9575326957ab1d 2-9
+  s_e72e574415ec4d::t_0bba39c85fd31c 43-52
+  s_e72e574415ec4d::t_87158333a01566 1
+  s_e72e574415ec4d::t_9b9465b0e2c59d 33
+  s_e72e574415ec4d::t_9c48aec67ee031 18-19
+  s_e72e574415ec4d::t_be1c6bc4699562 20-21
+.tmp/slice1-user-acceptance/glm-after-save.xml
+  s_e72e574415ec4d::t_24ba921cf50f41 1
+.tmp/slice1-user-acceptance/glm-app-reopen.xml
+  s_e72e574415ec4d::t_e8c84068cda8c1 1
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.40-trip",
+  "base_commit_sha": "d3b9c173776234a56013c41fa15fe8cfa3e8bbaa",
+  "prompts": {},
+  "humans": {
+    "h_e5cd53142b29a8": {
+      "author": "yumeifeng <yumeifeng@trip.com>"
+    }
+  },
+  "sessions": {
+    "s_e72e574415ec4d": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a01f5d-e7e4-7e43-a1b4-41d387ac4c7f",
+        "model": "gpt-5.6-luna"
+      },
+      "human_author": "yumeifeng <yumeifeng@trip.com>"
+    }
+  }
+}
