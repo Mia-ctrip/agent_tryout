@@ -1,0 +1,131 @@
+.tmp/slice1-user-acceptance/register-corrected.xml
+  s_e72e574415ec4d::t_e2d727253f458e 1
+.tmp/slice1-user-acceptance/slice1-detail-nav.xml
+  s_e72e574415ec4d::t_bd921d9dc6959c 1
+.tmp/slice1-user-acceptance/slice1-new-observe.xml
+  s_e72e574415ec4d::t_0ec8c31c19bee3 1
+.tmp/slice1-user-acceptance/post-register.xml
+  s_e72e574415ec4d::t_fa3b80581a8d17 1
+.tmp/slice1-user-acceptance/post-consent.xml
+  s_e72e574415ec4d::t_5b47194ddd606b 1
+.tmp/slice1-user-acceptance/logs/backend.err.log
+  s_e72e574415ec4d::t_989496f9be01e3 1-5
+skin_care_agent/ai_gateaway_proxy/anthropic_api_protocol.py
+  h_e5cd53142b29a8 1
+skin_care_agent/ai_gateaway_proxy/factory.py
+  h_e5cd53142b29a8 2-12
+.tmp/slice1-user-acceptance/slice1-nav.xml
+  s_e72e574415ec4d::t_798b4f6726d2f4 1
+.tmp/slice1-user-acceptance/logs/ime-emulator.err.log
+  s_e72e574415ec4d::t_83559035909d54 1-35
+.tmp/slice1-user-acceptance/create-observation.xml
+  s_e72e574415ec4d::t_2ed51c17fa8a63 1
+.tmp/slice1-user-acceptance/logs/backend.out.log
+  s_e72e574415ec4d::t_118ee613d7b5f9 35
+  s_e72e574415ec4d::t_fe8ce6d4344e9b 36-38
+  s_e72e574415ec4d::t_372d3de5820b27 3
+  s_e72e574415ec4d::t_798b4f6726d2f4 24
+  s_e72e574415ec4d::t_5b47194ddd606b 31-32
+  s_e72e574415ec4d::t_da7af75e7fe8ca 33-34
+  s_e72e574415ec4d::t_ff5b998368d8cf 28
+  s_e72e574415ec4d::t_1d7d009e76bc3e 29-30
+  s_e72e574415ec4d::t_989496f9be01e3 1-2
+  s_e72e574415ec4d::t_98d389851f36da 27
+  s_e72e574415ec4d::t_f0c7948daa9685 4-5
+  s_e72e574415ec4d::t_bd921d9dc6959c 25-26
+.tmp/slice1-user-acceptance/slice1-loaded.xml
+  s_e72e574415ec4d::t_5315d2b7ca8419 1
+.tmp/slice1-user-acceptance/logs/emulator.err.log
+  s_e72e574415ec4d::t_d305594c71b02e 1-36
+.tmp/slice1-user-acceptance/expo-error.xml
+  s_e72e574415ec4d::t_4e685e2723da17 1
+skin_care_agent/ai_gateaway_proxy/ai_gateaway.py
+  h_e5cd53142b29a8 1-47
+.tmp/slice1-user-acceptance/post-login.xml
+  s_e72e574415ec4d::t_1d7d009e76bc3e 1
+skin_care_agent/ai_gateaway_proxy/utils/file_utils.py
+  s_76f6923d2eae6b::t_d57f8c4df527c3 1-10
+.tmp/slice1-user-acceptance/register.xml
+  s_e72e574415ec4d::t_bec57179674fbc 1
+skin_care_agent/ai_gateaway_proxy/docs/2026-08-22-ai-gateway-learning-plan.md
+  s_386cd94455d8d2::t_1f27ef8a436566 1-771
+skin_care_agent/ai_gateaway_proxy/prompt/single_spot_prompt.md
+  h_e5cd53142b29a8 1
+.tmp/slice1-user-acceptance/slice1-fresh.xml
+  s_e72e574415ec4d::t_8d805460edea3f 1
+skin_care_agent/ai_gateaway_proxy/open_ai_api_protocol.py
+  h_e5cd53142b29a8 1-5
+.tmp/slice1-user-acceptance/current-login.xml
+  s_e72e574415ec4d::t_a01e64c46a3bd4 1
+.tmp/slice1-user-acceptance/direct-detail.xml
+  s_e72e574415ec4d::t_fe8ce6d4344e9b 1
+.tmp/slice1-user-acceptance/logs/emulator.out.log
+  s_e72e574415ec4d::t_f0c7948daa9685 1820-1898
+  s_e72e574415ec4d::t_372d3de5820b27 1249-1347
+  s_e72e574415ec4d::t_d305594c71b02e 1-1007
+skin_care_agent/ai_gateaway_proxy/main.py
+  h_e5cd53142b29a8 1-33
+.tmp/slice1-user-acceptance/logs/expo.out.log
+  s_e72e574415ec4d::t_989496f9be01e3 1-14
+  s_e72e574415ec4d::t_0b88abbfcbec0f 15-31
+  s_e72e574415ec4d::t_372d3de5820b27 32
+skin_care_agent/ai_gateaway_proxy/model/model_types.py
+  h_e5cd53142b29a8 2-9
+skin_care_agent/ai_gateaway_proxy/model/service_entity.py
+  h_e5cd53142b29a8 2-15,17-32
+  s_e72e574415ec4d::t_2f5fec7873b216 16
+.tmp/slice1-user-acceptance/detail-new.xml
+  s_e72e574415ec4d::t_da7af75e7fe8ca 1
+skin_care_agent/ai_gateaway_proxy/config/open_api_config.py
+  h_e5cd53142b29a8 1-37
+.tmp/slice1-user-acceptance/slice1-new-bundle.xml
+  s_e72e574415ec4d::t_f74a6594e1a8ab 1
+.tmp/slice1-user-acceptance/register-filled.xml
+  s_e72e574415ec4d::t_b9ea8aaac6f0d4 1
+.tmp/slice1-user-acceptance/after-system-back.xml
+  s_e72e574415ec4d::t_118ee613d7b5f9 1
+.tmp/slice1-user-acceptance/text-observation.xml
+  s_e72e574415ec4d::t_0d458f22e8406f 1
+.tmp/slice1-user-acceptance/slice1-retry.xml
+  s_e72e574415ec4d::t_9fc83da120f6ae 1
+.tmp/slice1-user-acceptance/logs/ime-emulator.out.log
+  s_e72e574415ec4d::t_38edf98242b432 158
+  s_e72e574415ec4d::t_83559035909d54 1-131
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.40-trip",
+  "base_commit_sha": "fddf95b68cdccddf4d829f7e7f1046ea1f531596",
+  "prompts": {},
+  "humans": {
+    "h_e5cd53142b29a8": {
+      "author": "yumeifeng <yumeifeng@trip.com>"
+    }
+  },
+  "sessions": {
+    "s_386cd94455d8d2": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0236f-c888-7863-80a5-93894e505ea9",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "yumeifeng <yumeifeng@trip.com>"
+    },
+    "s_76f6923d2eae6b": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0286d-a1d7-7e32-9e82-abd7378dc23b",
+        "model": "gpt-5.6-luna"
+      },
+      "human_author": "yumeifeng <yumeifeng@trip.com>"
+    },
+    "s_e72e574415ec4d": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a01f5d-e7e4-7e43-a1b4-41d387ac4c7f",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "yumeifeng <yumeifeng@trip.com>"
+    }
+  }
+}
