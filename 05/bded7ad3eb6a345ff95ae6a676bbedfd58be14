@@ -1,0 +1,14 @@
+skin_care_agent/docs/prompt.md
+  h_e5cd53142b29a8 1,5-7,19-20,34,36,38,40,42-47,49-51,53,55
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.40-trip",
+  "base_commit_sha": "05bded7ad3eb6a345ff95ae6a676bbedfd58be14",
+  "prompts": {},
+  "humans": {
+    "h_e5cd53142b29a8": {
+      "author": "yumeifeng <yumeifeng@trip.com>"
+    }
+  }
+}
