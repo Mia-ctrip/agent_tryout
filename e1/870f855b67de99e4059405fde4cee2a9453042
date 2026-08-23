@@ -1,0 +1,80 @@
+.tmp/slice1-final-screen4.xml
+  s_e72e574415ec4d::t_9ba8790f509bdc 1
+.tmp/slice1-after-login.xml
+  s_e72e574415ec4d::t_94de967315757f 1
+.tmp/slice1-my.xml
+  s_e72e574415ec4d::t_a99de1dbf74823 1
+.tmp/window.xml
+  s_e72e574415ec4d::t_7fce6fc0116415 1
+.tmp/slice1-reopened.xml
+  s_e72e574415ec4d::t_7a0cd20632a0ea 1
+skin_care_agent/ai_gateaway_proxy/open_ai_chat_completion_protocol.py
+  h_e5cd53142b29a8 8,12,23,27
+.tmp/slice1-login-filled.xml
+  s_e72e574415ec4d::t_abd5d495c1a21a 1
+.tmp/slice1-detail-bottom.xml
+  s_e72e574415ec4d::t_252833cd1fd375 1
+skin_care_agent/design/product/skin_care_app_mvp_spec.md
+  s_74ce455b210ac5::t_52013ca86c8634 122,126,128-132,134-147,161,163,165,167,172,177-178,181-195,211,217,219,221-222,224,226,228,236
+  s_74ce455b210ac5::t_ac9e13ad309a5e 446-450,452-453,456-457,465-466,469-470,480-483,498,506,511
+  s_74ce455b210ac5::t_c8279d6c1f8332 5,24,36,40-42,44-45,65,67,69,73,80-81,100-101
+  s_74ce455b210ac5::t_b68f01b6b4a593 240,244-247,251-252,257,270,272,274,283
+  s_74ce455b210ac5::t_30db9e2c4b85e1 305-336,347,349,353,355,358,362-364,367,369,371,380,401,407,416
+  s_74ce455b210ac5::t_23c3b2a8e5a519 26,28,156,249,393
+.tmp/slice1-detail-top.xml
+  s_e72e574415ec4d::t_2de47c442fbb0e 1
+.tmp/slice1-login.xml
+  s_e72e574415ec4d::t_48e51e651a92a0 1
+.tmp/slice1-final-screen.xml
+  s_e72e574415ec4d::t_65dc01ede905c9 1
+.tmp/slice1-final-screen2.xml
+  s_e72e574415ec4d::t_06db76320bb065 1
+skin_care_agent/docs/prompt.md
+  h_e5cd53142b29a8 5-6,10
+  s_74ce455b210ac5::t_44a680c67e047f 13
+.tmp/slice1-detail-reentered.xml
+  s_e72e574415ec4d::t_aaaeb4a9aa0d05 1
+.tmp/slice1-final-screen3.xml
+  s_e72e574415ec4d::t_73851cd07f1392 1
+.tmp/slice1-window.xml
+  s_e72e574415ec4d::t_eaa68cedccd2d7 1
+skin_care_agent/ai_gateaway_proxy/utils/file_utils.py
+  s_76f6923d2eae6b::t_da274f62fc9471 11-16
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.40-trip",
+  "base_commit_sha": "e1870f855b67de99e4059405fde4cee2a9453042",
+  "prompts": {},
+  "humans": {
+    "h_e5cd53142b29a8": {
+      "author": "yumeifeng <yumeifeng@trip.com>"
+    }
+  },
+  "sessions": {
+    "s_74ce455b210ac5": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a02f12-7ca7-79c2-a97e-687b553c7c88",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "yumeifeng <yumeifeng@trip.com>"
+    },
+    "s_76f6923d2eae6b": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0286d-a1d7-7e32-9e82-abd7378dc23b",
+        "model": "gpt-5.6-luna"
+      },
+      "human_author": "yumeifeng <yumeifeng@trip.com>"
+    },
+    "s_e72e574415ec4d": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a01f5d-e7e4-7e43-a1b4-41d387ac4c7f",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "yumeifeng <yumeifeng@trip.com>"
+    }
+  }
+}
