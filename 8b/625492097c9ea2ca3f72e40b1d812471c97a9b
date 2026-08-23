@@ -1,0 +1,72 @@
+skin_care_agent/ai_gateaway_proxy/open_ai_chat_completion_protocol.py
+  h_e5cd53142b29a8 3,5-10,12,14-15,18-25,27-58
+  s_386cd94455d8d2::t_4e750b416b33f5 11,13,16-17
+skin_care_agent/ai_gateaway_proxy/model/model_types.py
+  h_e5cd53142b29a8 4-6
+skin_care_agent/ai_gateaway_proxy/factory.py
+  h_e5cd53142b29a8 3
+.gitignore
+  s_a2c938b29ab53b::t_e0022ee5afff12 2
+skin_care_agent/design/product/skin_care_app_mvp_spec.md
+  s_74ce455b210ac5::t_23c3b2a8e5a519 26,28,156,249,393
+  s_74ce455b210ac5::t_b68f01b6b4a593 240,244-247,251-252,257,270,272,274,283
+  s_74ce455b210ac5::t_30db9e2c4b85e1 305-319,322-336,347,349,353,355,358,362-364,367,369,371,380,401,407,416
+  s_74ce455b210ac5::t_c8279d6c1f8332 5,24,36,40-42,44-45,65,67,69,73,80-81,100-101
+  h_e5cd53142b29a8 320-321
+  s_74ce455b210ac5::t_ac9e13ad309a5e 446-450,452-453,456-457,465-466,469-470,480-483,498,506,511
+  s_74ce455b210ac5::t_52013ca86c8634 122,126,128-132,134-147,161,163,165,167,172,177-178,181-195,211,217,219,221-222,224,226,228,236
+skin_care_agent/docs/prompt.md
+  h_e5cd53142b29a8 1,5-7,11,19-20,32-48
+  s_74ce455b210ac5::t_44a680c67e047f 14
+skin_care_agent/ai_gateaway_proxy/.python-version
+  s_386cd94455d8d2::t_6caa58e95fae04 1
+skin_care_agent/ai_gateaway_proxy/utils/file_utils.py
+  s_76f6923d2eae6b::t_da274f62fc9471 11-16
+skin_care_agent/ai_gateaway_proxy/pyproject.toml
+  s_386cd94455d8d2::t_3b42d635396b14 9-11
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.40-trip",
+  "base_commit_sha": "8b625492097c9ea2ca3f72e40b1d812471c97a9b",
+  "prompts": {},
+  "humans": {
+    "h_e5cd53142b29a8": {
+      "author": "yumeifeng <yumeifeng@trip.com>"
+    }
+  },
+  "sessions": {
+    "s_386cd94455d8d2": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0236f-c888-7863-80a5-93894e505ea9",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "yumeifeng <yumeifeng@trip.com>"
+    },
+    "s_74ce455b210ac5": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a02f12-7ca7-79c2-a97e-687b553c7c88",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "yumeifeng <yumeifeng@trip.com>"
+    },
+    "s_76f6923d2eae6b": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0286d-a1d7-7e32-9e82-abd7378dc23b",
+        "model": "gpt-5.6-luna"
+      },
+      "human_author": "yumeifeng <yumeifeng@trip.com>"
+    },
+    "s_a2c938b29ab53b": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a02f33-5fe6-7901-a53b-dcd5214f1e03",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "yumeifeng <yumeifeng@trip.com>"
+    }
+  }
+}
