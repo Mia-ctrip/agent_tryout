@@ -1,7 +1,0 @@
-INFO:     Started server process [6112]
-INFO:     Waiting for application startup.
-2026-08-22 16:53:22,219 [INFO] skin_care_agent: App starting up. env=dev
-INFO:     Application startup complete.
-INFO:     Uvicorn running on http://0.0.0.0:8080 (Press CTRL+C to quit)
-2026-08-22 17:03:43,491 [INFO] skin_care_agent.ai_gateway: [trace=-] gateway.provider.request seq=1 provider=mock model=mock-v1 task=vision_analyze
-2026-08-22 17:03:43,529 [INFO] skin_care_agent.ai_gateway: [trace=-] gateway.provider.ok seq=1 provider=mock model=mock-v1 latency_ms=32 tokens_in=24 tokens_out=227 text_preview={"main_locations": ["两颊"], "estimated_amount": "可见少量变化，精确数量无法判断", "distribution": "散在分布", "coverage"
