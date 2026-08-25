@@ -1,10 +1,5 @@
 #存放各家open api的调用url和token
 
-# Qwen-VL (DashScope)
-QWEN_API_KEY=""
-QWEN_BASE_URL="https://dashscope.aliyuncs.com/compatible-mode/v1"
-QWEN_MODEL="qwen-vl-max"
-
 # GLM 视觉（智谱）
 GLM_API_KEY=""
 GLM_BASE_URL="https://open.bigmodel.cn/api/paas/v4"
