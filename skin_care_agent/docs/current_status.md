@@ -4,7 +4,7 @@
 >
 > 核验日期：2026-08-25
 >
-> 代码核验基线：`feature/slice-1-full-face-observation`，基于提交 `a89f173` 的未提交实现
+> 代码核验基线：`feat/mvp-dev`；此分支是当前 MVP 验收源
 >
 > 职责：记录经代码、测试、数据库迁移和 Git 验证的当前事实。产品范围以 `design/product/skin_care_app_mvp_spec.md` 为准。
 
