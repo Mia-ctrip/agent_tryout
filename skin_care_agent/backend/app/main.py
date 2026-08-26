@@ -12,11 +12,17 @@ from app.api import (
     auth,
     chat,
     check_ins,
+    dev_product_catalog,
     files,
     health,
     lineages,
     me,
+    observations,
     photos,
+    product_catalog,
+    products,
+    region_events,
+    timeline,
     trends,
 )
 from app.config import get_settings
@@ -64,6 +70,12 @@ def create_app() -> FastAPI:
     api_v1 = APIRouter(prefix=settings.api_v1_prefix)
     api_v1.include_router(auth.router)
     api_v1.include_router(me.router)
+    api_v1.include_router(observations.router)
+    api_v1.include_router(region_events.router)
+    api_v1.include_router(product_catalog.catalog_router)
+    api_v1.include_router(products.products_router)
+    api_v1.include_router(products.product_uses_router)
+    api_v1.include_router(timeline.router)
     api_v1.include_router(photos.router)
     api_v1.include_router(check_ins.router)
     api_v1.include_router(analyses.router)
@@ -72,6 +84,7 @@ def create_app() -> FastAPI:
     api_v1.include_router(trends.router)
     if settings.app_env == "dev":
         api_v1.include_router(ai_debug.router)
+        api_v1.include_router(dev_product_catalog.dev_catalog_router)
     app.include_router(api_v1)
 
     return app

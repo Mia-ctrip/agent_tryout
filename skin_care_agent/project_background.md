@@ -2,7 +2,7 @@
 
 > 状态：ACTIVE
 >
-> 更新日期：2026-08-21
+> 更新日期：2026-08-24
 >
 > 职责：说明资料入口、当前方向和开发边界，不替代产品规格。
 
@@ -13,7 +13,9 @@
 | 当前 MVP 做什么、如何工作、如何验收 | `design/product/skin_care_app_mvp_spec.md` | ACTIVE，唯一产品事实源 |
 | 现在已经实现什么、验证到哪里、下一步是什么 | `docs/current_status.md` | ACTIVE，唯一进度视图 |
 | 如何配置和运行本地环境 | `docs/environment_setup.md` | ACTIVE |
-| 当前执行哪些任务 | `docs/current_status.md` 指定的唯一 ACTIVE 计划 | 尚未生成 |
+| 最近完成了哪些任务 | `docs/superpowers/plans/2026-08-24-products-timeline-life-context-slices-4-5.md` | COMPLETED |
+| 新增标准产品目录如何设计 | `docs/superpowers/specs/2026-08-24-standard-product-catalog-design.md` | APPROVED |
+| 当前标准产品目录如何实施 | `docs/superpowers/plans/2026-08-24-standard-product-catalog-slice-4a.md` | ACTIVE，尚未开始编码 |
 | 早期设想、第二版设计、旧原型和旧计划 | Git 历史及外部备份 | HISTORICAL，不默认读取 |
 
 后续 agent 不应根据 Git 历史主动恢复需求。只有用户明确要求追溯产品决策时才读取历史材料。
@@ -22,11 +24,11 @@
 
 Skin Care Agent 是面向希望长期回看皮肤外观变化用户的个人记录工具，包含 React Native + Expo 移动端和 FastAPI 后端。
 
-当前 MVP 的最小闭环是：一张全脸照片、一次中性的异步 AI 可见状态整理、一次真实产品使用，以及之后可重新查看的历史。首版自动使用 `full_face`，不显示区域选择页；区域选择、区域事件和区域趋势属于后续扩展。
+当前 MVP 的最小闭环是：拍摄一张照片、主动选择一个或多个固定区域、分别获得中性的异步 AI 可见状态整理，并把有效区域时间点组织到区域事件中回看。切片 1 的 `full_face` 只作为历史保留；切片 2 起停止创建新的全脸目标。
 
 观察、产品使用和生活背景是分离的事实。产品不输出诊断、医学分类、严重度、皮肤评分、治疗建议、产品推荐、相关性、疗效或因果判断。
 
-底部导航采用四栏：观察、历程、产品、我的。首版只提供个人产品柜、手动添加名称和“未注明产品”，不建设平台总产品池。
+底部导航采用四栏：观察、历程、产品、我的。产品使用以个人产品柜为入口；新增 Slice 4A，以配方版本级标准目录提供图片、搜索和有来源的官方说明书原文，并保留手动自建和“未注明产品”。
 
 完整行为和验收以 `design/product/skin_care_app_mvp_spec.md` 为准。
 
@@ -37,10 +39,10 @@ Skin Care Agent 是面向希望长期回看皮肤外观变化用户的个人记�
 | 移动端 | React Native、Expo SDK 57、Expo Router、TypeScript |
 | 后端 | FastAPI、SQLAlchemy、PostgreSQL、Alembic |
 | 开发存储 | 本地文件系统与签名 URL |
-| AI 调用 | 通用 provider gateway 基础；新版全脸异步业务链路尚未实现 |
-| 数据库迁移 | 当前 head 为 `0012_app_foundation` |
+| AI 调用 | 通用 provider gateway；全脸历史与按区域异步任务分派，严格七项事实、区域边界和人工降级已实现 |
+| 数据库迁移 | 代码及本地开发数据库 head 为 `0017_life_contexts`；head→0013→head 往返和旧观察兼容已验证 |
 
-现有系统能够运行，但主要实现旧版三视角产品。可复用基础和 MVP 缺口见 `docs/current_status.md`。
+现有系统仍保留旧版三视角产品代码；新版 Slice 1 已作为独立 Observation 链路完成技术验收并冻结非阻塞遗留，Slice 2–5 已完成。产品使用采用独立领域模型，生活背景只关联 Observation，统一历程是只读聚合层。
 
 ## 当前开发主线
 
@@ -48,14 +50,15 @@ Skin Care Agent 是面向希望长期回看皮肤外观变化用户的个人记�
 
 已确认的顺序是：
 
-1. 准备阶段：新旧边界、通用观察范围、异步状态和主题 token；
-2. 单张全脸照片与异步 AI 降级闭环；
-3. 实际产品使用与个人产品柜；
-4. 重复记录、历程与生活背景；
-5. 全脸前后变化与阶段趋势；
-6. 公开测试就绪。
+1. 已完成：准备阶段和单张全脸异步基线；
+2. 已完成：拍照后固定区域选择与按区域 AI；
+3. 已完成：区域事件与区域时间点回看；
+4. 已完成：实际产品使用与个人产品柜；
+5. 待实施：标准产品目录、搜索与图片；
+6. 已完成：历程整合与生活背景；
+7. 后续：既有全脸趋势和公开测试就绪。
 
-书面规格已经确认。当前只执行 `docs/current_status.md` 指定的唯一 ACTIVE 实施计划。
+Slice 2–5 已完成并有自动化、PostgreSQL 与 HTTP 恢复证据。Slice 4A 产品设计和实施计划已完成书面确认，尚未开始编码；不得把标准产品目录宣称为已实现。
 
 ## 旧实现边界
 

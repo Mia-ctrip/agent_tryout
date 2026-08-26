@@ -47,7 +47,19 @@ STORAGE_URL_SIGN_SECRET=dev-only-change-me
 AI_PROVIDER_PRIMARY=mock
 ```
 
-真实密钥只写入未跟踪的 `.env`。本地首次运行优先使用 mock provider。
+真实密钥只写入未跟踪的 `.env`。普通本地开发可以使用 mock；Slice 1 的真实 AI 验收必须显式配置 provider，不能用 mock 代替。
+
+GLM-4.6V 单 Provider 验收配置：
+
+```text
+AI_PROVIDER_PRIMARY=glm
+AI_PROVIDER_FALLBACKS=
+GLM_API_KEY=只写在本地 .env 的真实密钥
+GLM_BASE_URL=https://open.bigmodel.cn/api/paas/v4
+GLM_MODEL=glm-4.6v
+```
+
+`AI_PROVIDER_FALLBACKS=` 必须留空；说明文字写在上一行注释中，不要把示例 provider 写进值。显式选择 `glm` 但缺少 Key 时，调用应失败并进入业务降级，不会静默返回 mock 结果。
 
 ### PostgreSQL
 
@@ -64,7 +76,22 @@ cd backend
 .venv\Scripts\alembic.exe upgrade head
 ```
 
-当前代码迁移 head 为 `0012_app_foundation`。
+当前代码迁移 head 为 `0013_full_face_observations`。
+
+### PostgreSQL 集成测试
+
+`TEST_DATABASE_URL` 必须指向可丢弃且已经迁移到 head 的 PostgreSQL 测试库，不能复用生产库：
+
+```powershell
+cd backend
+$env:DATABASE_URL = $env:TEST_DATABASE_URL
+.\.venv\Scripts\python.exe -m alembic upgrade head
+.\.venv\Scripts\python.exe -m pytest tests\integration\test_observations_persistence.py -q
+.\.venv\Scripts\python.exe -m pytest -q
+.\.venv\Scripts\python.exe -m ruff check app tests
+```
+
+没有设置 `TEST_DATABASE_URL` 时，PostgreSQL 集成测试会明确标记为 skipped，不得把 skip 视为持久化验收通过。
 
 ### 启动和检查
 
@@ -149,4 +176,5 @@ npm run test:unit
 - 真机无法访问时，检查同一局域网、Windows 防火墙和后端监听地址。
 - 数据库连接失败时，检查 PostgreSQL 进程、端口及 `DATABASE_URL`。
 - Expo 命令异常时，先核对 Node 版本，再按 lockfile 重装依赖，不要升级 Expo。
-- AI provider 未配置时使用 mock；真实 provider 联调不属于基础环境验收。
+- `AI_PROVIDER_PRIMARY=mock` 时才使用 mock；显式配置真实 provider 后不会静默回退到 mock。
+- 不同 Git worktree 各自读取其 `backend/.env`；未跟踪的密钥文件不会随分支或 worktree 自动复制。

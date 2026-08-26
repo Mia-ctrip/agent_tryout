@@ -13,6 +13,8 @@ FastAPI 后端。当前代码主要是旧版产品的可运行基线，新版产
 - `client_request_id` 幂等模式；
 - AI provider gateway、fallback、合规校验和调用追踪。
 
+Slice 1 的生产候选视觉模型当前为 `glm-4.6v`。网关按 `AI_PROVIDER_PRIMARY` 和 `AI_PROVIDER_FALLBACKS` 的显式顺序路由；选择 GLM 但缺少 Key 时不会静默返回 Mock。GLM 视觉请求关闭思考模式、不发送仅文本模型使用的 JSON Mode 参数，输出由本地 JSON、七字段 Schema 和展示安全校验负责把关。
+
 仍在代码中运行但属于 legacy 的业务：
 
 - 三视角 Check-in；
@@ -21,7 +23,7 @@ FastAPI 后端。当前代码主要是旧版产品的可运行基线，新版产
 - Patch lineage、按日趋势和开放式聊天；
 - 旧日记与账号级联删除。
 
-这些接口不能作为新版 MVP 的产品依据。新版区域事件、区域时间点、无照片记录、逐区域异步分析、个人产品、实际使用、生活贴纸和证据趋势尚未形成完整后端闭环。
+这些接口不能作为新版 MVP 的产品依据。新版 Slice 1 已建立独立的全脸 Observation 契约；区域事件属于 MVP 后续未开放能力，个人产品、实际使用、生活贴纸和证据趋势仍未形成完整后端闭环。
 
 ## 快速开始
 
@@ -37,7 +39,7 @@ Copy-Item -LiteralPath .env.example -Destination .env
 .venv\Scripts\uvicorn.exe app.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
-迁移会改变本地数据库，只在明确需要时执行。当前代码迁移 head 为 `0012_app_foundation`。
+迁移会改变本地数据库，只在明确需要时执行。当前代码迁移 head 为 `0013_full_face_observations`；是否已应用到某个环境必须以该环境的 Alembic current 为准。
 
 | 检查 | 地址 |
 |---|---|
@@ -52,7 +54,11 @@ Copy-Item -LiteralPath .env.example -Destination .env
 | 认证 | `/api/v1/auth/*` | 优先复用 |
 | 当前用户和协议 | `/api/v1/me*` | 复用认证与授权基础；账号删除不进入当前 MVP |
 | 文件 | `/files/*` | 优先复用签名读取能力 |
-| 照片 | `/api/v1/photos*` | 评估后适配零张或一张照片的新记录 |
+| Observation | `POST /api/v1/observations` | Slice 1；零张或一张照片、UUID 幂等、先保存原始记录 |
+| Observation | `GET /api/v1/observations` | Slice 1；按记录时间/ID 倒序读取当前用户历程，最多 50 条 |
+| Observation | `GET /api/v1/observations/{observation_id}` | Slice 1；读取原图签名 URL、异步状态和公开结果 |
+| Observation | `PUT /api/v1/observations/{observation_id}/note` | Slice 1；仅 `needs_input` 可补非空用户原文 |
+| 照片 | `/api/v1/photos*` | Legacy 独立照片接口；新版记录不调用 |
 | Check-in | `/api/v1/check-ins*` | Legacy，新流程不能要求三视角 |
 | 分析 | `/api/v1/analyses*` | Legacy Schema；可复用 gateway 基础 |
 | Lineage | `/api/v1/lineages*` | Legacy，不进入新导航 |
@@ -71,6 +77,15 @@ $env:PYTHONDONTWRITEBYTECODE='1'
 ```
 
 现有测试覆盖旧业务基线。新增 MVP 能力必须补数据库、API、授权隔离、幂等和降级路径测试。
+
+真实 GLM 契约测试默认跳过，只有明确允许消耗额度并提供测试照片时运行：
+
+```powershell
+$env:RUN_LIVE_GLM_TEST='1'
+$env:LIVE_GLM_ENV_FILE=(Resolve-Path .env)
+$env:LIVE_GLM_IMAGE_PATH='本地验收照片的绝对路径'
+.venv\Scripts\python.exe -m pytest tests\integration\test_glm_live.py -q -s
+```
 
 ## 开发前必读
 

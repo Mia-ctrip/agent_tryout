@@ -7,6 +7,8 @@ const captureModule = await import('../src/lib/camera-capture.ts').catch(
 
 test('development emulator uses the Android system camera', async () => {
   assert.equal(typeof captureModule.takeCheckInPhoto, 'function');
+  assert.equal(typeof captureModule.takeCameraPhoto, 'function');
+  assert.equal(captureModule.takeCheckInPhoto, captureModule.takeCameraPhoto);
 
   let embeddedCameraCalled = false;
   const picture = await captureModule.takeCheckInPhoto({

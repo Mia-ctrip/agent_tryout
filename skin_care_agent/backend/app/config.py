@@ -87,7 +87,8 @@ class Settings(BaseSettings):
 
     @property
     def fallback_providers(self) -> list[str]:
-        return [p.strip() for p in self.ai_provider_fallbacks.split(",") if p.strip()]
+        value = self.ai_provider_fallbacks.split("#", 1)[0]
+        return [p.strip() for p in value.split(",") if p.strip()]
 
     @property
     def storage_local_path(self) -> Path:

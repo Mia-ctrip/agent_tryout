@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import json
 import time
 
 from app.services.ai_gateway.providers.base import Provider
@@ -39,7 +40,8 @@ class MockProvider(Provider):
             (m.content for m in reversed(req.messages) if m.role == "user"), ""
         )
         if req.response_format == "json":
-            text = '{"echo": ' + repr(last_user) + ', "mock": true}'
+            default_json = {"echo": last_user, "mock": True}
+            text = json.dumps(req.extra.get("mock_json", default_json), ensure_ascii=False)
         else:
             text = f"[mock:{model}] {last_user}"
 

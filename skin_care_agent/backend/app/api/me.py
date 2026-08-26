@@ -3,13 +3,15 @@ from __future__ import annotations
 import logging
 
 from fastapi import APIRouter, Depends, HTTPException, Response, status
-from sqlalchemy import select
+from sqlalchemy import delete, select
 from sqlalchemy.orm import Session
 
 from app.api.auth import _user_out
 from app.api.deps import get_auth_context, get_current_user
 from app.db.session import get_db
 from app.models.photo import Photo
+from app.models.product import PersonalProduct
+from app.models.product_catalog import ProductImageAsset
 from app.models.user import User
 from app.schemas.auth import (
     ConsentStatusOut,
@@ -90,7 +92,23 @@ def delete_account(
     storage_keys = {
         key for photo in photos for key in (photo.storage_key, photo.processed_storage_key) if key
     }
+    user_assets = list(
+        db.scalars(
+            select(ProductImageAsset).where(
+                ProductImageAsset.owner_user_id == context.user.id,
+                ProductImageAsset.source_type == "user",
+            )
+        )
+    )
+    storage_keys.update(asset.storage_key for asset in user_assets)
     user_id = context.user.id
+    # Remove the account's product references before deleting user-owned immutable assets.
+    # Product-use associations cascade from PersonalProduct, so no historical reference can
+    # leave the user record pinned by a RESTRICT foreign key.
+    db.execute(delete(PersonalProduct).where(PersonalProduct.user_id == user_id))
+    db.flush()
+    for asset in user_assets:
+        db.delete(asset)
     db.delete(context.user)
     db.commit()
 

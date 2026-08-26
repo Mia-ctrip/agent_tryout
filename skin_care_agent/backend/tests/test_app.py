@@ -20,6 +20,21 @@ def test_openapi_exposes_tracking_endpoints() -> None:
     assert "/api/v1/auth/login" in paths
     assert "/api/v1/auth/refresh" in paths
     assert "/api/v1/me/consents" in paths
+    assert "/api/v1/observations" in paths
+    assert "get" in paths["/api/v1/observations"]
+    assert "/api/v1/observations/{observation_id}" in paths
+    assert "/api/v1/observations/{observation_id}/targets/{target_id}/note" in paths
+    assert "/api/v1/observations/{observation_id}/life-contexts" in paths
+    assert "/api/v1/region-events/preview" in paths
+    assert "/api/v1/region-events/{event_id}" in paths
+    assert "/api/v1/region-events/{event_id}/end" in paths
+    assert "/api/v1/products" in paths
+    assert "/api/v1/products/{product_id}" in paths
+    assert "/api/v1/product-search" in paths
+    assert "/api/v1/catalog/products/{standard_product_id}" in paths
+    assert "/api/v1/product-uses" in paths
+    assert "/api/v1/product-uses/{use_id}" in paths
+    assert "/api/v1/timeline" in paths
     assert "/api/v1/check-ins" in paths
     assert "/api/v1/check-ins/{check_in_id}/diary" in paths
     assert "/api/v1/check-ins/{check_in_id}/analysis-summary" in paths
@@ -33,10 +48,36 @@ def test_openapi_exposes_tracking_endpoints() -> None:
 
 def test_business_endpoint_requires_bearer_token() -> None:
     with TestClient(app) as client:
-        response = client.get("/api/v1/check-ins")
+        responses = [
+            client.get("/api/v1/check-ins"),
+            client.get("/api/v1/observations"),
+            client.get("/api/v1/observations/1"),
+            client.put(
+                "/api/v1/observations/1/targets/2/note",
+                json={"user_note": "记录"},
+            ),
+            client.get("/api/v1/region-events"),
+            client.get("/api/v1/products"),
+            client.get("/api/v1/product-search", params={"q": "合成洁面"}),
+            client.get("/api/v1/catalog/products/1"),
+            client.get("/api/v1/product-uses"),
+            client.get("/api/v1/timeline"),
+            client.put(
+                "/api/v1/observations/1/life-contexts",
+                json={"context_ids": []},
+            ),
+            client.post(
+                "/api/v1/region-events/preview",
+                json={
+                    "region_ids": ["forehead"],
+                    "recorded_at": "2026-08-24T08:00:00Z",
+                    "recorded_timezone_offset_minutes": 480,
+                },
+            ),
+        ]
 
-    assert response.status_code == 401
-    assert response.headers["www-authenticate"] == "Bearer"
+    assert all(response.status_code == 401 for response in responses)
+    assert all(response.headers["www-authenticate"] == "Bearer" for response in responses)
 
 
 def test_production_app_does_not_mount_ai_debug_routes(monkeypatch) -> None:
@@ -47,6 +88,16 @@ def test_production_app_does_not_mount_ai_debug_routes(monkeypatch) -> None:
         paths = client.get("/openapi.json").json()["paths"]
 
     assert not any("/debug/" in path for path in paths)
+    assert "/api/v1/dev/catalog/products" not in paths
+
+
+def test_dev_app_mounts_development_catalog_form_route() -> None:
+    dev_app = create_app()
+
+    with TestClient(dev_app) as client:
+        paths = client.get("/openapi.json").json()["paths"]
+
+    assert "/api/v1/dev/catalog/products" in paths
 
 
 def test_static_by_photo_routes_precede_dynamic_id_routes() -> None:

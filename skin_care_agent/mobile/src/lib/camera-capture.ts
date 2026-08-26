@@ -12,13 +12,13 @@ type EmbeddedCamera = {
 
 type SystemCameraLauncher = () => Promise<ImagePickerResult>;
 
-type TakeCheckInPhotoOptions = {
+type TakeCameraPhotoOptions = {
   camera: EmbeddedCamera | null;
   launchSystemCamera: SystemCameraLauncher;
   useSystemCamera: boolean;
 };
 
-type CheckInPhoto = {
+type CameraPhoto = {
   uri: string;
 };
 
@@ -32,11 +32,11 @@ export function shouldUseSystemCamera({
   return isDevelopment && !isDevice;
 }
 
-export async function takeCheckInPhoto({
+export async function takeCameraPhoto({
   camera,
   launchSystemCamera,
   useSystemCamera,
-}: TakeCheckInPhotoOptions): Promise<CheckInPhoto | null> {
+}: TakeCameraPhotoOptions): Promise<CameraPhoto | null> {
   if (useSystemCamera) {
     const result = await launchSystemCamera();
     if (result.canceled) {
@@ -61,3 +61,5 @@ export async function takeCheckInPhoto({
   }
   return { uri: picture.uri };
 }
+
+export const takeCheckInPhoto = takeCameraPhoto;

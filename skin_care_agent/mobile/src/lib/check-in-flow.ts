@@ -24,6 +24,8 @@ export const CHECK_IN_VIEWS: readonly CheckInViewSpec[] = [
   },
 ];
 
+export { createClientRequestId } from './client-request-id.ts';
+
 const QUALITY_FAILURE_MESSAGES: Readonly<Record<string, string>> = {
   image_too_small: '图片分辨率过低，请使用原相机重新拍摄。',
   image_blurry: '照片不够清晰，请保持手机稳定后重拍。',
@@ -36,16 +38,6 @@ const QUALITY_FAILURE_MESSAGES: Readonly<Record<string, string>> = {
   head_tilted: '头部倾斜幅度过大，请摆正后重新拍摄。',
   view_angle_mismatch: '拍摄角度与当前视角不符，请按参考姿势重拍。',
 };
-
-export function createClientRequestId(
-  random: () => number = Math.random,
-): string {
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (token) => {
-    const value = Math.floor(random() * 16) & 0xf;
-    const nibble = token === 'x' ? value : (value & 0x3) | 0x8;
-    return nibble.toString(16);
-  });
-}
 
 export function localObservedOn(now: Date = new Date()): string {
   const year = now.getFullYear();
