@@ -1,0 +1,19 @@
+skin_care_agent/docs/current_status.md
+  s_5d3da4abc73697::t_878bc9a767f83c 7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.43-trip",
+  "base_commit_sha": "8b97835b6063bbf2fb4e938a4e072196e0101e23",
+  "prompts": {},
+  "sessions": {
+    "s_5d3da4abc73697": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a03c1f-99ca-7c42-9874-e5f5bcc8dec9",
+        "model": "gpt-5.6-terra"
+      },
+      "human_author": "yumeifeng <yumeifeng@trip.com>"
+    }
+  }
+}
