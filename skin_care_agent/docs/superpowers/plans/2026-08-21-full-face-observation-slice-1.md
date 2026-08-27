@@ -142,7 +142,7 @@ $env:DATABASE_URL = $env:TEST_DATABASE_URL
 
 **Files:** modify theme, root layout/index/app.json; create `mobile/src/app/(tabs)/_layout.tsx` and observe/history/products/me.
 
-- [ ] Add palette `#8F85CE/#6F63B7/#F2EFF8/#C5DCCC/#ECD083/#5A5651/#FFFDF8`, preserving legacy semantic keys. Press uses opacity; splash/adaptive background becomes warm white.
+- [ ] Add the sage palette `#9BAD50/#71813C/#F8F0DD/#E8C76A/#46502C/#FFFDF7` as semantic tokens: brand/selected, actionPrimary/focus, background/surfaceMuted, context/highlight, textPrimary/iconStrong, and surface/photoSurface. Preserve legacy semantic keys; press uses opacity; splash/adaptive background uses `#F8F0DD` and content surfaces use `#FFFDF7`.
 - [ ] Authenticated index redirects `/(tabs)/observe`. Protect tab group and observation new/detail; keep legacy routes unlinked.
 - [ ] Configure exactly four labels 观察/历程/产品/我的 with installed expo-symbols: camera.viewfinder/photo_camera, clock.arrow.circlepath/history, shippingbox/inventory_2, person.crop.circle/person.
 - [ ] “我的” uses existing user/signOut. “产品” truthfully states cabinet arrives in Slice 2, with no fake data/action.
