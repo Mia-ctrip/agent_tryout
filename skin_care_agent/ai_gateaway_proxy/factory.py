@@ -32,7 +32,7 @@ class OpenAIChatCompletionAdapter:
 
       def call(self, model_name, model_input,type):
            match type:
-                case "text_only":
+                case "chat_only_model":
                     return default_api_call(model_name,model_input,self.client)
                 case _:
                     return image_api_call(model_name,model_input,self.client) 
@@ -40,7 +40,7 @@ class OpenAIChatCompletionAdapter:
           
 def client_choose(api_supplier:str):
     config = providers[api_supplier]
-    return AsyncOpenAI(
+    return OpenAI(
          base_url = config["base_url"] ,
          api_key=config["api_key"]
     )

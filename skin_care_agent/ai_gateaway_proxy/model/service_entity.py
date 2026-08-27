@@ -1,8 +1,8 @@
 # 定义skin care调用AI时的输入和输出
 
 class SingleSpotAnalysisRequest:
-    def __init__(self, user_prompt, pic):
-        self.user_prompt = user_prompt
+    def __init__(self, user_content, pic):
+        self.user_content = user_content
         self.pic = pic
 
 

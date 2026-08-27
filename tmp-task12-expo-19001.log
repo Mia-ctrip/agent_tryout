@@ -1,0 +1,21 @@
+
+> skin-care-agent-mobile@1.0.0 android
+> expo start --android --lan --port 19001
+
+env: load .env
+env: export EXPO_PUBLIC_API_URL
+Starting project at D:\Mia\agent_tryout\.worktrees\slice-1-full-face-observation\skin_care_agent\mobile
+Using src/app as the root directory for Expo Router.
+React Compiler enabled
+Starting Metro Bundler
+
+› Opening exp://10.0.2.2:19001 on Pixel_8
+Waiting on http://localhost:19001
+
+An update for expo is available: 57.0.8 → ~57.0.16
+17 other packages may need updating. Run npx expo install --check for details.
+Logs for your project will appear below.
+Android Bundled 3401ms ..\..\..\..\skin_care_agent\mobile\node_modules\expo-router\entry.js (1519 modules)
+Android Bundled 146ms ..\..\..\..\skin_care_agent\mobile\node_modules\expo-router\entry.js (1 module)
+Android Bundled 99ms ..\..\..\..\skin_care_agent\mobile\node_modules\expo-router\entry.js (1 module)
+Android Bundled 48ms ..\..\..\..\skin_care_agent\mobile\node_modules\expo-router\entry.js (1 module)

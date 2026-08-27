@@ -1,4 +1,0 @@
-catalog_code,brand_name,official_name,product_category,formula_version,key_strength,regulatory_type,registration_number,market_region,status,primary_image_path,primary_image_mime_type,primary_image_sha256
-414043a13f-synthetic-cleanser-v1,合成品牌,合成洁面,cleanser,v1,,cosmetic,,CN,active,assets/cleanser.png,image/png,5ace9992386bc7fc39f8a402ebda2328965b4ae3a791aa60dadd2b6403981ef3
-414043a13f-synthetic-drug-gel-v1,合成药品品牌,合成药品凝胶,topical_gel,v1,1% synthetic,drug,SYN-DRUG-001,CN,active,assets/gel.png,image/png,0a9c1ed7c66109a279d6707b57bb5124f585d77e2322f853cbb5208ab97431cc
-414043a13f-synthetic-device-patch-v1,合成器械品牌,合成器械贴,medical_patch,model-v1,,medical_device,SYN-DEVICE-001,CN,active,assets/device.png,image/png,f3f2c5842da67fc8889a0996e17fc18e16b4a07f08fb51e74309902eee528ae7

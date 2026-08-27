@@ -61,7 +61,7 @@ def origanize_batch_image(input:ModelInput)->list:
                         "text": user_content
                     }
                 ]
-    for item in input.pic_url_dict:
+    for item in input.pic_url_list:
         pic_relative_path = item['url']
         pic_type = item['type']
         image_bytes = read_binary_file(pic_relative_path)

@@ -1,6 +1,7 @@
 #核心调度；负责 provider 选择、重试、fallback、熔断和调用记录。
 from config.open_api_config import *
-from router import *
+from model.model_types import ModelOutput
+from router import api_call_link
 from factory import OpenAIChatCompletionAdapter,client_choose
 import logging
 
@@ -14,8 +15,8 @@ def call(capability,model_input)->ModelOutput:
     model_call_dict = api_call_link(capability)
     try:
         for model in model_call_dict:
-            model_name = model[model_name]
-            model_supplier = model[model_supplier]
+            model_name = model["model_name"]
+            model_supplier = model["model_supplier"]
             client = client_choose(model_supplier)
             model_adapter = OpenAIChatCompletionAdapter(client=client)
             for i in range(DEFAULT_MODEL_RETRY_TIMES):

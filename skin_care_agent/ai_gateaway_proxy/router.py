@@ -3,7 +3,7 @@ from model.model_types import ModelInput,ModelOutput
 
 
 #模型降级顺序就先用list实现 
-chat_only_model_dict=[
+chat_only_model_list=[
     {
         "model_name":"Deepseek V4 Flash",
         "model_supplier":"deepseek"
@@ -36,7 +36,7 @@ pic_model_list=[
 
 
 def api_call_link(capability) -> list:
-    match type:
+    match capability:
         case "chat_only_model":
             return chat_only_model_list
         case "pic_model":

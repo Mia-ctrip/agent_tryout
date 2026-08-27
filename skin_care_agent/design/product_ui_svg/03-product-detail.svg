@@ -1,0 +1,98 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="390" height="844" viewBox="0 0 390 844">
+  <defs>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="150%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#403A34" flood-opacity="0.08"/>
+    </filter>
+    <clipPath id="heroClip"><rect x="20" y="98" width="350" height="218" rx="24"/></clipPath>
+    <style>
+      .ui { font-family: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif; }
+      .serif { font-family: "Noto Serif SC", "Songti SC", serif; }
+      .primary { fill: #242220; }
+      .secondary { fill: #746E67; }
+      .accent { fill: #6F63B7; }
+    </style>
+  </defs>
+
+  <rect width="390" height="844" fill="#F7F1E8"/>
+  <g class="ui primary" font-size="12" font-weight="700">
+    <text x="22" y="28">20:19</text>
+    <path d="M323 24c4.8-4.6 12.2-4.6 17 0M327 28c2.8-2.7 7.2-2.7 10 0" fill="none" stroke="#242220" stroke-width="1.7" stroke-linecap="round"/>
+    <circle cx="332" cy="31" r="1.3"/>
+    <rect x="349" y="20" width="20" height="10" rx="3" fill="none" stroke="#242220" stroke-width="1.5"/>
+    <rect x="351.5" y="22.5" width="14" height="5" rx="1.5"/>
+  </g>
+
+  <g class="ui">
+    <rect x="20" y="48" width="38" height="38" rx="19" fill="#FFFDF8" stroke="#E5DED4"/>
+    <path d="M43 59l-9 8 9 8" fill="none" stroke="#242220" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="195" y="73" text-anchor="middle" font-size="16" font-weight="700" class="primary">产品详情</text>
+    <circle cx="344" cy="67" r="2" fill="#746E67"/><circle cx="352" cy="67" r="2" fill="#746E67"/><circle cx="360" cy="67" r="2" fill="#746E67"/>
+  </g>
+
+  <!-- editorial hero -->
+  <g filter="url(#shadow)">
+    <rect x="20" y="98" width="350" height="218" rx="24" fill="#FFFDF8" stroke="#DED5C9"/>
+    <rect x="20" y="98" width="142" height="218" fill="#EEE8DE" clip-path="url(#heroClip)"/>
+    <image href="../../pic/阿达帕林.jpg" x="26" y="116" width="130" height="180" preserveAspectRatio="xMidYMid meet" clip-path="url(#heroClip)"/>
+    <line x1="162" y1="119" x2="162" y2="295" stroke="#E7E0D6"/>
+  </g>
+  <g class="ui">
+    <text x="184" y="133" font-size="9.5" font-weight="700" letter-spacing="1.5" fill="#A94C29">PRESCRIPTION CARE</text>
+    <text x="184" y="166" font-size="19" font-weight="700" class="primary">阿达帕林</text>
+    <text x="184" y="190" font-size="19" font-weight="700" class="primary">凝胶</text>
+    <text x="184" y="218" font-size="12" class="secondary">达芙文 · 0.1% · 30g</text>
+    <rect x="184" y="236" width="68" height="25" rx="12.5" fill="#EEE9F7"/>
+    <text x="218" y="253" text-anchor="middle" font-size="10.5" font-weight="700" class="accent">处方药</text>
+    <text x="184" y="285" font-size="11" class="secondary">资料版本 2026.08</text>
+  </g>
+
+  <!-- key metrics -->
+  <g class="ui">
+    <rect x="20" y="334" width="169" height="80" rx="18" fill="#302D35"/>
+    <text x="36" y="357" font-size="11" fill="#D7D1DC">累计使用</text>
+    <text x="36" y="393" font-size="29" font-weight="700" fill="#FFFDF8">11</text>
+    <text x="75" y="392" font-size="12" fill="#D7D1DC">次</text>
+    <rect x="201" y="334" width="169" height="80" rx="18" fill="#E5F0E8"/>
+    <text x="217" y="357" font-size="11" fill="#597064">最近使用</text>
+    <text x="217" y="392" font-size="21" font-weight="700" fill="#314C3B">昨天</text>
+    <circle cx="349" cy="354" r="5" fill="#9ABFA7"/>
+  </g>
+
+  <!-- product information -->
+  <g class="ui">
+    <text x="20" y="451" font-size="14" font-weight="700" class="primary">产品资料</text>
+    <rect x="20" y="466" width="350" height="110" rx="20" fill="#FFFDF8" stroke="#E5DED4"/>
+    <g>
+      <rect x="34" y="480" width="34" height="34" rx="11" fill="#EEE9F7"/>
+      <path d="M44 489h14v17H44zM47 486h8v3M47 494h8M47 498h8" fill="none" stroke="#6F63B7" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+      <text x="80" y="493" font-size="13" font-weight="700" class="primary">产品说明书</text>
+      <text x="80" y="510" font-size="10.5" class="secondary">查看适用范围、用法与注意事项</text>
+      <path d="M348 492l5 5-5 5" fill="none" stroke="#A49D95" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+    <line x1="80" y1="523" x2="354" y2="523" stroke="#EEE8DF"/>
+    <g>
+      <circle cx="51" cy="548" r="17" fill="#F1E6CA"/>
+      <path d="M44 548h14M51 541v14" stroke="#80611A" stroke-width="1.5" stroke-linecap="round"/>
+      <text x="80" y="545" font-size="13" font-weight="700" class="primary">记录一次使用</text>
+      <text x="80" y="562" font-size="10.5" class="secondary">补充部位、用量与当时感受</text>
+      <path d="M348 544l5 5-5 5" fill="none" stroke="#A49D95" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+  </g>
+
+  <!-- usage history -->
+  <g class="ui">
+    <text x="20" y="614" font-size="14" font-weight="700" class="primary">最近使用记录</text>
+    <text x="370" y="614" text-anchor="end" font-size="11" font-weight="600" class="accent">查看全部 11 次</text>
+    <line x1="39" y1="640" x2="39" y2="755" stroke="#D7CFE5" stroke-width="1.5"/>
+    <circle cx="39" cy="652" r="5" fill="#6F63B7" stroke="#F7F1E8" stroke-width="3"/>
+    <rect x="57" y="632" width="313" height="67" rx="16" fill="#FFFDF8" stroke="#E5DED4"/>
+    <text x="72" y="654" font-size="11.5" font-weight="700" class="primary">8 月 26 日 · 晚间</text>
+    <text x="72" y="676" font-size="11" class="secondary">面颊局部 · 薄涂 · 无即时不适</text>
+    <circle cx="39" cy="728" r="5" fill="#B8B1C8" stroke="#F7F1E8" stroke-width="3"/>
+    <rect x="57" y="708" width="313" height="67" rx="16" fill="#FFFDF8" stroke="#E5DED4"/>
+    <text x="72" y="730" font-size="11.5" font-weight="700" class="primary">8 月 24 日 · 晚间</text>
+    <text x="72" y="752" font-size="11" class="secondary">下颌局部 · 少量 · 记录轻微干燥</text>
+    <text x="20" y="807" font-size="9.5" class="secondary">仅呈现个人使用事实，不作疗效判断或因果推断。</text>
+    <rect x="135" y="832" width="120" height="5" rx="2.5" fill="#242220"/>
+  </g>
+</svg>

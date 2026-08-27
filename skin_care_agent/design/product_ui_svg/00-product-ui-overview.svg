@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1900" height="1060" viewBox="0 0 1900 1060">
+  <defs>
+    <filter id="screenShadow" x="-15%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="18" stdDeviation="22" flood-color="#433D36" flood-opacity="0.16"/>
+    </filter>
+    <style>
+      .ui { font-family: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif; }
+      .serif { font-family: "Noto Serif SC", "Songti SC", serif; }
+    </style>
+  </defs>
+  <rect width="1900" height="1060" fill="#ECE4D8"/>
+  <circle cx="1740" cy="-60" r="290" fill="#DED7EF" opacity="0.62"/>
+  <circle cx="96" cy="1030" r="250" fill="#DCEADF" opacity="0.72"/>
+
+  <g class="ui">
+    <text x="80" y="62" font-size="11" font-weight="700" letter-spacing="2.4" fill="#6F63B7">SKIN CARE AGENT · PERSONAL PRODUCTS</text>
+    <text x="80" y="106" font-size="32" font-weight="700" fill="#242220">个人产品栏 · 视觉提案</text>
+    <text x="1820" y="99" text-anchor="end" font-size="13" fill="#746E67">暖象牙白 × 克制鸢尾紫 × 真实产品图</text>
+  </g>
+
+  <g class="ui">
+    <text x="80" y="151" font-size="13" font-weight="700" fill="#242220">01  产品列表</text>
+    <text x="530" y="151" font-size="13" font-weight="700" fill="#242220">02  右滑归档</text>
+    <text x="980" y="151" font-size="13" font-weight="700" fill="#242220">03  产品详情</text>
+    <text x="1430" y="151" font-size="13" font-weight="700" fill="#242220">04  添加产品</text>
+  </g>
+
+  <g filter="url(#screenShadow)">
+    <rect x="70" y="170" width="410" height="864" rx="42" fill="#242220"/>
+    <image href="01-product-list.svg" x="80" y="180" width="390" height="844"/>
+    <rect x="520" y="170" width="410" height="864" rx="42" fill="#242220"/>
+    <image href="02-swipe-archive.svg" x="530" y="180" width="390" height="844"/>
+    <rect x="970" y="170" width="410" height="864" rx="42" fill="#242220"/>
+    <image href="03-product-detail.svg" x="980" y="180" width="390" height="844"/>
+    <rect x="1420" y="170" width="410" height="864" rx="42" fill="#242220"/>
+    <image href="04-add-product.svg" x="1430" y="180" width="390" height="844"/>
+  </g>
+</svg>

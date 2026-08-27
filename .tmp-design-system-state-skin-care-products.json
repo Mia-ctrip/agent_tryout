@@ -1,0 +1,41 @@
+{
+  "runId": "skin-care-products-ui-2026-08-27",
+  "fileKey": "SsmYHCVpJWB1p9Bd0PKXOW",
+  "fileUrl": "https://www.figma.com/design/SsmYHCVpJWB1p9Bd0PKXOW",
+  "phase": "phase2",
+  "step": "blocked-figma-starter-mcp-call-limit",
+  "entities": {
+    "collections": {
+      "primitives": "VariableCollectionId:3:2",
+      "semantic": "VariableCollectionId:3:3",
+      "layout": "VariableCollectionId:3:4"
+    },
+    "variables": {},
+    "styles": {},
+    "pages": {},
+    "components": {},
+    "screens": {}
+  },
+  "pendingValidations": ["P2.b", "P2.c", "P3", "P4"],
+  "completedSteps": [
+    "P0.a",
+    "P0.b",
+    "P0.c",
+    "P0.d",
+    "P0.e",
+    "P0.f",
+    "P1.a",
+    "P1.b",
+    "P1.c",
+    "P1.d",
+    "P1.e",
+    "P1.f",
+    "P1.g",
+    "P1.h",
+    "P2.a"
+  ],
+  "blocker": {
+    "type": "figma_starter_mcp_call_limit",
+    "message": "Figma MCP tool call limit reached before screen creation"
+  }
+}

@@ -1,3 +1,0 @@
-catalog_code,market_region,language,document_version,effective_date,registration_number,source_name,source_url,indications_original_text,source_document_path,content_sha256,is_current
-96e0a38c7c-synthetic-drug-gel-v1,CN,zh-CN,2026-02,2026-02-01,SYN-DRUG-001,合成监管来源,https://invalid.example/drug-fixture-v2,仅用于自动化测试的合成适应症 v2 原文,assets/drug-document-v2.txt,4f1e65fc70c7d6822c4e7742f7452907f8714f337a321506a7a3e6eb0029d799,true
-96e0a38c7c-synthetic-device-patch-v1,CN,zh-CN,2026-02,2026-02-01,SYN-DEVICE-001,合成监管来源,https://invalid.example/device-fixture-v2,仅用于自动化测试的合成器械适用范围 v2 原文,assets/device-document-v2.txt,4d53be63232325f6fcfb3df1a262676058c99f39645b5065a7038e4965538a25,true
