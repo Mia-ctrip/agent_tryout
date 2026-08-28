@@ -1,45 +1,40 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="390" height="844" viewBox="0 0 390 844">
   <defs>
-    <filter id="shadow" x="-20%" y="-20%" width="140%" height="150%">
-      <feDropShadow dx="0" dy="7" stdDeviation="10" flood-color="#403A34" flood-opacity="0.09"/>
-    </filter>
     <filter id="tipShadow" x="-30%" y="-30%" width="160%" height="170%">
-      <feDropShadow dx="0" dy="5" stdDeviation="8" flood-color="#242220" flood-opacity="0.22"/>
+      <feDropShadow dx="0" dy="5" stdDeviation="8" flood-color="#46502C" flood-opacity="0.18"/>
     </filter>
-    <clipPath id="photo"><rect x="102" y="318" width="68" height="76" rx="15"/></clipPath>
+    <clipPath id="photo"><rect x="0" y="298" width="70" height="76" rx="15"/></clipPath>
     <style>
       .ui { font-family: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif; }
-      .primary { fill: #242220; }
-      .secondary { fill: #746E67; }
+      .primary { fill: #46502C; }
+      .secondary { fill: #6E735D; }
     </style>
   </defs>
 
   <image href="01-product-list.svg" x="0" y="0" width="390" height="844"/>
 
-  <!-- replace the second row with its active swipe state -->
-  <rect x="0" y="297" width="390" height="118" fill="#F7F1E8"/>
-  <g class="ui">
-    <rect x="20" y="306" width="104" height="100" rx="20" fill="#302D35"/>
-    <path d="M46 338h19M49 338l2 27h11l2-27M53 333h8M56 344v14M60 344v14" fill="none" stroke="#FFFDF8" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
-    <text x="57" y="384" text-anchor="middle" font-size="11.5" font-weight="700" fill="#FFFDF8">归档</text>
+  <rect x="0" y="278" width="390" height="116" fill="#F8F0DD"/>
 
-    <g filter="url(#shadow)">
-      <rect x="88" y="306" width="282" height="100" rx="20" fill="#FFFDF8" stroke="#D8CFE9" stroke-width="1.4"/>
-      <rect x="102" y="318" width="68" height="76" rx="15" fill="#F5F2EC"/>
-      <image href="../../pic/班赛.png" x="102" y="318" width="68" height="76" preserveAspectRatio="xMidYMid meet" clip-path="url(#photo)"/>
-      <text x="184" y="337" font-size="14.5" font-weight="700" class="primary">班赛 过氧苯甲酰</text>
-      <text x="184" y="357" font-size="11.5" font-weight="700" class="primary">凝胶</text>
-      <text x="184" y="378" font-size="10.5" class="secondary">Galderma · 5% · 60g</text>
-      <rect x="310" y="319" width="45" height="22" rx="11" fill="#F1E6CA"/>
-      <text x="332.5" y="334" text-anchor="middle" font-size="10" font-weight="700" fill="#7A5D18">8 次</text>
-      <circle cx="189" cy="392" r="3" fill="#D9B45C"/>
-      <text x="198" y="396" font-size="10.5" class="secondary">3 天前使用</text>
-    </g>
+  <g id="archive-action" x="296" class="ui">
+    <rect x="296" y="286" width="74" height="100" rx="20" fill="#46502C"/>
+    <path d="M321 317h23M324 317l2 29h14l2-29M328 312h10M331 324v15M337 324v15" fill="none" stroke="#FFFDF7" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="333" y="366" text-anchor="middle" font-size="11.5" font-weight="700" fill="#FFFDF7">归档</text>
+  </g>
+
+  <g class="ui">
+    <rect id="swiped-card" x="-54" y="286" width="350" height="100" rx="20" fill="#FFFDF7" stroke="#C9D5A4" stroke-width="1.4"/>
+    <image href="../../pic/班赛.png" x="-40" y="288" width="76" height="96" preserveAspectRatio="xMidYMid meet" clip-path="url(#photo)"/>
+    <text x="50" y="314" font-size="15" font-weight="700" class="primary">班赛 过氧苯甲酰凝胶</text>
+    <text x="50" y="337" font-size="11.5" class="secondary">Galderma · 5% · 60g</text>
+    <rect x="220" y="300" width="59" height="23" rx="11.5" fill="#F5E8BF"/>
+    <text x="249.5" y="316" text-anchor="middle" font-size="10.5" font-weight="700" fill="#71813C">8 次</text>
+    <circle cx="55" cy="362" r="3.5" fill="#E8C76A"/>
+    <text x="65" y="366" font-size="11" class="secondary">最后使用：3 天前</text>
   </g>
 
   <g class="ui" filter="url(#tipShadow)">
-    <rect x="105" y="675" width="180" height="42" rx="21" fill="#302D35"/>
-    <path d="M131 696h20M131 696l6-6M131 696l6 6" fill="none" stroke="#FFFDF8" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-    <text x="164" y="701" font-size="12" font-weight="600" fill="#FFFDF8">右滑显示归档操作</text>
+    <rect x="105" y="675" width="180" height="42" rx="21" fill="#46502C"/>
+    <path d="M151 696h-20M131 696l6-6M131 696l6 6" fill="none" stroke="#FFFDF7" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="164" y="701" font-size="12" font-weight="600" fill="#FFFDF7">左滑显示归档操作</text>
   </g>
 </svg>

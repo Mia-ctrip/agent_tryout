@@ -1,106 +1,75 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="390" height="844" viewBox="0 0 390 844">
   <defs>
-    <filter id="shadow" x="-20%" y="-20%" width="140%" height="150%">
-      <feDropShadow dx="0" dy="7" stdDeviation="11" flood-color="#403A34" flood-opacity="0.08"/>
-    </filter>
-    <clipPath id="r1"><rect x="34" y="254" width="68" height="68" rx="14"/></clipPath>
-    <clipPath id="r2"><rect x="34" y="350" width="68" height="68" rx="14"/></clipPath>
-    <clipPath id="r3"><rect x="34" y="446" width="68" height="68" rx="14"/></clipPath>
+    <clipPath id="r1"><rect x="34" y="278" width="72" height="72" rx="14"/></clipPath>
+    <clipPath id="r2"><rect x="34" y="382" width="72" height="72" rx="14"/></clipPath>
     <style>
       .ui { font-family: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif; }
-      .primary { fill: #242220; }
-      .secondary { fill: #746E67; }
-      .accent { fill: #6F63B7; }
+      .primary { fill: #46502C; }
+      .secondary { fill: #6E735D; }
+      .action { fill: #71813C; }
     </style>
   </defs>
 
-  <rect width="390" height="844" fill="#F7F1E8"/>
+  <rect width="390" height="844" fill="#F8F0DD"/>
   <g class="ui primary" font-size="12" font-weight="700">
     <text x="22" y="28">20:19</text>
-    <path d="M323 24c4.8-4.6 12.2-4.6 17 0M327 28c2.8-2.7 7.2-2.7 10 0" fill="none" stroke="#242220" stroke-width="1.7" stroke-linecap="round"/>
+    <path d="M323 24c4.8-4.6 12.2-4.6 17 0M327 28c2.8-2.7 7.2-2.7 10 0" fill="none" stroke="#46502C" stroke-width="1.7" stroke-linecap="round"/>
     <circle cx="332" cy="31" r="1.3"/>
-    <rect x="349" y="20" width="20" height="10" rx="3" fill="none" stroke="#242220" stroke-width="1.5"/>
+    <rect x="349" y="20" width="20" height="10" rx="3" fill="none" stroke="#46502C" stroke-width="1.5"/>
     <rect x="351.5" y="22.5" width="14" height="5" rx="1.5"/>
   </g>
 
   <g class="ui">
-    <rect x="20" y="48" width="38" height="38" rx="19" fill="#FFFDF8" stroke="#E5DED4"/>
-    <path d="M43 59l-9 8 9 8" fill="none" stroke="#242220" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="20" y="48" width="38" height="38" rx="19" fill="#FFFDF7" stroke="#DED8C6"/>
+    <path d="M43 59l-9 8 9 8" fill="none" stroke="#46502C" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
     <text x="76" y="74" font-size="22" font-weight="700" class="primary">添加产品</text>
-    <text x="20" y="111" font-size="12" class="secondary">从标准目录选择，或创建自己的产品记录</text>
-  </g>
-
-  <!-- source switch -->
-  <g class="ui">
-    <rect x="20" y="132" width="350" height="42" rx="21" fill="#EAE4DC"/>
-    <rect x="23" y="135" width="171" height="36" rx="18" fill="#FFFDF8" filter="url(#shadow)"/>
-    <text x="108" y="158" text-anchor="middle" font-size="12" font-weight="700" class="primary">标准产品目录</text>
-    <text x="282" y="158" text-anchor="middle" font-size="12" font-weight="600" class="secondary">手动添加</text>
-  </g>
-
-  <!-- search -->
-  <g class="ui">
-    <rect x="20" y="190" width="350" height="46" rx="16" fill="#FFFDF8" stroke="#D8CFE9" stroke-width="1.4"/>
-    <circle cx="43" cy="213" r="7" fill="none" stroke="#6F63B7" stroke-width="1.6"/>
-    <path d="M48 218l6 6" stroke="#6F63B7" stroke-width="1.6" stroke-linecap="round"/>
-    <text x="64" y="218" font-size="12" class="secondary">搜索名称、品牌或成分</text>
-  </g>
-
-  <!-- standard catalog results -->
-  <g class="ui" filter="url(#shadow)">
-    <rect x="20" y="246" width="350" height="84" rx="18" fill="#FFFDF8" stroke="#E5DED4"/>
-    <image href="../../pic/阿达帕林.jpg" x="34" y="254" width="68" height="68" preserveAspectRatio="xMidYMid meet" clip-path="url(#r1)"/>
-    <text x="116" y="272" font-size="14" font-weight="700" class="primary">阿达帕林凝胶</text>
-    <text x="116" y="293" font-size="10.5" class="secondary">达芙文 · 0.1% · 30g</text>
-    <rect x="116" y="302" width="68" height="19" rx="9.5" fill="#EEE9F7"/>
-    <text x="150" y="315" text-anchor="middle" font-size="9.5" font-weight="700" class="accent">资料已核对</text>
-    <circle cx="339" cy="288" r="15" fill="#6F63B7"/>
-    <path d="M339 282v12M333 288h12" stroke="#FFFDF8" stroke-width="1.7" stroke-linecap="round"/>
-  </g>
-
-  <g class="ui" filter="url(#shadow)">
-    <rect x="20" y="342" width="350" height="84" rx="18" fill="#FFFDF8" stroke="#E5DED4"/>
-    <image href="../../pic/班赛.png" x="34" y="350" width="68" height="68" preserveAspectRatio="xMidYMid meet" clip-path="url(#r2)"/>
-    <text x="116" y="368" font-size="14" font-weight="700" class="primary">班赛 过氧苯甲酰凝胶</text>
-    <text x="116" y="389" font-size="10.5" class="secondary">Galderma · 5% · 60g</text>
-    <rect x="116" y="398" width="68" height="19" rx="9.5" fill="#EEE9F7"/>
-    <text x="150" y="411" text-anchor="middle" font-size="9.5" font-weight="700" class="accent">资料已核对</text>
-    <circle cx="339" cy="384" r="15" fill="#6F63B7"/>
-    <path d="M339 378v12M333 384h12" stroke="#FFFDF8" stroke-width="1.7" stroke-linecap="round"/>
-  </g>
-
-  <g class="ui" filter="url(#shadow)">
-    <rect x="20" y="438" width="350" height="84" rx="18" fill="#FFFDF8" stroke="#E5DED4"/>
-    <image href="../../pic/壬二酸.jpg" x="34" y="446" width="68" height="68" preserveAspectRatio="xMidYMid meet" clip-path="url(#r3)"/>
-    <text x="116" y="464" font-size="14" font-weight="700" class="primary">Skinoren 壬二酸乳膏</text>
-    <text x="116" y="485" font-size="10.5" class="secondary">LEO · 20% · 30g</text>
-    <rect x="116" y="494" width="68" height="19" rx="9.5" fill="#EEE9F7"/>
-    <text x="150" y="507" text-anchor="middle" font-size="9.5" font-weight="700" class="accent">资料已核对</text>
-    <circle cx="339" cy="480" r="15" fill="#6F63B7"/>
-    <path d="M339 474v12M333 480h12" stroke="#FFFDF8" stroke-width="1.7" stroke-linecap="round"/>
-  </g>
-
-  <!-- custom product route -->
-  <g class="ui">
-    <text x="20" y="562" font-size="12" font-weight="700" class="primary">没有找到你的产品？</text>
-    <rect x="20" y="578" width="350" height="142" rx="22" fill="#302D35"/>
-    <rect x="36" y="594" width="80" height="80" rx="17" fill="#48434F" stroke="#6E6875" stroke-dasharray="4 4"/>
-    <path d="M53 628h46v31H53zM62 628l5-8h18l5 8" fill="none" stroke="#F1EDF5" stroke-width="1.6" stroke-linejoin="round"/>
-    <circle cx="76" cy="643" r="8" fill="none" stroke="#F1EDF5" stroke-width="1.6"/>
-    <text x="132" y="612" font-size="9.5" font-weight="700" letter-spacing="1.2" fill="#C9C2D0">CUSTOM PRODUCT</text>
-    <text x="132" y="638" font-size="16" font-weight="700" fill="#FFFDF8">创建自定义产品</text>
-    <text x="132" y="660" font-size="10.5" fill="#C9C2D0">拍摄包装，补充名称与规格</text>
-    <rect x="132" y="677" width="104" height="28" rx="14" fill="#FFFDF8"/>
-    <text x="184" y="696" text-anchor="middle" font-size="11" font-weight="700" fill="#302D35">开始录入</text>
-    <path d="M346 640l6 6-6 6" fill="none" stroke="#FFFDF8" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="20" y="111" font-size="12" class="secondary">输入得越完整，匹配结果越准确</text>
   </g>
 
   <g class="ui">
-    <rect x="20" y="744" width="350" height="50" rx="17" fill="#EEE9F7"/>
-    <circle cx="42" cy="769" r="8" fill="none" stroke="#6F63B7" stroke-width="1.4"/>
-    <path d="M42 765v5M42 774v.2" stroke="#6F63B7" stroke-width="1.5" stroke-linecap="round"/>
-    <text x="60" y="765" font-size="10.5" font-weight="700" class="accent">添加后可随时补充说明书与使用记录</text>
-    <text x="60" y="781" font-size="9.5" class="secondary">标准目录信息不会覆盖你的个人备注</text>
-    <rect x="135" y="832" width="120" height="5" rx="2.5" fill="#242220"/>
+    <text x="20" y="145" font-size="11.5" font-weight="700" class="primary">搜索产品</text>
+    <text x="370" y="145" text-anchor="end" font-size="10.5" font-weight="600" class="action">实时匹配</text>
+    <rect x="20" y="157" width="350" height="52" rx="16" fill="#FFFDF7" stroke="#9BAD50" stroke-width="1.4"/>
+    <circle cx="43" cy="183" r="7" fill="none" stroke="#71813C" stroke-width="1.6"/>
+    <path d="M48 188l6 6" stroke="#71813C" stroke-width="1.6" stroke-linecap="round"/>
+    <text x="65" y="188" font-size="14" font-weight="600" class="primary">阿达</text>
+    <circle cx="346" cy="183" r="10" fill="#EDF1DF"/>
+    <path d="M342 179l8 8M350 179l-8 8" stroke="#71813C" stroke-width="1.4" stroke-linecap="round"/>
+    <text x="20" y="230" font-size="10.5" class="secondary">同时匹配产品名称、品牌、简称和受控别名</text>
+  </g>
+
+  <g class="ui">
+    <text x="20" y="263" font-size="12" font-weight="700" class="primary">找到 2 个匹配结果</text>
+    <text x="370" y="263" text-anchor="end" font-size="10.5" class="secondary">按匹配程度排列</text>
+
+    <rect x="20" y="272" width="350" height="88" rx="18" fill="#FFFDF7" stroke="#DED8C6"/>
+    <image href="../../pic/阿达帕林.jpg" x="34" y="278" width="72" height="72" preserveAspectRatio="xMidYMid meet" clip-path="url(#r1)"/>
+    <text x="120" y="294" font-size="14.5" font-weight="700" class="primary">达芙文 阿达帕林凝胶</text>
+    <text x="120" y="315" font-size="10.8" class="secondary">Galderma · 0.1% · 30g</text>
+    <rect x="120" y="326" width="72" height="20" rx="10" fill="#EDF1DF"/>
+    <text x="156" y="340" text-anchor="middle" font-size="9.5" font-weight="700" class="action">标准产品</text>
+    <circle cx="339" cy="316" r="16" fill="#71813C"/>
+    <path d="M339 309v14M332 316h14" stroke="#FFFDF7" stroke-width="1.8" stroke-linecap="round"/>
+
+    <rect x="20" y="376" width="350" height="88" rx="18" fill="#FFFDF7" stroke="#DED8C6"/>
+    <image href="../../pic/阿达帕林.jpg" x="34" y="382" width="72" height="72" preserveAspectRatio="xMidYMid meet" clip-path="url(#r2)"/>
+    <text x="120" y="398" font-size="14.5" font-weight="700" class="primary">阿达帕林凝胶</text>
+    <text x="120" y="419" font-size="10.8" class="secondary">0.1% · 15g · 配方版本 2024</text>
+    <rect x="120" y="430" width="72" height="20" rx="10" fill="#EDF1DF"/>
+    <text x="156" y="444" text-anchor="middle" font-size="9.5" font-weight="700" class="action">标准产品</text>
+    <circle cx="339" cy="420" r="16" fill="#71813C"/>
+    <path d="M339 413v14M332 420h14" stroke="#FFFDF7" stroke-width="1.8" stroke-linecap="round"/>
+  </g>
+
+  <g class="ui">
+    <path d="M88 505h214" stroke="#DED8C6"/>
+    <text x="195" y="538" text-anchor="middle" font-size="11.5" class="secondary">继续输入可进一步缩小范围</text>
+    <text x="195" y="558" text-anchor="middle" font-size="10.5" class="secondary">没有匹配项时，页面会提供自建产品入口</text>
+    <rect x="20" y="600" width="350" height="64" rx="18" fill="#EDF1DF"/>
+    <circle cx="43" cy="632" r="9" fill="none" stroke="#71813C" stroke-width="1.4"/>
+    <path d="M43 627v6M43 637v.2" stroke="#71813C" stroke-width="1.5" stroke-linecap="round"/>
+    <text x="62" y="627" font-size="10.8" font-weight="700" class="action">搜索结果只帮助识别产品</text>
+    <text x="62" y="646" font-size="10" class="secondary">结果顺序不代表推荐、疗效或适用程度。</text>
+    <rect x="135" y="832" width="120" height="5" rx="2.5" fill="#46502C"/>
   </g>
 </svg>

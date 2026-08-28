@@ -1,38 +1,56 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1900" height="1060" viewBox="0 0 1900 1060">
+<svg xmlns="http://www.w3.org/2000/svg" width="2350" height="1060" viewBox="0 0 2350 1060">
   <defs>
     <filter id="screenShadow" x="-15%" y="-10%" width="130%" height="130%">
-      <feDropShadow dx="0" dy="18" stdDeviation="22" flood-color="#433D36" flood-opacity="0.16"/>
+      <feDropShadow dx="0" dy="18" stdDeviation="22" flood-color="#46502C" flood-opacity="0.14"/>
     </filter>
     <style>
       .ui { font-family: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif; }
-      .serif { font-family: "Noto Serif SC", "Songti SC", serif; }
     </style>
   </defs>
-  <rect width="1900" height="1060" fill="#ECE4D8"/>
-  <circle cx="1740" cy="-60" r="290" fill="#DED7EF" opacity="0.62"/>
-  <circle cx="96" cy="1030" r="250" fill="#DCEADF" opacity="0.72"/>
+
+  <rect width="2350" height="1060" fill="#F8F0DD"/>
+  <circle cx="2190" cy="-60" r="300" fill="#CBD6A8" opacity="0.62"/>
+  <circle cx="90" cy="1035" r="250" fill="#E8C76A" opacity="0.56"/>
 
   <g class="ui">
-    <text x="80" y="62" font-size="11" font-weight="700" letter-spacing="2.4" fill="#6F63B7">SKIN CARE AGENT · PERSONAL PRODUCTS</text>
-    <text x="80" y="106" font-size="32" font-weight="700" fill="#242220">个人产品栏 · 视觉提案</text>
-    <text x="1820" y="99" text-anchor="end" font-size="13" fill="#746E67">暖象牙白 × 克制鸢尾紫 × 真实产品图</text>
-  </g>
+    <text x="80" y="62" font-size="11" font-weight="700" letter-spacing="2.4" fill="#9BAD50">SKIN CARE AGENT · PERSONAL PRODUCTS</text>
+    <text x="80" y="106" font-size="32" font-weight="700" fill="#46502C">个人产品栏 · 第二版视觉提案</text>
+    <text x="2270" y="99" text-anchor="end" font-size="13" fill="#6E735D">奶油底色 × 低饱和鼠尾草 × 单一功能入口</text>
 
-  <g class="ui">
-    <text x="80" y="151" font-size="13" font-weight="700" fill="#242220">01  产品列表</text>
-    <text x="530" y="151" font-size="13" font-weight="700" fill="#242220">02  右滑归档</text>
-    <text x="980" y="151" font-size="13" font-weight="700" fill="#242220">03  产品详情</text>
-    <text x="1430" y="151" font-size="13" font-weight="700" fill="#242220">04  添加产品</text>
+    <text x="80" y="151" font-size="13" font-weight="700" fill="#46502C">01  产品列表</text>
+    <text x="530" y="151" font-size="13" font-weight="700" fill="#46502C">02  左滑归档</text>
+    <text x="980" y="151" font-size="13" font-weight="700" fill="#46502C">03  产品详情</text>
+    <text x="1430" y="151" font-size="13" font-weight="700" fill="#46502C">04  输入即匹配</text>
+    <text x="1880" y="151" font-size="13" font-weight="700" fill="#46502C">05  无匹配时自建</text>
   </g>
 
   <g filter="url(#screenShadow)">
-    <rect x="70" y="170" width="410" height="864" rx="42" fill="#242220"/>
+    <rect x="70" y="170" width="410" height="864" rx="42" fill="#46502C"/>
     <image href="01-product-list.svg" x="80" y="180" width="390" height="844"/>
-    <rect x="520" y="170" width="410" height="864" rx="42" fill="#242220"/>
+    <image href="../../pic/阿达帕林.jpg" x="114" y="356" width="76" height="96" preserveAspectRatio="xMidYMid meet"/>
+    <image href="../../pic/班赛.png" x="114" y="468" width="76" height="96" preserveAspectRatio="xMidYMid meet"/>
+    <image href="../../pic/壬二酸.jpg" x="114" y="580" width="76" height="96" preserveAspectRatio="xMidYMid meet"/>
+    <image href="../../pic/鱼石脂软膏.jpg" x="114" y="692" width="76" height="96" preserveAspectRatio="xMidYMid meet"/>
+
+    <rect x="520" y="170" width="410" height="864" rx="42" fill="#46502C"/>
+    <image href="01-product-list.svg" x="530" y="180" width="390" height="844"/>
+    <image href="../../pic/阿达帕林.jpg" x="564" y="356" width="76" height="96" preserveAspectRatio="xMidYMid meet"/>
+    <image href="../../pic/班赛.png" x="564" y="468" width="76" height="96" preserveAspectRatio="xMidYMid meet"/>
+    <image href="../../pic/壬二酸.jpg" x="564" y="580" width="76" height="96" preserveAspectRatio="xMidYMid meet"/>
+    <image href="../../pic/鱼石脂软膏.jpg" x="564" y="692" width="76" height="96" preserveAspectRatio="xMidYMid meet"/>
     <image href="02-swipe-archive.svg" x="530" y="180" width="390" height="844"/>
-    <rect x="970" y="170" width="410" height="864" rx="42" fill="#242220"/>
+    <image href="../../pic/班赛.png" x="530" y="468" width="36" height="96" preserveAspectRatio="xMaxYMid meet"/>
+
+    <rect x="970" y="170" width="410" height="864" rx="42" fill="#46502C"/>
     <image href="03-product-detail.svg" x="980" y="180" width="390" height="844"/>
-    <rect x="1420" y="170" width="410" height="864" rx="42" fill="#242220"/>
+    <image href="../../pic/阿达帕林.jpg" x="1006" y="291" width="128" height="160" preserveAspectRatio="xMidYMid meet"/>
+
+    <rect x="1420" y="170" width="410" height="864" rx="42" fill="#46502C"/>
     <image href="04-add-product.svg" x="1430" y="180" width="390" height="844"/>
+    <image href="../../pic/阿达帕林.jpg" x="1464" y="458" width="72" height="72" preserveAspectRatio="xMidYMid meet"/>
+    <image href="../../pic/阿达帕林.jpg" x="1464" y="562" width="72" height="72" preserveAspectRatio="xMidYMid meet"/>
+
+    <rect x="1870" y="170" width="410" height="864" rx="42" fill="#46502C"/>
+    <image href="05-add-product-no-match.svg" x="1880" y="180" width="390" height="844"/>
   </g>
 </svg>

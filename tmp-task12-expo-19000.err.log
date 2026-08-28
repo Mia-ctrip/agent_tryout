@@ -1,0 +1,17 @@
+D:\Mia\agent_tryout\skin_care_agent\mobile\node_modules\expo\node_modules\@expo\cli\build\src\utils\errors.js:130
+    throw error;
+    ^
+
+Error: UNKNOWN: unknown error, lstat 'D:\Mia\agent_tryout\.worktrees\slice-1-full-face-observation\skin_care_agent\mobile\node_modules\@react-native\gradle-plugin\react-native-gradle-plugin\src\main\kotlin\com\facebook\?\D:\Mia\agent_tryout\.worktrees\slice-1-full-face-observation\skin_care_agent\mobile\node_modules\@react-native\gradle-plugin\react-native-gradle-plugin\src\main\kotlin\com\facebook'
+    at async Object.lstat (node:internal/fs/promises:1029:18)
+    at async #processChange (D:\Mia\agent_tryout\skin_care_agent\mobile\node_modules\expo\node_modules\@expo\metro-file-map\build\watchers\FallbackWatcher.js:257:26)
+Emitted 'error' event at:
+    at FallbackWatcher.emitError (D:\Mia\agent_tryout\skin_care_agent\mobile\node_modules\expo\node_modules\@expo\metro-file-map\build\watchers\AbstractWatcher.js:92:23)
+    at D:\Mia\agent_tryout\skin_care_agent\mobile\node_modules\expo\node_modules\@expo\metro-file-map\build\watchers\FallbackWatcher.js:245:22 {
+  errno: -4094,
+  code: 'UNKNOWN',
+  syscall: 'lstat',
+  path: 'D:\\Mia\\agent_tryout\\.worktrees\\slice-1-full-face-observation\\skin_care_agent\\mobile\\node_modules\\@react-native\\gradle-plugin\\react-native-gradle-plugin\\src\\main\\kotlin\\com\\facebook\\?\\D:\\Mia\\agent_tryout\\.worktrees\\slice-1-full-face-observation\\skin_care_agent\\mobile\\node_modules\\@react-native\\gradle-plugin\\react-native-gradle-plugin\\src\\main\\kotlin\\com\\facebook'
+}
+
+Node.js v24.18.0
