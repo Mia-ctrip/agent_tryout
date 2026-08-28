@@ -1,11 +1,11 @@
 import * as ImagePicker from 'expo-image-picker';
 import { useState } from 'react';
-import { StyleSheet, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
-import { AppButton } from '@/components/app-button';
 import { InlineNotice } from '@/components/inline-notice';
 import { ProductImage } from '@/components/product-image';
-import { colors, radii, spacing } from '@/constants/theme';
+import { productColors } from '@/constants/product-theme';
+import { radii, spacing } from '@/constants/theme';
 import { createClientRequestId } from '@/lib/client-request-id';
 import { userFacingError } from '@/lib/errors';
 import { productImageFromPickerAsset } from '@/lib/product-image-picker';
@@ -13,6 +13,30 @@ import { buildCustomProductForm, createCustomProduct } from '@/lib/product-api';
 import type { NativePhotoFile } from '@/lib/observation-api';
 import { validateProductName } from '@/lib/product-use-flow';
 import { useSession } from '@/providers/session-provider';
+
+function ProductFormButton({
+  label,
+  onPress,
+  primary = false,
+  loading = false,
+}: {
+  label: string;
+  onPress: () => void;
+  primary?: boolean;
+  loading?: boolean;
+}) {
+  return (
+    <Pressable
+      accessibilityRole="button"
+      disabled={loading}
+      onPress={onPress}
+      style={({ pressed }) => [styles.button, primary ? styles.primaryButton : styles.secondaryButton, pressed && styles.pressed]}>
+      {loading ? <ActivityIndicator color={productColors.surface} /> : (
+        <Text style={primary ? styles.primaryButtonText : styles.secondaryButtonText}>{label}</Text>
+      )}
+    </Pressable>
+  );
+}
 
 export function CustomProductForm({
   initialName = '',
@@ -72,32 +96,47 @@ export function CustomProductForm({
 
   return (
     <View style={styles.form}>
-      <Text style={styles.title}>没有找到产品？创建自建产品</Text>
+      <Text style={styles.title}>自定义产品资料</Text>
       <TextInput
         accessibilityLabel="自建产品名称"
         maxLength={120}
         onChangeText={setName}
         placeholder="输入产品名称"
-        placeholderTextColor={colors.textMuted}
+        placeholderTextColor={productColors.textSecondary}
         style={styles.input}
         value={name}
       />
-      {image ? <ProductImage accessibilityLabel="待上传的产品图片" category={null} uri={image.uri} /> : null}
-      <View style={styles.actions}>
-        <AppButton label="拍摄产品图片" onPress={() => void chooseImage(true)} variant="secondary" />
-        <AppButton label="从相册选择" onPress={() => void chooseImage(false)} variant="secondary" />
+      {image ? (
+        <View style={styles.preview}>
+          <ProductImage accessibilityLabel="待上传的产品图片" category={null} radius={16} size={112} uri={image.uri} />
+          <Pressable accessibilityRole="button" onPress={() => setImage(null)}>
+            <Text style={styles.remove}>移除图片</Text>
+          </Pressable>
+        </View>
+      ) : null}
+      <View style={styles.imageActions}>
+        <View style={styles.actionCell}><ProductFormButton label="拍摄产品图片" onPress={() => void chooseImage(true)} /></View>
+        <View style={styles.actionCell}><ProductFormButton label="从相册选择" onPress={() => void chooseImage(false)} /></View>
       </View>
-      {image ? <AppButton label="移除图片" onPress={() => setImage(null)} variant="text" /> : null}
       {error ? <InlineNotice tone="error" message={error} /> : null}
-      {error && image ? <AppButton label="重试上传" onPress={() => void save()} variant="secondary" /> : null}
-      <AppButton label="创建并选中" loading={saving} onPress={() => void save()} />
+      {error && image ? <ProductFormButton label="重试上传" onPress={() => void save()} /> : null}
+      <ProductFormButton label="创建并加入产品柜" loading={saving} onPress={() => void save()} primary />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  form: { gap: spacing.md, borderRadius: radii.lg, backgroundColor: colors.sage, padding: spacing.lg },
-  title: { color: colors.text, fontSize: 17, fontWeight: '700' },
-  input: { minHeight: 50, borderWidth: 1, borderColor: colors.border, borderRadius: radii.md, backgroundColor: colors.surface, color: colors.text, paddingHorizontal: spacing.lg },
-  actions: { gap: spacing.sm },
+  form: { gap: spacing.md, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: productColors.border, paddingTop: spacing.lg, marginTop: spacing.sm },
+  title: { color: productColors.textPrimary, fontSize: 15, fontWeight: '700' },
+  input: { minHeight: 50, borderWidth: 1, borderColor: productColors.border, borderRadius: radii.md, backgroundColor: productColors.surface, color: productColors.textPrimary, paddingHorizontal: spacing.lg },
+  preview: { alignItems: 'center', gap: spacing.sm, borderRadius: radii.lg, backgroundColor: productColors.background, padding: spacing.md },
+  remove: { color: productColors.danger, fontSize: 12, fontWeight: '600' },
+  imageActions: { flexDirection: 'row', gap: spacing.sm },
+  actionCell: { flex: 1 },
+  button: { minHeight: 46, alignItems: 'center', justifyContent: 'center', borderRadius: radii.md, paddingHorizontal: 12 },
+  primaryButton: { backgroundColor: productColors.actionPrimary },
+  secondaryButton: { borderWidth: 1, borderColor: productColors.brand, backgroundColor: productColors.surfaceMuted },
+  primaryButtonText: { color: productColors.surface, fontSize: 14, fontWeight: '700' },
+  secondaryButtonText: { color: productColors.actionPrimary, fontSize: 12, fontWeight: '700', textAlign: 'center' },
+  pressed: { opacity: 0.8 },
 });

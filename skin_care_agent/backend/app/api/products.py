@@ -23,6 +23,9 @@ from app.services.product_image_service import validate_product_image
 products_router = APIRouter(prefix="/products", tags=["products"])
 product_uses_router = APIRouter(prefix="/product-uses", tags=["product-uses"])
 
+# TODO(product-archive): add an authenticated soft-archive endpoint and exclude archived
+# personal products from cabinet/search selection while preserving historical use snapshots.
+
 
 @products_router.post(
     "/from-standard",

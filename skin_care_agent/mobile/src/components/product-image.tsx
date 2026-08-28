@@ -6,27 +6,29 @@ export function ProductImage({
   uri,
   category,
   accessibilityLabel,
+  size = 72,
+  radius = radii.md,
 }: {
   uri: string | null;
   category: string | null;
   accessibilityLabel: string;
+  size?: number;
+  radius?: number;
 }) {
+  const frame = { width: size, height: size, borderRadius: radius };
   if (!uri) {
     return (
-      <View accessibilityLabel={accessibilityLabel} style={styles.placeholder}>
+      <View accessibilityLabel={accessibilityLabel} style={[styles.placeholder, frame]}>
         <Text style={styles.placeholderText}>{category || '产品'}</Text>
       </View>
     );
   }
-  return <Image accessibilityLabel={accessibilityLabel} source={{ uri }} style={styles.image} />;
+  return <Image accessibilityLabel={accessibilityLabel} resizeMode="contain" source={{ uri }} style={[styles.image, frame]} />;
 }
 
 const styles = StyleSheet.create({
-  image: { width: 72, height: 72, borderRadius: radii.md, backgroundColor: colors.surfaceMuted },
+  image: { backgroundColor: colors.surfaceMuted },
   placeholder: {
-    width: 72,
-    height: 72,
-    borderRadius: radii.md,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: colors.lavender,

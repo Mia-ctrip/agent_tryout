@@ -13,6 +13,9 @@ test('product picker exposes the searchable catalog boundary and accessible entr
   assert.match(picker, /accessibilityLabel="搜索或添加产品"/);
   assert.match(picker, /搜索结果仅用于记录，不代表推荐/);
   assert.match(picker, /250/);
+  assert.match(picker, /shouldOfferCustomProduct/);
+  assert.match(picker, /!customOpen[\s\S]*<CustomProductForm/);
+  assert.match(picker, /Keyboard\.dismiss\(\)/);
 });
 
 
@@ -31,4 +34,33 @@ test('standard detail shows original sourced material without recommendation lan
   assert.match(detail, /官方来源/);
   assert.match(detail, /不构成诊断或使用建议/);
   assert.doesNotMatch(detail, /推荐使用|适合你的皮肤/);
+});
+
+
+test('products tab keeps one add entry, usage sorting, and no record-use action', () => {
+  const products = source('../src/app/(tabs)/products.tsx');
+  assert.match(products, /我的产品/);
+  assert.match(products, /按使用频次排列/);
+  assert.match(products, /productCabinetSummary/);
+  assert.match(products, /\/product\/new/);
+  assert.match(products, /SwipeableProductRow/);
+  assert.doesNotMatch(products, /记录一次使用|常用优先/);
+});
+
+
+test('personal product detail renders compact facts and the official manual in place', () => {
+  const detail = source('../src/app/product/[productId].tsx');
+  assert.match(detail, /官方说明书/);
+  assert.match(detail, /getStandardProduct/);
+  assert.match(detail, /累计使用/);
+  assert.match(detail, /最近使用/);
+  assert.doesNotMatch(detail, /记录一次使用|product-catalog/);
+});
+
+
+test('add product is a dedicated live-search route with no-match creation', () => {
+  const add = source('../src/app/product/new.tsx');
+  assert.match(add, /添加产品/);
+  assert.match(add, /ProductSearchPicker/);
+  assert.match(add, /router\.back/);
 });

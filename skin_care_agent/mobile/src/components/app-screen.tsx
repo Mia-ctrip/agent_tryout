@@ -17,6 +17,7 @@ type AppScreenProps = PropsWithChildren<{
   footer?: ReactNode;
   contentStyle?: StyleProp<ViewStyle>;
   safeAreaEdges?: SafeAreaViewProps['edges'];
+  backgroundColor?: string;
 }>;
 
 export function AppScreen({
@@ -24,9 +25,10 @@ export function AppScreen({
   footer,
   contentStyle,
   safeAreaEdges,
+  backgroundColor = colors.background,
 }: AppScreenProps) {
   return (
-    <SafeAreaView edges={safeAreaEdges} style={styles.safeArea}>
+    <SafeAreaView edges={safeAreaEdges} style={[styles.safeArea, { backgroundColor }]}>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         style={styles.keyboard}>
@@ -35,7 +37,7 @@ export function AppScreen({
           keyboardShouldPersistTaps="handled">
           <View style={styles.content}>{children}</View>
         </ScrollView>
-        {footer ? <View style={styles.footer}>{footer}</View> : null}
+        {footer ? <View style={[styles.footer, { backgroundColor }]}>{footer}</View> : null}
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
