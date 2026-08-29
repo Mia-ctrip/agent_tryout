@@ -2,7 +2,9 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-> **Status:** ACTIVE
+> **Status:** ACTIVE，仅剩 Task 12 出口验证。
+>
+> **Progress governance:** 截至 2026-08-29，Task 1–11 已实现，Task 12 尚未通过完整出口门禁。下方复选框保留原始实施与验收配方，不作为当前进度日志；唯一当前状态以 `docs/current_status.md` 为准。
 
 **Goal:** 在保留现有个人产品和使用历史的前提下，实现配方版本级标准产品目录、图片、版本化官方说明书原文、统一模糊搜索、双层引用、用户自建图片和不可改写的产品使用快照。
 
@@ -1152,7 +1154,6 @@ If authorized, commit as `feat: integrate product catalog flows`; otherwise run 
 - Modify: `backend/README.md`
 - Modify: `docs/environment_setup.md`
 - Modify: `docs/current_status.md`
-- Modify: `OVERNIGHT_PROGRESS.md`
 
 **Interfaces:**
 - Consumes: every prior task.
@@ -1241,7 +1242,7 @@ Re-read `design/product/skin_care_app_mvp_spec.md`, the approved spec and this p
 If authorized:
 
 ```bash
-git add skin_care_agent/backend skin_care_agent/mobile skin_care_agent/design/product/skin_care_app_mvp_spec.md skin_care_agent/docs skin_care_agent/project_background.md skin_care_agent/OVERNIGHT_PROGRESS.md
+git add skin_care_agent/backend skin_care_agent/mobile skin_care_agent/design/product/skin_care_app_mvp_spec.md skin_care_agent/docs skin_care_agent/project_background.md
 git commit -m "feat: complete standard product catalog slice"
 ```
 

@@ -541,7 +541,6 @@ Run: `npm run lint`
 - Create: `backend/tests/integration/test_region_observations_persistence.py`
 - Create: `backend/scripts/verify_region_observation_flow.py`
 - Modify: `docs/current_status.md`
-- Modify: `OVERNIGHT_PROGRESS.md`
 
 **Interfaces:**
 - Script exercises real FastAPI HTTP, PostgreSQL, object storage and gateway route with a deterministic local provider.
@@ -759,7 +758,6 @@ Run: `npm run lint`
 - Modify: `backend/scripts/verify_region_observation_flow.py`
 - Modify: `docs/current_status.md`
 - Modify: `project_background.md`
-- Modify: `OVERNIGHT_PROGRESS.md`
 - Modify: `docs/superpowers/plans/2026-08-21-full-face-observation-slice-1.md`
 
 **Interfaces:** Final verification evidence only; no new product scope.

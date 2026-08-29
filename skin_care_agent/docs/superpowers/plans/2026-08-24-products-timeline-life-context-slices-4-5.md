@@ -1,6 +1,6 @@
 # Slice 4–5 Products, Timeline, and Life Context Implementation Plan
 
-> **Status:** COMPLETED 2026-08-24。Slice 4 与 Slice 5 已完成，最终证据记录在 `docs/current_status.md` 与 `OVERNIGHT_PROGRESS.md`。
+> **Status:** COMPLETED 2026-08-24。Slice 4 与 Slice 5 已完成；当前结果以 `docs/current_status.md` 为准，历史过程由 Git 保存。
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use Markdown checkboxes for tracking.
 
@@ -101,7 +101,6 @@
 - Create: `backend/tests/integration/test_product_http_closure.py`
 - Create: `backend/scripts/verify_product_life_context_flow.py` (extended in Task 7)
 - Modify: `docs/current_status.md`
-- Modify: `OVERNIGHT_PROGRESS.md`
 
 **Interfaces:**
 - Runs FastAPI against migrated local PostgreSQL with real auth and user isolation; no remote AI call.
@@ -175,7 +174,6 @@
 - Modify: `backend/scripts/verify_product_life_context_flow.py`
 - Modify: `docs/current_status.md`
 - Modify: `project_background.md`
-- Modify: `OVERNIGHT_PROGRESS.md`
 - Modify: this plan (checkboxes and completion status)
 
 - [x] Extend real local HTTP closure through an Observation with selected contexts and another with explicit skip; reload Timeline/Event/Observation through a new client.
