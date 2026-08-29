@@ -1,0 +1,30 @@
+skin_care_agent/backend/tests/test_verify_standard_product_catalog_flow.py
+  s_b3fafa0bd43c63::t_33e46c54ff8ceb 1-9
+  s_b3fafa0bd43c63::t_e87a419c532d42 10-17
+skin_care_agent/OVERNIGHT_PROGRESS.md
+  s_b3fafa0bd43c63::t_baeebbbf844e5a 3
+  s_b3fafa0bd43c63::t_fd181b8cf54c74 4
+skin_care_agent/backend/scripts/verify_standard_product_catalog_flow.py
+  s_b3fafa0bd43c63::t_628b5243fdfa33 23-26,31
+  s_b3fafa0bd43c63::t_227f5fbc1c2ca6 1-22,27-30,32-79
+skin_care_agent/docs/environment_setup.md
+  s_b3fafa0bd43c63::t_fd181b8cf54c74 96-108
+skin_care_agent/backend/README.md
+  s_b3fafa0bd43c63::t_fd181b8cf54c74 81-101
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.43-trip",
+  "base_commit_sha": "ae18c1fdfedb0323fa01bef0506c82b9c39a332a",
+  "prompts": {},
+  "sessions": {
+    "s_b3fafa0bd43c63": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a032e7-bb63-7110-9099-1d7c4e1112a4",
+        "model": "gpt-5.6-luna"
+      },
+      "human_author": "yumeifeng <yumeifeng@trip.com>"
+    }
+  }
+}
