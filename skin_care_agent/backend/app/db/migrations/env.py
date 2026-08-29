@@ -12,7 +12,7 @@ from app.models import Base  # noqa: F401  ensure models loaded
 config = context.config
 
 if config.config_file_name is not None:
-    fileConfig(config.config_file_name)
+    fileConfig(config.config_file_name, disable_existing_loggers=False)
 
 # Inject DATABASE_URL from settings (instead of hardcoding in alembic.ini)
 settings = get_settings()

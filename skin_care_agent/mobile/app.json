@@ -16,7 +16,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#EEF3EE",
+        "backgroundColor": "#FFFDF8",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
         "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
@@ -32,7 +32,7 @@
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#F7F4EF"
+          "backgroundColor": "#FFFDF8"
         }
       ],
       "expo-secure-store",
@@ -44,7 +44,16 @@
           "recordAudioAndroid": false,
           "barcodeScannerEnabled": false
         }
-      ]
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "允许 Skin Care Agent 选择产品图片",
+          "cameraPermission": "允许 Skin Care Agent 拍摄产品图片",
+          "microphonePermission": false
+        }
+      ],
+      "expo-image"
     ],
     "experiments": {
       "typedRoutes": true,

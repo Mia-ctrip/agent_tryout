@@ -2,9 +2,9 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 >
-> **Status:** ACTIVE
+> **Status:** COMPLETED / FROZEN
 >
-> **Scope:** MVP 准备阶段＋切片 1。
+> **Scope:** MVP 准备阶段＋切片 1。非阻塞遗留见 `docs/frozen/2026-08-23-slice-1-deferred.md`。
 
 **Goal:** 交付“单张全脸照片或文字记录 → 可靠保存 → 异步 AI 中性整理 → 离开后重新进入可查看 → AI 失败文字降级”的真实闭环。
 

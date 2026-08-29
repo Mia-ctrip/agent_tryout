@@ -26,6 +26,11 @@ function RootNavigator() {
           <Stack.Screen name="consents" />
         </Stack.Protected>
         <Stack.Protected guard={signedIn && hasRequiredConsents}>
+          <Stack.Screen name="(tabs)" />
+          <Stack.Screen name="observation" />
+          <Stack.Screen name="region-event/[eventId]" />
+          <Stack.Screen name="product/[productId]" />
+          <Stack.Screen name="product-use/new" />
           <Stack.Screen name="home" />
           <Stack.Screen name="check-in" />
           <Stack.Screen name="analysis/[checkInId]" />

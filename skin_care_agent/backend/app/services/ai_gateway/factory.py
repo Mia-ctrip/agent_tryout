@@ -11,6 +11,7 @@ from functools import lru_cache
 from app.config import Settings, get_settings
 from app.services.ai_gateway.gateway import AIGateway, HealthTracker
 from app.services.ai_gateway.providers.base import Provider
+from app.services.ai_gateway.providers.glm import GLMProvider
 from app.services.ai_gateway.providers.mock import MockProvider
 from app.services.ai_gateway.providers.openai_compat import OpenAICompatProvider
 from app.services.ai_gateway.routes import ModelBinding, ModelRoute
@@ -52,7 +53,7 @@ def _build_providers(s: Settings) -> dict[str, Provider]:
         )
 
     if s.glm_api_key:
-        providers["glm"] = OpenAICompatProvider(
+        providers["glm"] = GLMProvider(
             name="glm",
             base_url=s.glm_base_url,
             api_key=s.glm_api_key,
@@ -71,44 +72,33 @@ def _build_providers(s: Settings) -> dict[str, Provider]:
 
 
 def _build_routes(s: Settings, providers: dict[str, Provider]) -> dict[str, ModelRoute]:
-    # Vision: GLM-4.6V 优先（体验包 500 万 token），MiniMax M3 兜底。
-    vision_chain = [
-        ModelBinding("glm", s.glm_model),
-        ModelBinding("minimax", s.minimax_model),
-        ModelBinding("qwen", s.qwen_model),
-        ModelBinding("doubao", s.doubao_model),
-    ]
-    # Chat: prefer MiniMax fast models; cross-vendor fallback to DeepSeek.
-    chat_chain = [
-        ModelBinding("minimax", s.minimax_model),
-        ModelBinding("deepseek", s.deepseek_model),
-    ]
-
-    if not providers or set(providers.keys()) == {"mock"}:
-        # Dev mode: route everything to mock so the API is usable without keys.
-        mock_chain = (ModelBinding("mock", "mock-v1"),)
-        return {
-            "vision_analyze": ModelRoute(
-                task="vision_analyze",
-                chain=mock_chain,
-                requires=frozenset({Capability.VISION, Capability.JSON_MODE}),
-            ),
-            "chat_qa": ModelRoute(
-                task="chat_qa", chain=mock_chain, requires=frozenset({Capability.TEXT})
-            ),
-        }
+    model_by_provider = {
+        "mock": "mock-v1",
+        "glm": s.glm_model,
+        "minimax": s.minimax_model,
+        "qwen": s.qwen_model,
+        "doubao": s.doubao_model,
+        "deepseek": s.deepseek_model,
+    }
+    configured_names = [s.ai_provider_primary.strip(), *s.fallback_providers]
+    ordered_names = list(dict.fromkeys(name for name in configured_names if name))
+    configured_chain = tuple(
+        ModelBinding(name, model_by_provider[name])
+        for name in ordered_names
+        if name in model_by_provider
+    )
 
     return {
         "vision_analyze": ModelRoute(
             task="vision_analyze",
-            chain=tuple(b for b in vision_chain if b.provider in providers),
+            chain=configured_chain,
             requires=frozenset({Capability.VISION, Capability.JSON_MODE}),
             timeout_s=90.0,
             max_retries_per_node=1,
         ),
         "chat_qa": ModelRoute(
             task="chat_qa",
-            chain=tuple(b for b in chat_chain if b.provider in providers),
+            chain=configured_chain,
             requires=frozenset({Capability.TEXT}),
             timeout_s=15.0,
             max_retries_per_node=1,

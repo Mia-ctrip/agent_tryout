@@ -1,0 +1,18 @@
+export const productColors = {
+  brand: '#9BAD50',
+  selected: '#9BAD50',
+  actionPrimary: '#71813C',
+  focus: '#71813C',
+  background: '#F8F0DD',
+  surfaceMuted: '#EDF1DF',
+  context: '#E8C76A',
+  highlight: '#E8C76A',
+  textPrimary: '#46502C',
+  textSecondary: '#7A8069',
+  iconStrong: '#46502C',
+  surface: '#FFFDF7',
+  photoSurface: '#FFFDF7',
+  border: '#DED8C6',
+  danger: '#6A3E35',
+  shadow: '#46502C',
+} as const;

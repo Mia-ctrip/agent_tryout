@@ -52,7 +52,7 @@ export default function RegisterScreen() {
       <BrandHeader
         eyebrow="PRIVATE BETA"
         title="建立你的私密皮肤档案"
-        description="账号只用于隔离并同步你自己的照片、记录与趋势。"
+        description="账号只用于隔离并同步你自己的照片和观察记录。"
       />
       <View style={styles.form}>
         <InlineNotice message="当前为小范围内测账号；邮箱验证与找回密码将在公开测试前接入。" />

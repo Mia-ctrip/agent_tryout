@@ -40,7 +40,7 @@ export default function LoginScreen() {
     <AppScreen contentStyle={styles.screen}>
       <BrandHeader
         title="继续记录你的变化"
-        description="每天一组可对比的照片，让短期波动沉淀为真正可看的趋势。"
+        description="用一张照片或一段文字，留下此刻真实可见的状态。"
       />
       <View style={styles.form}>
         {error ? <InlineNotice tone="error" message={error} /> : null}

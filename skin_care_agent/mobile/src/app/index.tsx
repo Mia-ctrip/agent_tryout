@@ -13,7 +13,7 @@ export default function IndexScreen() {
     return <Redirect href="/consents" />;
   }
   if (phase === 'authenticated') {
-    return <Redirect href="/home" />;
+    return <Redirect href="/(tabs)/observe" />;
   }
   return (
     <View style={styles.container}>
