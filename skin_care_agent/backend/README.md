@@ -78,6 +78,27 @@ $env:PYTHONDONTWRITEBYTECODE='1'
 
 现有测试覆盖旧业务基线。新增 MVP 能力必须补数据库、API、授权隔离、幂等和降级路径测试。
 
+## Slice 4A 标准产品目录本地闭环
+
+标准目录只接受版本化离线包；测试目录中的 `tests/fixtures/product_catalog/` 全部是合成数据，不能作为真实药品、器械或说明书资料发布。包由 `manifest.json`、`products.csv`、`aliases.csv`、`documents.csv` 和引用的图片/原始文档组成；PostgreSQL 需要 `pg_trgm`，迁移会在首次目录迁移时创建该扩展。
+
+导入前可执行 dry-run：
+
+```powershell
+cd backend
+python scripts/import_standard_products.py tests/fixtures/product_catalog/v1 --dry-run
+```
+
+完整的目录闭环使用随机 PostgreSQL schema 和临时本地对象存储目录，必须显式提供可丢弃的测试连接，脚本结束后会清理二者：
+
+```powershell
+cd backend
+$env:TEST_DATABASE_URL='postgresql+psycopg://<test-user>:<test-password>@localhost:5432/<disposable-db>'
+python scripts/verify_standard_product_catalog_flow.py
+```
+
+该脚本不调用外部 API，也不会导入真实产品或医疗资料。
+
 真实 GLM 契约测试默认跳过，只有明确允许消耗额度并提供测试照片时运行：
 
 ```powershell

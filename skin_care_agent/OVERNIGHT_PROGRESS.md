@@ -1,5 +1,7 @@
 # Slice 4–5 持续实施进度
 
+> 2026-08-26：Slice 4A Task 12 新增隔离 PostgreSQL/临时存储闭环脚本；默认后端和移动端回归通过。更新 Expo SDK 57 兼容依赖（含 worklets）后，Pixel 8 Expo Go 57.0.9 清缓存启动并进入 Skin Care Agent 登录页，Hermes 崩溃已消失；认证测试账号和四项协议已在本地后端准备。真实闭环仍等待可丢弃的 `TEST_DATABASE_URL`，产品流尚未完成，不能将 Slice 4A 标为完成。
+
 > 目标：实现 Slice 4 实际产品使用与个人产品柜，验证后直接实现 Slice 5 统一历程与生活背景。
 >
 > 工作区：`D:\Mia\agent_tryout\.worktrees\slice-1-full-face-observation\skin_care_agent`

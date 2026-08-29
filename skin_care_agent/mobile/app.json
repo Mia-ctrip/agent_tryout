@@ -52,7 +52,8 @@
           "cameraPermission": "允许 Skin Care Agent 拍摄产品图片",
           "microphonePermission": false
         }
-      ]
+      ],
+      "expo-image"
     ],
     "experiments": {
       "typedRoutes": true,

@@ -93,6 +93,20 @@ $env:DATABASE_URL = $env:TEST_DATABASE_URL
 
 没有设置 `TEST_DATABASE_URL` 时，PostgreSQL 集成测试会明确标记为 skipped，不得把 skip 视为持久化验收通过。
 
+### 标准产品目录闭环
+
+`tests/fixtures/product_catalog/` 中的目录包、图片和说明书均为合成数据。目录导入依赖 PostgreSQL 的 `pg_trgm` 扩展；应用迁移会创建扩展，测试数据库用户必须有创建 schema 和迁移所需的权限。
+
+使用可丢弃数据库运行完整闭环。脚本在该数据库创建随机 schema、使用临时本地存储目录，并在 `finally` 中清理：
+
+```powershell
+cd backend
+$env:TEST_DATABASE_URL='postgresql+psycopg://<test-user>:<test-password>@localhost:5432/<disposable-db>'
+python scripts/verify_standard_product_catalog_flow.py
+```
+
+不能把当前开发库、生产库或含真实目录内容的数据库用作这个命令的目标。
+
 ### 启动和检查
 
 ```powershell
