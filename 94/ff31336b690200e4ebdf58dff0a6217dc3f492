@@ -1,0 +1,28 @@
+skin_care_agent/docs/ui-redesign.md
+  h_e5cd53142b29a8 1-74
+skin_care_agent/docs/2026-09-google-play-launch-calendar.md
+  s_69521b37e9263b::t_17c12d1c86f7ee 1-100
+skin_care_agent/docs/current_status.md
+  s_69521b37e9263b::t_17c12d1c86f7ee 18,23
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.43-trip",
+  "base_commit_sha": "94ff31336b690200e4ebdf58dff0a6217dc3f492",
+  "prompts": {},
+  "humans": {
+    "h_e5cd53142b29a8": {
+      "author": "yumeifeng <yumeifeng@trip.com>"
+    }
+  },
+  "sessions": {
+    "s_69521b37e9263b": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a05ade-9484-7291-a2de-b382b5ce9008",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "yumeifeng <yumeifeng@trip.com>"
+    }
+  }
+}
