@@ -11,6 +11,7 @@ import {
   getStandardProduct,
   getProductUse,
   listPersonalProducts,
+  listAllProductUses,
   listProductUses,
   searchProducts,
 } from '../src/lib/product-api.ts';
@@ -41,6 +42,24 @@ test('product API mirrors cabinet and history routes exactly', async () => {
     '/products/9',
     '/product-uses?limit=20&before_id=15',
     '/product-uses/7',
+  ]);
+});
+
+test('history product context loader follows every backend page', async () => {
+  const calls = [];
+  const firstPage = Array.from({ length: 100 }, (_, index) => ({ product_use_id: 200 - index }));
+  const secondPage = [{ product_use_id: 100 }];
+  const request = async (path) => {
+    calls.push(path);
+    return calls.length === 1 ? firstPage : secondPage;
+  };
+
+  const uses = await listAllProductUses(request);
+
+  assert.equal(uses.length, 101);
+  assert.deepEqual(calls, [
+    '/product-uses?limit=100',
+    '/product-uses?limit=100&before_id=101',
   ]);
 });
 

@@ -11,6 +11,7 @@ type EmbeddedCamera = {
 };
 
 type SystemCameraLauncher = () => Promise<ImagePickerResult>;
+type PhotoLibraryLauncher = () => Promise<ImagePickerResult>;
 
 type TakeCameraPhotoOptions = {
   camera: EmbeddedCamera | null;
@@ -60,6 +61,20 @@ export async function takeCameraPhoto({
     throw new Error('Camera did not return a photo');
   }
   return { uri: picture.uri };
+}
+
+export async function selectPhotoFromLibrary(
+  launchPhotoLibrary: PhotoLibraryLauncher,
+): Promise<CameraPhoto | null> {
+  const result = await launchPhotoLibrary();
+  if (result.canceled) {
+    return null;
+  }
+  const uri = result.assets[0]?.uri;
+  if (!uri) {
+    throw new Error('Photo library did not return a photo');
+  }
+  return { uri };
 }
 
 export const takeCheckInPhoto = takeCameraPhoto;

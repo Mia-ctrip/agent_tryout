@@ -68,7 +68,7 @@ test('region timeline copy reports organization and source without a trend claim
     }),
     {
       eyebrow: '区域记录 · 照片整理与用户记录',
-      title: '左侧脸',
+    title: '左脸颊',
       detail: '2 个有效时间点 · 正在记录',
     },
   );

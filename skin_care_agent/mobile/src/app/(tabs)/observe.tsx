@@ -5,13 +5,15 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import { AppButton } from '@/components/app-button';
 import { AppScreen } from '@/components/app-screen';
+import { CameraStartPanel } from '@/components/camera-start-panel';
 import { InlineNotice } from '@/components/inline-notice';
 import { ObservationListItem } from '@/components/observation-list-item';
 import { RegionEventCard } from '@/components/region-event-card';
-import { colors, radii, spacing } from '@/constants/theme';
+import { colors, spacing } from '@/constants/theme';
 import { listObservations } from '@/lib/observation-api';
 import type { Observation } from '@/lib/observation-api';
 import { createObservationGenerationGuard } from '@/lib/observation-flow';
+import { observationCaptureHref } from '@/lib/observation-navigation';
 import { userFacingError } from '@/lib/errors';
 import { listRegionEvents } from '@/lib/region-event-api';
 import type { RegionEvent } from '@/lib/region-event-api';
@@ -53,19 +55,17 @@ export default function ObserveScreen() {
         <Text style={styles.title}>观察</Text>
         <Text style={styles.description}>留下一张照片，记录此刻真实可见的变化。</Text>
       </View>
-      <View style={styles.capturePanel}>
-        <Text style={styles.captureTitle}>从一次区域观察开始</Text>
-        <Text style={styles.captureBody}>
-          单张照片会先可靠保存，再在后台整理为中性的外观事实。
-        </Text>
-        <AppButton
-          label="记录现在的变化"
-          onPress={() => router.push('/observation/new')}
-        />
+      <CameraStartPanel
+        compact
+        embedded
+        onChoosePhoto={() => router.push(observationCaptureHref('library') as Href)}
+        onOpenCamera={() => router.push(observationCaptureHref('camera') as Href)}
+      />
+      <View style={styles.productUseAction}>
         <AppButton
           label="记录产品使用"
           onPress={() => router.push('/product-use/new')}
-          variant="secondary"
+          variant="text"
         />
       </View>
       {error ? <InlineNotice tone="error" message={error} /> : null}
@@ -107,14 +107,7 @@ const styles = StyleSheet.create({
   header: { gap: spacing.sm, marginBottom: spacing.xxl },
   title: { color: colors.text, fontSize: 32, lineHeight: 40, fontWeight: '800' },
   description: { color: colors.textMuted, fontSize: 16, lineHeight: 24 },
-  capturePanel: {
-    gap: spacing.md,
-    borderRadius: radii.lg,
-    backgroundColor: colors.lavender,
-    padding: spacing.xl,
-  },
-  captureTitle: { color: colors.irisStrong, fontSize: 20, fontWeight: '700' },
-  captureBody: { color: colors.text, fontSize: 15, lineHeight: 23 },
+  productUseAction: { marginTop: spacing.xs },
   latestSection: { gap: spacing.md, marginTop: spacing.xxl },
   latestTitle: { color: colors.text, fontSize: 20, fontWeight: '700' },
   latestList: { gap: spacing.md },

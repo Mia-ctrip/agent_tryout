@@ -20,6 +20,10 @@ from app.main import app
 from app.models.observation import ObservationRecord, ObservationTarget
 from app.models.photo import Photo
 from app.models.region_event import RegionEvent
+from app.schemas.observation_quality import (
+    ObservationQualityIssue,
+    ObservationQualityOut,
+)
 from app.services import observation_service
 from app.services.full_face_prompt import FULL_FACE_OBSERVATION_MOCK
 
@@ -154,8 +158,10 @@ class _HistoryDB(_FakeDB):
     def __init__(self, rows: list[tuple[ObservationRecord, ObservationTarget, Photo | None]]) -> None:
         super().__init__()
         self.history_rows = rows
+        self.last_statement: Any | None = None
 
-    def execute(self, _statement: Any) -> _QueryResult:
+    def execute(self, statement: Any) -> _QueryResult:
+        self.last_statement = statement
         return _QueryResult(self.history_rows)
 
 
@@ -208,6 +214,7 @@ def _client(
     db: _FakeDB,
     storage: _FakeStorage,
     worker: Any | None = None,
+    quality_result: ObservationQualityOut | None = None,
 ) -> Iterator[TestClient]:
     async def no_op_worker(_target_id: int) -> None:
         return None
@@ -215,6 +222,18 @@ def _client(
     app.dependency_overrides[get_current_app_user] = lambda: SimpleNamespace(id=7)
     app.dependency_overrides[get_db] = lambda: db
     monkeypatch.setattr(observation_service, "get_storage", lambda: storage)
+    monkeypatch.setattr(
+        observation_service.observation_quality_service,
+        "assess_observation_photo",
+        lambda _data: quality_result
+        or ObservationQualityOut(
+            status="passed",
+            primary_issue=None,
+            issues=[],
+            metrics={"face_count": 1},
+            regions=[],
+        ),
+    )
     monkeypatch.setattr(
         observations,
         "run_observation_target",
@@ -302,23 +321,56 @@ def test_region_creation_requires_current_30_day_event_decision(monkeypatch) -> 
     assert storage.deleted == [storage.puts[0][0]]
 
 
-def test_photo_creation_saves_before_ai_and_accepts_low_quality_image(monkeypatch) -> None:
+def test_photo_creation_rechecks_quality_before_storage(monkeypatch) -> None:
+    db, storage = _FakeDB(), _FakeStorage()
+    issue = ObservationQualityIssue(
+        code="blurry",
+        message="照片有些模糊，请保持手机稳定",
+    )
+    with _client(
+        monkeypatch,
+        db,
+        storage,
+        quality_result=ObservationQualityOut(
+            status="failed",
+            primary_issue=issue,
+            issues=[issue],
+            metrics={"laplacian_variance": 12.0},
+            regions=[],
+        ),
+    ) as client:
+        response = client.post(
+            "/api/v1/observations",
+            data=_form(),
+            files={"file": ("face.jpg", _image_bytes(), "image/jpeg")},
+        )
+
+    assert response.status_code == 422
+    assert response.json()["detail"]["primary_issue"]["code"] == "blurry"
+    assert storage.puts == []
+    assert not any(isinstance(row, Photo) for row in db.rows)
+
+
+def test_photo_creation_persists_quality_metadata(monkeypatch) -> None:
     db, storage = _FakeDB(), _FakeStorage()
     with _client(monkeypatch, db, storage) as client:
         response = client.post(
             "/api/v1/observations",
             data=_form(),
-            files={"file": ("face.jpg", _image_bytes((1, 1)), "image/jpeg")},
+            files={"file": ("face.jpg", _image_bytes(), "image/jpeg")},
         )
 
     assert response.status_code == 201
     assert response.json()["status"] == "saved"
     assert response.json()["targets"][0]["status"] == "queued"
     assert response.json()["targets"][0]["scope_type"] == "region"
+    assert response.json()["photo"]["quality_status"] == "passed"
+    assert response.json()["photo"]["quality_meta"]["metrics"]["face_count"] == 1
     photo = next(row for row in db.rows if isinstance(row, Photo))
     assert photo.check_in_id is None
     assert photo.view_type is None
-    assert photo.quality_status is None
+    assert photo.quality_status == "passed"
+    assert photo.quality_meta["metrics"]["face_count"] == 1
     assert photo.processed_storage_key is None
 
 
@@ -523,6 +575,32 @@ def test_history_lists_server_rows_newest_first_with_signed_photos(monkeypatch) 
     assert response.json()[0]["targets"][0]["scope_type"] == "full_face"
 
 
+def test_history_paginates_records_before_loading_every_target(monkeypatch) -> None:
+    record, first_target, photo = _history_row(2)
+    second_target = ObservationTarget(
+        record_id=record.id,
+        user_id=7,
+        scope_type="region",
+        region_id="chin",
+        status="processing",
+    )
+    second_target.id = 999
+    db = _HistoryDB([(record, first_target, photo), (record, second_target, photo)])
+
+    with _client(monkeypatch, db, _FakeStorage()) as client:
+        response = client.get("/api/v1/observations?limit=1")
+
+    assert response.status_code == 200
+    assert [target["target_id"] for target in response.json()[0]["targets"]] == [
+        first_target.id,
+        second_target.id,
+    ]
+    assert db.last_statement is not None
+    sql = str(db.last_statement).upper()
+    assert " IN (SELECT " in sql
+    assert " LIMIT " in sql
+
+
 def test_detail_hides_another_users_observation(monkeypatch) -> None:
     with _client(
         monkeypatch,
@@ -576,3 +654,42 @@ def test_note_fallback_rejects_blank_text(monkeypatch) -> None:
         )
 
     assert response.status_code == 422
+
+
+def test_failed_target_retry_preserves_completed_sibling_and_schedules_once(
+    monkeypatch,
+) -> None:
+    record, failed, photo = _history_row(9, target_status="needs_input")
+    completed = ObservationTarget(
+        record_id=record.id,
+        user_id=record.user_id,
+        scope_type="region",
+        region_id="forehead",
+        status="completed",
+        result_source="photo_analysis",
+        facts=dict(FULL_FACE_OBSERVATION_MOCK),
+        completed_at=datetime(2026, 8, 21, tzinfo=timezone.utc),
+    )
+    completed.id = 301
+    failed.scope_type = "region"
+    failed.region_id = "chin"
+    calls: list[int] = []
+
+    async def worker(target_id: int) -> None:
+        calls.append(target_id)
+
+    db = _HistoryDB([(record, completed, photo), (record, failed, photo)])
+    with _client(monkeypatch, db, _FakeStorage(), worker) as client:
+        first = client.post(
+            f"/api/v1/observations/{record.id}/targets/{failed.id}/retry"
+        )
+        duplicate = client.post(
+            f"/api/v1/observations/{record.id}/targets/{failed.id}/retry"
+        )
+
+    assert first.status_code == 200
+    assert duplicate.status_code == 200
+    first_by_id = {target["target_id"]: target for target in first.json()["targets"]}
+    assert first_by_id[completed.id]["status"] == "completed"
+    assert first_by_id[failed.id]["status"] == "queued"
+    assert calls == [failed.id]

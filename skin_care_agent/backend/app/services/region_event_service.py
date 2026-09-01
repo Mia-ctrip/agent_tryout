@@ -287,6 +287,7 @@ def get_region_event_detail(
             RegionEventTimepointOut(
                 observation_id=record.id,
                 recorded_at=record.recorded_at,
+                recorded_timezone_offset_minutes=record.recorded_timezone_offset_minutes,
                 recorded_local_date=record.recorded_local_date,
                 photo=observation.photo,
                 target=observation.targets[0],

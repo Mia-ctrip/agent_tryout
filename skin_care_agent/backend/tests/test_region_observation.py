@@ -43,7 +43,11 @@ def test_region_prompt_carries_stable_id_boundary_and_user_direction() -> None:
     assert "用户本人真实左侧" in prompt
     assert "自拍预览是否镜像都不改变" in prompt
     assert "不得输出未选区域" in prompt
-    assert REGION_OBSERVATION_PROMPT_VERSION == "region-observation-1.0.0"
+    assert "最高优先级" in prompt
+    assert "只关注所选区域内的皮肤" in prompt
+    assert "唇色" in prompt and "唇纹" in prompt and "唇毛" in prompt
+    assert prompt.rstrip().endswith("不要输出任何非皮肤或非痤疮记录相关判断。")
+    assert REGION_OBSERVATION_PROMPT_VERSION == "region-observation-1.1.0"
     assert REGION_OBSERVATION_SCHEMA_VERSION == "region-observation-1.0.0"
 
 
@@ -80,3 +84,16 @@ def test_region_sanitizer_returns_no_result_when_only_foreign_observations_remai
 
     assert result.facts is None
     assert result.changed is True
+
+
+@pytest.mark.parametrize("non_skin_text", ["唇色偏深", "唇纹明显", "可见唇毛", "疑似唇炎"])
+def test_mouth_region_rejects_non_skin_lip_attributes(non_skin_text: str) -> None:
+    with pytest.raises(ValueError, match="unsafe_output"):
+        validate_region_display(
+            _facts(
+                main_locations=["口周"],
+                daily_appearance=[non_skin_text],
+                summary=f"口周{non_skin_text}",
+            ),
+            "mouth_area",
+        )

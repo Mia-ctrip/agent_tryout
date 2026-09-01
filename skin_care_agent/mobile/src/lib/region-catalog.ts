@@ -19,12 +19,12 @@ export const REGIONS: readonly RegionDefinition[] = [
   { id: 'forehead', label: '额头', boundary: '面部中央上方的额头区域' },
   {
     id: 'left_face',
-    label: '你的左侧脸',
+    label: '左脸颊',
     boundary: '用户本人真实左侧；自拍预览是否镜像都不改变这个方向',
   },
   {
     id: 'right_face',
-    label: '你的右侧脸',
+    label: '右脸颊',
     boundary: '用户本人真实右侧；自拍预览是否镜像都不改变这个方向',
   },
   { id: 'nose_area', label: '鼻周', boundary: '鼻部及紧邻鼻翼范围' },

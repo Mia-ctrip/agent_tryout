@@ -134,7 +134,7 @@ async def test_region_analysis_uses_stable_region_prompt_and_log_boundary(monkey
     outcome = await analyze_region_photo(db, target=target, record=record, photo=photo)
 
     assert outcome.success is True
-    assert outcome.prompt_version == "region-observation-1.0.0"
+    assert outcome.prompt_version == "region-observation-1.1.0"
     assert "region_id: left_face" in gateway.requests[0].messages[0].content
     log = next(row for row in db.added if isinstance(row, AICallLog))
     assert log.kind == "region_observation"

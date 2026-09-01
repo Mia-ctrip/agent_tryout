@@ -3,42 +3,66 @@ import * as Device from 'expo-device';
 import { File } from 'expo-file-system';
 import { Image } from 'expo-image';
 import * as ImagePicker from 'expo-image-picker';
-import { router, useFocusEffect } from 'expo-router';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
+import { useCallback, useEffect, useReducer, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Linking,
   Pressable,
   StyleSheet,
   Text,
-  TextInput,
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { AppButton } from '@/components/app-button';
 import { AppScreen } from '@/components/app-screen';
+import { CameraGuideOverlay } from '@/components/camera-guide-overlay';
+import { CameraStartPanel } from '@/components/camera-start-panel';
+import { FaceRegionMap } from '@/components/face-region-map';
 import { InlineNotice } from '@/components/inline-notice';
-import { RegionSelector } from '@/components/region-selector';
-import { colors, radii, spacing } from '@/constants/theme';
+import { ObservationActionBar } from '@/components/observation-action-bar';
+import { RegionChoiceBar } from '@/components/region-choice-bar';
+import {
+  observationColors,
+  observationRadii,
+  observationSpacing,
+} from '@/constants/observation-theme';
 import { ApiError } from '@/lib/api';
+import {
+  selectPhotoFromLibrary,
+  shouldUseSystemCamera,
+  takeCameraPhoto,
+} from '@/lib/camera-capture';
 import { cameraPermissionState } from '@/lib/camera-permission';
-import { shouldUseSystemCamera, takeCameraPhoto } from '@/lib/camera-capture';
 import { createClientRequestId } from '@/lib/client-request-id';
+import {
+  createFaceAnalysisState,
+  faceAnalysisReducer,
+  liveGuidanceFromQuality,
+  photoRecoveryPrimaryLabel,
+  regionSelectionCta,
+} from '@/lib/face-analysis-flow';
+import type { CaptureGuidanceStatus, FacePhotoSource } from '@/lib/face-analysis-flow';
 import { buildObservationForm, createObservation } from '@/lib/observation-api';
 import {
-  createObservationDraft,
+  buildObservationQualityForm,
+  checkObservationPhotoQuality,
+} from '@/lib/observation-quality-api';
+import type {
+  ObservationQuality,
+  ObservationQualityIssue,
+} from '@/lib/observation-quality-api';
+import {
+  clearObservationDraftPhoto,
   confirmRegionSelection,
-  observationDraftError,
+  createObservationDraft,
   observationDraftToInput,
-  selectRegions,
   setObservationDraftPhoto,
-  setRegionNote,
   setRegionEventDecision,
 } from '@/lib/observation-flow';
-import type { ObservationDraft, SavePhase } from '@/lib/observation-flow';
-import { userFacingError } from '@/lib/errors';
+import type { ObservationDraft } from '@/lib/observation-flow';
 import { regionById } from '@/lib/region-catalog';
+import type { RegionId } from '@/lib/region-catalog';
 import { previewRegionEvents } from '@/lib/region-event-api';
 import type { RegionEventPreview } from '@/lib/region-event-api';
 import {
@@ -49,40 +73,74 @@ import {
   loadLastRegionSelection,
   saveLastRegionSelection,
 } from '@/lib/region-selection-storage';
+import { userFacingError } from '@/lib/errors';
 import { useSession } from '@/providers/session-provider';
 
-type ScreenMode = 'choose' | 'camera' | 'regions' | 'events' | 'confirm';
+const CAPTURE_GUIDANCE = new Set<CaptureGuidanceStatus>([
+  'camera_ready',
+  'face_not_found',
+  'multiple_faces',
+  'face_too_far',
+  'face_too_close',
+  'face_off_angle',
+  'poor_lighting',
+  'unstable',
+  'occluded',
+  'ready_to_capture',
+]);
+
+function sourceSize(quality: ObservationQuality | null) {
+  const width = Number(quality?.metrics.width ?? 0);
+  const height = Number(quality?.metrics.height ?? 0);
+  return width > 0 && height > 0 ? { width, height } : { width: 3, height: 4 };
+}
+
+function apiQualityIssue(error: unknown): ObservationQualityIssue | null {
+  if (!(error instanceof ApiError) || typeof error.detail !== 'object' || !error.detail) {
+    return null;
+  }
+  const detail = error.detail as { primary_issue?: unknown };
+  if (typeof detail.primary_issue !== 'object' || !detail.primary_issue) return null;
+  const issue = detail.primary_issue as Partial<ObservationQualityIssue>;
+  return typeof issue.code === 'string' && typeof issue.message === 'string'
+    ? (issue as ObservationQualityIssue)
+    : null;
+}
 
 export default function NewObservationScreen() {
   const { request } = useSession();
+  const { entry } = useLocalSearchParams<{ entry?: string | string[] }>();
   const [permission, requestPermission] = useCameraPermissions();
-  const [draft, setDraft] = useState<ObservationDraft>(() =>
-    createObservationDraft(createClientRequestId()),
+  const requestIdRef = useRef(createClientRequestId());
+  const [flow, dispatch] = useReducer(
+    faceAnalysisReducer,
+    requestIdRef.current,
+    createFaceAnalysisState,
   );
-  const [mode, setMode] = useState<ScreenMode>('choose');
-  const [phase, setPhase] = useState<SavePhase>('idle');
+  const [draft, setDraft] = useState<ObservationDraft>(() =>
+    createObservationDraft(requestIdRef.current),
+  );
   const [focused, setFocused] = useState(false);
   const [cameraReady, setCameraReady] = useState(false);
   const [requestingPermission, setRequestingPermission] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [choosingPhoto, setChoosingPhoto] = useState(false);
   const [eventPreviews, setEventPreviews] = useState<RegionEventPreview[]>([]);
-  const [previewingEvents, setPreviewingEvents] = useState(false);
+  const [notice, setNotice] = useState<string | null>(null);
   const cameraRef = useRef<CameraView | null>(null);
+  const captureGuard = useRef(false);
+  const liveSampleGuard = useRef(false);
+  const submitGuard = useRef(false);
+  const entryHandled = useRef(false);
   const permissionState = cameraPermissionState(permission);
   const useSystemCamera = shouldUseSystemCamera({
     isDevelopment: __DEV__,
     isDevice: Device.isDevice,
   });
-  const saving = phase === 'saving';
 
   useEffect(() => {
     void loadLastRegionSelection().then((regionIds) => {
       if (regionIds.length > 0) {
-        setDraft((current) =>
-          current.selectedRegions.length > 0
-            ? current
-            : selectRegions(current, regionIds),
-        );
+        dispatch({ type: 'regions_suggested', regionIds });
       }
     });
   }, []);
@@ -97,63 +155,168 @@ export default function NewObservationScreen() {
     }, []),
   );
 
-  function updateRegionNote(regionId: Parameters<typeof setRegionNote>[1], note: string) {
-    setDraft((current) => setRegionNote(current, regionId, note));
-    if (phase === 'save_failed') {
-      setPhase('idle');
-      setError(null);
+  useEffect(() => {
+    if (
+      useSystemCamera ||
+      !focused ||
+      !cameraReady ||
+      flow.photoUri !== null
+    ) {
+      return;
+    }
+    let stopped = false;
+    const sample = async () => {
+      if (stopped || captureGuard.current || liveSampleGuard.current || !cameraRef.current) {
+        return;
+      }
+      liveSampleGuard.current = true;
+      let sampleFile: File | null = null;
+      try {
+        const picture = await cameraRef.current.takePictureAsync({
+          quality: 0.45,
+          shutterSound: false,
+          skipProcessing: false,
+        });
+        if (!picture?.uri || stopped) return;
+        sampleFile = new File(picture.uri);
+        const quality = await checkObservationPhotoQuality(
+          request,
+          buildObservationQualityForm(sampleFile),
+        );
+        if (!stopped) {
+          dispatch({
+            type: 'guidance_changed',
+            status: liveGuidanceFromQuality(quality),
+          });
+        }
+      } catch {
+        // Live guidance is progressive enhancement; final capture still has mandatory checks.
+      } finally {
+        try {
+          sampleFile?.delete();
+        } catch {
+          // Expo may already have cleared a temporary camera file.
+        }
+        liveSampleGuard.current = false;
+      }
+    };
+    const timer = setInterval(() => void sample(), 2400);
+    void sample();
+    return () => {
+      stopped = true;
+      clearInterval(timer);
+    };
+  }, [cameraReady, flow.photoUri, focused, request, useSystemCamera]);
+
+  async function openSettings() {
+    setNotice(null);
+    try {
+      await Linking.openSettings();
+    } catch (error) {
+      setNotice(userFacingError(error));
     }
   }
 
-  async function beginPhoto() {
-    setError(null);
-    if (permissionState === 'granted') {
-      setMode('camera');
-      return;
-    }
+  async function beginCamera() {
+    setNotice(null);
     if (permissionState === 'settings') {
-      setMode('camera');
+      await openSettings();
       return;
     }
     if (permissionState === 'loading') {
-      setError('相机权限仍在读取，请稍后再试。');
+      setNotice('相机权限仍在读取，请稍后再试。');
       return;
     }
-
+    if (permissionState === 'granted') {
+      dispatch({ type: 'permission_granted' });
+      return;
+    }
     setRequestingPermission(true);
     try {
       const result = await requestPermission();
       if (result.granted) {
-        setMode('camera');
+        dispatch({ type: 'permission_granted' });
       } else {
-        setError('没有相机权限时，仍可以直接写下观察。');
+        dispatch({ type: 'permission_required' });
+        setNotice('需要相机权限才能拍摄。你可以重新授权，或稍后再试。');
       }
-    } catch (permissionError) {
-      setError(userFacingError(permissionError));
+    } catch (error) {
+      setNotice(userFacingError(error));
     } finally {
       setRequestingPermission(false);
     }
   }
 
-  async function openSettings() {
-    setError(null);
+  async function runQualityCheck(photoUri: string) {
+    dispatch({ type: 'quality_check_started' });
+    setNotice(null);
     try {
-      await Linking.openSettings();
-    } catch (settingsError) {
-      setError(userFacingError(settingsError));
+      const file = new File(photoUri);
+      const quality = await checkObservationPhotoQuality(
+        request,
+        buildObservationQualityForm(file),
+      );
+      if (quality.status === 'failed' || quality.regions.length === 0) {
+        dispatch({
+          type: 'quality_failed',
+          issue:
+            quality.primary_issue ??
+            ({
+              code: 'face_not_found',
+              message: '没有完整定位到面部区域，请调整后重拍',
+            } satisfies ObservationQualityIssue),
+        });
+        return;
+      }
+      dispatch({ type: 'quality_passed', quality });
+    } catch (error) {
+      dispatch({ type: 'analysis_failed', message: userFacingError(error) });
+    }
+  }
+
+  async function acceptPhoto(photoUri: string, source: FacePhotoSource) {
+    if (flow.photoUri !== null) {
+      dispatch({ type: 'retake' });
+    }
+    const takenAt = new Date().toISOString();
+    setDraft((current) => setObservationDraftPhoto(current, photoUri, takenAt));
+    dispatch({ type: 'photo_captured', photoUri, source });
+    await runQualityCheck(photoUri);
+  }
+
+  async function choosePhotoFromLibrary() {
+    if (captureGuard.current || submitGuard.current) return;
+    captureGuard.current = true;
+    setChoosingPhoto(true);
+    setNotice(null);
+    try {
+      const photo = await selectPhotoFromLibrary(() =>
+        ImagePicker.launchImageLibraryAsync({
+          allowsEditing: false,
+          mediaTypes: ['images'],
+          quality: 1,
+        }),
+      );
+      if (!photo) return;
+      await acceptPhoto(photo.uri, 'library');
+    } catch (error) {
+      setNotice(userFacingError(error));
+    } finally {
+      captureGuard.current = false;
+      setChoosingPhoto(false);
     }
   }
 
   async function capturePhoto() {
     if (
-      phase === 'capturing' ||
+      captureGuard.current ||
+      liveSampleGuard.current ||
       (!useSystemCamera && (!cameraRef.current || !cameraReady))
     ) {
       return;
     }
-
-    setPhase('capturing');
-    setError(null);
+    captureGuard.current = true;
+    setNotice(null);
     try {
       const photo = await takeCameraPhoto({
         camera: cameraRef.current,
@@ -166,375 +329,401 @@ export default function NewObservationScreen() {
           }),
         useSystemCamera,
       });
-      if (!photo) {
-        setPhase('idle');
-        return;
-      }
-      setDraft((current) =>
-        setObservationDraftPhoto(current, photo.uri, new Date().toISOString()),
-      );
-      setMode('regions');
-      setPhase('idle');
-    } catch (captureError) {
-      setError(userFacingError(captureError));
-      setPhase('idle');
+      if (!photo) return;
+      await acceptPhoto(photo.uri, 'camera');
+    } catch (error) {
+      setNotice(userFacingError(error));
+    } finally {
+      captureGuard.current = false;
     }
   }
 
-  async function saveObservation() {
-    if (saving) {
-      return;
-    }
-    const validationError = observationDraftError(draft);
-    if (validationError) {
-      setError(validationError);
-      return;
-    }
+  function retake() {
+    captureGuard.current = false;
+    submitGuard.current = false;
+    setNotice(null);
+    setEventPreviews([]);
+    setDraft((current) => clearObservationDraftPhoto(current));
+    dispatch({ type: 'retake' });
+  }
 
-    setPhase('saving');
-    setError(null);
+  async function persistObservation(confirmedDraft: ObservationDraft) {
     try {
-      const file = draft.photoUri ? new File(draft.photoUri) : undefined;
-      const form = buildObservationForm(observationDraftToInput(draft, file));
+      const file = confirmedDraft.photoUri ? new File(confirmedDraft.photoUri) : undefined;
+      const form = buildObservationForm(observationDraftToInput(confirmedDraft, file));
       const observation = await createObservation(request, form);
-      void saveLastRegionSelection(draft.selectedRegions).catch(() => undefined);
+      void saveLastRegionSelection(confirmedDraft.selectedRegions).catch(() => undefined);
       router.replace(`/observation/${observation.observation_id}`);
-    } catch (saveError) {
-      if (saveError instanceof ApiError && saveError.status === 409) {
-        await previewConfirmedRegions(draft, '记录分段状态已更新，请重新确认。');
-        setPhase('idle');
+    } catch (error) {
+      const issue = apiQualityIssue(error);
+      if (issue) {
+        dispatch({ type: 'quality_failed', issue });
+      } else if (error instanceof ApiError && error.status === 409) {
+        submitGuard.current = false;
+        await prepareAnalysis(confirmedDraft, '记录分段状态已更新，请重新确认。');
         return;
+      } else {
+        dispatch({ type: 'analysis_failed', message: userFacingError(error) });
       }
-      setError(userFacingError(saveError));
-      setPhase('save_failed');
+      submitGuard.current = false;
     }
   }
 
-  async function previewConfirmedRegions(
-    confirmedDraft: ObservationDraft,
-    notice?: string,
+  async function prepareAnalysis(
+    draftToSubmit: ObservationDraft,
+    nextNotice?: string,
   ) {
-    setPreviewingEvents(true);
-    setError(null);
+    if (submitGuard.current) return;
+    submitGuard.current = true;
+    dispatch({ type: 'analysis_started' });
+    setNotice(null);
     try {
       const previews = await previewRegionEvents(request, {
-        regionIds: confirmedDraft.selectedRegions,
-        recordedAt: confirmedDraft.recordedAt,
-        timezoneOffsetMinutes: confirmedDraft.timezoneOffsetMinutes,
+        regionIds: draftToSubmit.selectedRegions,
+        recordedAt: draftToSubmit.recordedAt,
+        timezoneOffsetMinutes: draftToSubmit.timezoneOffsetMinutes,
       });
       setEventPreviews(previews);
-      const required = new Set(choiceRequiredRegions(previews));
-      setDraft((current) => ({
-        ...current,
-        eventDecisions: Object.fromEntries(
-          Object.entries(current.eventDecisions).filter(([regionId]) =>
-            required.has(regionId as Parameters<typeof regionById>[0]),
+      const choiceRegions = choiceRequiredRegions(previews);
+      if (choiceRegions.length > 0) {
+        const required = new Set(choiceRegions);
+        setDraft((current) => ({
+          ...draftToSubmit,
+          eventDecisions: Object.fromEntries(
+            Object.entries(current.eventDecisions).filter(([regionId]) =>
+              required.has(regionId as RegionId),
+            ),
           ),
-        ),
-      }));
-      setError(notice ?? null);
-      setMode(required.size > 0 ? 'events' : 'confirm');
-    } catch (previewError) {
-      setError(userFacingError(previewError));
-    } finally {
-      setPreviewingEvents(false);
+        }));
+        setNotice(nextNotice ?? null);
+        submitGuard.current = false;
+        dispatch({ type: 'event_confirmation_required' });
+        return;
+      }
+      await persistObservation(draftToSubmit);
+    } catch (error) {
+      submitGuard.current = false;
+      dispatch({ type: 'analysis_failed', message: userFacingError(error) });
     }
   }
 
-  if (mode === 'camera') {
-    if (permissionState === 'loading') {
-      return (
-        <SafeAreaView style={styles.centered}>
-          <ActivityIndicator color={colors.primary} size="large" />
-          <Text style={styles.mutedText}>正在检查相机权限</Text>
-        </SafeAreaView>
-      );
-    }
-    if (permissionState !== 'granted') {
-      return (
-        <AppScreen>
-          <View style={styles.pageHeader}>
-            <Text style={styles.title}>相机权限已关闭</Text>
-            <Text style={styles.description}>
-              请在系统设置中允许相机权限，或者直接用文字完成这次观察。
-            </Text>
-          </View>
-          {error ? <InlineNotice tone="error" message={error} /> : null}
-          <View style={styles.actions}>
-            <AppButton label="打开系统设置" onPress={() => void openSettings()} />
-            <AppButton
-              label="直接写下观察"
-              variant="secondary"
-              onPress={() => setMode('regions')}
-            />
-            <AppButton label="返回" variant="text" onPress={() => setMode('choose')} />
-          </View>
-        </AppScreen>
-      );
-    }
+  function startAnalysis() {
+    if (flow.selectedRegions.length === 0 || !draft.photoUri) return;
+    const confirmed = confirmRegionSelection({
+      ...draft,
+      selectedRegions: [...flow.selectedRegions],
+    });
+    setDraft(confirmed);
+    void prepareAnalysis(confirmed);
+  }
 
+  function confirmEventsAndAnalyze() {
+    const decisionError = regionEventDecisionError(eventPreviews, draft.eventDecisions);
+    if (decisionError) {
+      setNotice(decisionError);
+      return;
+    }
+    if (submitGuard.current) return;
+    submitGuard.current = true;
+    dispatch({ type: 'analysis_started' });
+    setNotice(null);
+    void persistObservation(draft);
+  }
+
+  useEffect(() => {
+    const requestedEntry = Array.isArray(entry) ? entry[0] : entry;
+    if (
+      entryHandled.current ||
+      flow.status !== 'permission_required' ||
+      (requestedEntry === 'camera' && permissionState === 'loading')
+    ) {
+      return;
+    }
+    if (requestedEntry === 'camera') {
+      entryHandled.current = true;
+      const timer = setTimeout(() => void beginCamera(), 0);
+      return () => clearTimeout(timer);
+    } else if (requestedEntry === 'library') {
+      entryHandled.current = true;
+      const timer = setTimeout(() => void choosePhotoFromLibrary(), 0);
+      return () => clearTimeout(timer);
+    }
+    // Entry intents are consumed once; recovery remains on this state machine.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [entry, flow.status, permissionState]);
+
+  if (flow.status === 'permission_required') {
+    return (
+      <AppScreen backgroundColor={observationColors.background}>
+        <CameraStartPanel
+          busy={requestingPermission || choosingPhoto}
+          choosingPhoto={choosingPhoto}
+          compact={permissionState === 'granted'}
+          onChoosePhoto={() => void choosePhotoFromLibrary()}
+          onOpenCamera={() => void beginCamera()}
+          permissionDenied={permissionState === 'settings'}
+        />
+        {requestingPermission ? (
+          <View style={styles.inlineLoading}>
+            <ActivityIndicator color={observationColors.action} />
+            <Text style={styles.muted}>正在请求相机权限</Text>
+          </View>
+        ) : null}
+        {notice ? <InlineNotice tone="error" message={notice} /> : null}
+        <Pressable accessibilityRole="button" onPress={() => router.back()} style={styles.cancelLink}>
+          <Text style={styles.cancelLinkLabel}>取消</Text>
+        </Pressable>
+      </AppScreen>
+    );
+  }
+
+  if (
+    flow.status === 'camera_starting' ||
+    CAPTURE_GUIDANCE.has(flow.status as CaptureGuidanceStatus)
+  ) {
+    const guidanceStatus = CAPTURE_GUIDANCE.has(flow.status as CaptureGuidanceStatus)
+      ? (flow.status as CaptureGuidanceStatus)
+      : 'camera_ready';
     return (
       <View style={styles.cameraScreen}>
         {!useSystemCamera && focused ? (
           <CameraView
-            ref={cameraRef}
             facing="front"
             mirror={false}
             mode="picture"
-            onCameraReady={() => setCameraReady(true)}
-            onMountError={() => setError('相机预览启动失败，请返回后重新进入。')}
+            onCameraReady={() => {
+              setCameraReady(true);
+              dispatch({ type: 'camera_started' });
+            }}
+            onMountError={() => setNotice('相机预览启动失败，请返回后重新进入。')}
+            ref={cameraRef}
             style={StyleSheet.absoluteFill}
           />
-        ) : null}
-        <SafeAreaView pointerEvents="box-none" style={styles.cameraOverlay}>
+        ) : (
+          <View style={[StyleSheet.absoluteFill, styles.systemCameraBackdrop]} />
+        )}
+        <CameraGuideOverlay status={guidanceStatus} />
+        <SafeAreaView pointerEvents="box-none" style={styles.cameraSafeArea}>
           <View style={styles.cameraTopBar}>
             <Pressable
+              accessibilityLabel="退出拍摄"
               accessibilityRole="button"
-              onPress={() => setMode('choose')}
-              style={({ pressed }) => [styles.cancelButton, pressed && styles.pressed]}>
-              <Text style={styles.cancelText}>取消</Text>
+              onPress={() => dispatch({ type: 'permission_required' })}
+              style={styles.topButton}>
+              <Text style={styles.topButtonLabel}>取消</Text>
             </Pressable>
-            <Text style={styles.cameraTitle}>拍摄本次观察照片</Text>
-            <View style={styles.cancelButton} />
+            <Text style={styles.cameraTitle}>拍摄正脸照片</Text>
+            <View style={styles.topButton} />
           </View>
-          <View style={styles.guideArea} pointerEvents="none">
-            {!useSystemCamera ? <View style={styles.faceGuide} /> : null}
-          </View>
-          <View style={styles.cameraControls}>
-            <Text style={styles.cameraInstruction}>
-              正对镜头，让额头、两颊和下巴完整出现在画面中。
-            </Text>
-            {error ? <Text style={styles.cameraError}>{error}</Text> : null}
-            {useSystemCamera ? (
-              <AppButton
-                label="打开系统相机"
-                variant="secondary"
-                loading={phase === 'capturing'}
-                onPress={() => void capturePhoto()}
-              />
-            ) : (
-              <Pressable
-                accessibilityLabel="拍摄本次观察照片"
-                accessibilityRole="button"
-                disabled={!cameraReady || phase === 'capturing'}
-                onPress={() => void capturePhoto()}
-                style={({ pressed }) => [
-                  styles.shutterOuter,
-                  pressed && styles.pressed,
-                  (!cameraReady || phase === 'capturing') && styles.disabled,
-                ]}>
-                {phase === 'capturing' ? (
-                  <ActivityIndicator color={colors.text} />
-                ) : (
-                  <View style={styles.shutterInner} />
-                )}
-              </Pressable>
-            )}
+          <View style={styles.cameraBottom}>
+            {notice ? <Text style={styles.cameraError}>{notice}</Text> : null}
+            <Pressable
+              accessibilityLabel={useSystemCamera ? '打开系统相机拍摄' : '拍摄'}
+              accessibilityRole="button"
+              accessibilityState={{ disabled: !useSystemCamera && !cameraReady }}
+              disabled={!useSystemCamera && !cameraReady}
+              onPress={() => void capturePhoto()}
+              style={({ pressed }) => [
+                styles.captureButton,
+                pressed && styles.pressed,
+                !useSystemCamera && !cameraReady && styles.disabled,
+              ]}>
+              <Text style={styles.captureButtonLabel}>
+                {useSystemCamera ? '打开系统相机' : '拍摄'}
+              </Text>
+            </Pressable>
           </View>
         </SafeAreaView>
       </View>
     );
   }
 
-  if (mode === 'regions') {
+  if (flow.status === 'photo_captured' || flow.status === 'quality_checking') {
     return (
-      <AppScreen>
+      <AppScreen backgroundColor={observationColors.background}>
         <View style={styles.pageHeader}>
-          <Text style={styles.title}>选择本次观察区域</Text>
-          <Text style={styles.description}>
-            左右指你本人真实左右，自拍预览是否镜像都不会改变区域含义。
-          </Text>
+          <Text accessibilityRole="header" style={styles.title}>正在检查照片</Text>
+          <Text style={styles.description}>会先确认脸部完整、距离、角度、光线和清晰度。</Text>
         </View>
-        {draft.photoUri ? (
-          <Image
-            accessibilityLabel="待保存的观察照片"
-            contentFit="cover"
-            source={{ uri: draft.photoUri }}
-            style={styles.regionPreview}
-          />
-        ) : (
-          <InlineNotice tone="info" message="本次使用文字记录，每个已选区域都需要填写观察。" />
-        )}
-        <RegionSelector
-          selected={draft.selectedRegions}
-          onChange={(regionIds) => {
-            setDraft((current) => selectRegions(current, regionIds));
-            setError(null);
-          }}
-        />
-        {error ? <InlineNotice tone="error" message={error} /> : null}
-        <View style={styles.actions}>
-          <AppButton
-            label="确认这些区域"
-            loading={previewingEvents}
-            onPress={() => {
-              if (draft.selectedRegions.length === 0) {
-                setError('请至少选择一个观察区域。');
-                return;
-              }
-              const confirmed = confirmRegionSelection(draft);
-              setDraft(confirmed);
-              setError(null);
-              void previewConfirmedRegions(confirmed);
-            }}
-          />
-          {draft.photoUri ? (
-            <AppButton label="重新拍摄" variant="secondary" onPress={() => setMode('camera')} />
-          ) : null}
-          <AppButton label="返回选择" variant="text" onPress={() => setMode('choose')} />
+        {flow.photoUri ? (
+          <Image contentFit="cover" source={{ uri: flow.photoUri }} style={styles.qualityPhoto} />
+        ) : null}
+        <View accessibilityLiveRegion="polite" style={styles.progressBar}>
+          <ActivityIndicator color={observationColors.sage} />
+          <Text style={styles.progressText}>正在检查照片质量</Text>
         </View>
       </AppScreen>
     );
   }
 
-  if (mode === 'events') {
-    const requiredRegions = choiceRequiredRegions(eventPreviews);
+  if (flow.status === 'quality_failed') {
     return (
-      <AppScreen>
+      <AppScreen
+        backgroundColor={observationColors.background}
+        footer={
+          <ObservationActionBar
+            onPrimaryPress={
+              flow.photoSource === 'library'
+                ? () => void choosePhotoFromLibrary()
+                : retake
+            }
+            onSecondaryPress={() => flow.photoUri && void runQualityCheck(flow.photoUri)}
+            primaryLabel={photoRecoveryPrimaryLabel(flow.photoSource)}
+            secondaryLabel="重新检查这张照片"
+          />
+        }>
         <View style={styles.pageHeader}>
-          <Text style={styles.title}>确认记录分段</Text>
+          <Text accessibilityRole="header" style={styles.title}>这张照片需要调整</Text>
           <Text style={styles.description}>
-            以下区域距离上一条有效记录已满 30 天。请一次确认继续原记录，或从今天开始一段新记录。
+            照片尚未保存，你可以按提示重新获取，或再次检查这张照片。
           </Text>
         </View>
-        <View style={styles.confirmedList}>
+        {flow.photoUri ? (
+          <Image contentFit="cover" source={{ uri: flow.photoUri }} style={styles.qualityPhoto} />
+        ) : null}
+        <InlineNotice
+          tone="error"
+          message={flow.qualityIssue?.message ?? '照片质量未达到分析要求，请重新拍摄。'}
+        />
+      </AppScreen>
+    );
+  }
+
+  if (flow.status === 'selecting_regions' && flow.photoUri && flow.quality) {
+    return (
+      <AppScreen
+        backgroundColor={observationColors.background}
+        footer={
+          <ObservationActionBar
+            onPrimaryPress={startAnalysis}
+            onSecondaryPress={retake}
+            primaryDisabled={flow.selectedRegions.length === 0}
+            primaryLabel={regionSelectionCta(flow.selectedRegions)}
+            secondaryLabel="重新拍摄"
+          />
+        }>
+        <View style={styles.pageHeader}>
+          <Text accessibilityRole="header" style={styles.title}>这次想重点看看哪里？</Text>
+          <Text style={styles.description}>
+            系统建议的位置会预先选中，你还可以选择任意需要关注的区域。
+          </Text>
+        </View>
+        <FaceRegionMap
+          activeRegion={flow.activeRegion}
+          calloutMode="all"
+          geometry={flow.quality.regions}
+          onToggle={(regionId) => dispatch({ type: 'region_toggled', regionId })}
+          photoUri={flow.photoUri}
+          required={flow.requiredRegions}
+          selected={flow.selectedRegions}
+          sourceSize={sourceSize(flow.quality)}
+        />
+        <View style={styles.regionChoices}>
+          <RegionChoiceBar
+            onToggle={(regionId) => dispatch({ type: 'region_toggled', regionId })}
+            required={flow.requiredRegions}
+            selected={flow.selectedRegions}
+          />
+          <Text style={styles.directionNote}>左右均指你本人真实左右，与自拍预览是否镜像无关。</Text>
+        </View>
+      </AppScreen>
+    );
+  }
+
+  if (flow.status === 'confirming_events') {
+    const requiredRegions = choiceRequiredRegions(eventPreviews);
+    return (
+      <AppScreen
+        backgroundColor={observationColors.background}
+        footer={
+          <ObservationActionBar
+            onPrimaryPress={confirmEventsAndAnalyze}
+            onSecondaryPress={() => dispatch({ type: 'event_confirmation_cancelled' })}
+            primaryLabel="确认分段并开始分析"
+            secondaryLabel="修改检测区域"
+          />
+        }>
+        <View style={styles.pageHeader}>
+          <Text accessibilityRole="header" style={styles.title}>确认记录分段</Text>
+          <Text style={styles.description}>
+            这些区域距离上一条有效记录已满 30 天。请选择继续原记录，或从今天开始新一段。
+          </Text>
+        </View>
+        <View style={styles.eventList}>
           {requiredRegions.map((regionId) => {
-            const region = regionById(regionId);
             const decision = draft.eventDecisions[regionId];
             return (
-              <View key={regionId} style={styles.confirmedRegion}>
-                <Text style={styles.confirmedRegionLabel}>{region.label}</Text>
-                <Text style={styles.confirmedBoundary}>
-                  这只是记录组织方式，不代表皮肤问题已结束或重新发生。
-                </Text>
-                <View style={styles.decisionActions}>
-                  <AppButton
-                    label={decision === 'continue' ? '✓ 继续这段记录' : '继续这段记录'}
-                    variant={decision === 'continue' ? 'primary' : 'secondary'}
-                    onPress={() =>
-                      setDraft((current) =>
-                        setRegionEventDecision(current, regionId, 'continue'),
-                      )
-                    }
-                  />
-                  <AppButton
-                    label={decision === 'start_new' ? '✓ 开始一段新记录' : '开始一段新记录'}
-                    variant={decision === 'start_new' ? 'primary' : 'secondary'}
-                    onPress={() =>
-                      setDraft((current) =>
-                        setRegionEventDecision(current, regionId, 'start_new'),
-                      )
-                    }
-                  />
+              <View key={regionId} style={styles.eventSection}>
+                <Text style={styles.eventTitle}>{regionById(regionId).label}</Text>
+                <Text style={styles.directionNote}>这只影响记录组织，不代表皮肤问题结束或重新发生。</Text>
+                <View style={styles.decisionRow}>
+                  {(['continue', 'start_new'] as const).map((value) => {
+                    const selected = decision === value;
+                    return (
+                      <Pressable
+                        accessibilityRole="radio"
+                        accessibilityState={{ selected }}
+                        key={value}
+                        onPress={() =>
+                          setDraft((current) =>
+                            setRegionEventDecision(current, regionId, value),
+                          )
+                        }
+                        style={[styles.decision, selected && styles.decisionSelected]}>
+                        <Text style={styles.decisionLabel}>
+                          {selected ? '✓ ' : ''}{value === 'continue' ? '继续这段记录' : '开始新记录'}
+                        </Text>
+                      </Pressable>
+                    );
+                  })}
                 </View>
               </View>
             );
           })}
         </View>
-        {error ? <InlineNotice tone="error" message={error} /> : null}
-        <View style={styles.actions}>
-          <AppButton
-            label="确认分段并继续"
-            onPress={() => {
-              const decisionError = regionEventDecisionError(
-                eventPreviews,
-                draft.eventDecisions,
-              );
-              if (decisionError) {
-                setError(decisionError);
-                return;
-              }
-              setError(null);
-              setMode('confirm');
-            }}
-          />
-          <AppButton label="修改区域" variant="text" onPress={() => setMode('regions')} />
-        </View>
+        {notice ? <InlineNotice tone="error" message={notice} /> : null}
       </AppScreen>
     );
   }
 
-  if (mode === 'confirm') {
+  if (flow.status === 'error') {
+    const retryQuality = flow.quality === null;
     return (
-      <AppScreen>
+      <AppScreen
+        backgroundColor={observationColors.background}
+        footer={
+          <ObservationActionBar
+            onPrimaryPress={() => {
+              if (retryQuality && flow.photoUri) {
+                void runQualityCheck(flow.photoUri);
+              } else {
+                startAnalysis();
+              }
+            }}
+            onSecondaryPress={retake}
+            primaryLabel={retryQuality ? '重试照片检查' : '重试 AI 分析'}
+            secondaryLabel="重新拍摄"
+          />
+        }>
         <View style={styles.pageHeader}>
-          <Text style={styles.title}>保存前确认</Text>
-          <Text style={styles.description}>
-            {draft.photoUri ? '这张照片' : '这次文字记录'}将分别整理以下区域。未选择的区域只表示本次没有观察。
-          </Text>
+          <Text accessibilityRole="header" style={styles.title}>暂时没能继续</Text>
+          <Text style={styles.description}>照片和已选区域都还在，不需要从头开始。</Text>
         </View>
-        <View style={styles.confirmedList}>
-          {draft.selectedRegions.map((regionId) => {
-            const region = regionById(regionId);
-            const note = draft.notes[regionId] ?? '';
-            return (
-              <View key={regionId} style={styles.confirmedRegion}>
-                <Text style={styles.confirmedRegionLabel}>{region.label}</Text>
-                <Text style={styles.confirmedBoundary}>{region.boundary}</Text>
-                <TextInput
-                  accessibilityLabel={`${region.label}观察文字`}
-                  maxLength={500}
-                  multiline
-                  onChangeText={(value) => updateRegionNote(regionId, value)}
-                  placeholder={draft.photoUri ? '补充文字（选填）' : '写下这个区域的真实观察'}
-                  placeholderTextColor={colors.textMuted}
-                  style={styles.regionTextInput}
-                  textAlignVertical="top"
-                  value={note}
-                />
-                <Text style={styles.counter}>{note.length}/500</Text>
-              </View>
-            );
-          })}
-        </View>
-        {error ? <InlineNotice tone="error" message={error} /> : null}
-        <View style={styles.actions}>
-          <AppButton
-            label={phase === 'save_failed' ? '重新保存' : '保存这次观察'}
-            loading={saving}
-            onPress={() => void saveObservation()}
-          />
-          <AppButton
-            label="修改区域"
-            variant="text"
-            disabled={saving}
-            onPress={() => setMode('regions')}
-          />
-        </View>
+        {flow.photoUri ? (
+          <Image contentFit="cover" source={{ uri: flow.photoUri }} style={styles.qualityPhoto} />
+        ) : null}
+        <InlineNotice tone="error" message={flow.errorMessage ?? '网络异常，请稍后重试。'} />
       </AppScreen>
     );
   }
 
   return (
-    <AppScreen>
-      <View style={styles.pageHeader}>
-        <Text style={styles.title}>记录现在的变化</Text>
-        <Text style={styles.description}>
-          拍一张照片或直接写下观察，再选择一到六个固定区域。
-        </Text>
-      </View>
-      <View style={styles.choicePanel}>
-        <Text style={styles.choiceTitle}>单张照片</Text>
-        <Text style={styles.choiceBody}>原图与记录时间会先保存，AI 整理不会阻塞离开。</Text>
-        <AppButton
-          label="拍一张照片"
-          loading={requestingPermission}
-          onPress={() => void beginPhoto()}
-        />
-      </View>
-      {error ? <InlineNotice tone="error" message={error} /> : null}
-      <View style={styles.actions}>
-        <AppButton
-          label="暂时不拍，直接记录"
-          variant="secondary"
-          onPress={() => {
-            setError(null);
-            setMode('regions');
-          }}
-        />
-        <AppButton label="取消" variant="text" onPress={() => router.back()} />
-      </View>
-    </AppScreen>
+    <SafeAreaView style={styles.centered}>
+      <ActivityIndicator color={observationColors.action} size="large" />
+      <Text accessibilityLiveRegion="polite" style={styles.muted}>
+        正在准备分析并保存今日记录
+      </Text>
+    </SafeAreaView>
   );
 }
 
@@ -543,135 +732,111 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    gap: spacing.lg,
-    backgroundColor: colors.background,
+    gap: observationSpacing.lg,
+    backgroundColor: observationColors.background,
   },
-  mutedText: { color: colors.textMuted, fontSize: 14 },
-  pageHeader: { gap: spacing.sm, marginBottom: spacing.xxl },
-  title: { color: colors.text, fontSize: 30, lineHeight: 38, fontWeight: '800' },
-  description: { color: colors.textMuted, fontSize: 16, lineHeight: 24 },
-  choicePanel: {
-    gap: spacing.md,
-    borderRadius: radii.lg,
-    backgroundColor: colors.lavender,
-    padding: spacing.xl,
-  },
-  choiceTitle: { color: colors.text, fontSize: 20, fontWeight: '700' },
-  choiceBody: { color: colors.text, fontSize: 15, lineHeight: 23 },
-  actions: { gap: spacing.sm, marginTop: spacing.xl },
-  field: { gap: spacing.sm },
-  label: { color: colors.text, fontSize: 15, fontWeight: '700' },
-  textInput: {
-    minHeight: 136,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: radii.md,
-    backgroundColor: colors.surface,
-    color: colors.text,
-    fontSize: 16,
-    lineHeight: 24,
-    padding: spacing.lg,
-  },
-  counter: { alignSelf: 'flex-end', color: colors.textMuted, fontSize: 12 },
-  preview: {
-    width: '100%',
-    aspectRatio: 0.8,
-    borderRadius: radii.lg,
-    marginBottom: spacing.xl,
-    backgroundColor: colors.lavender,
-  },
-  regionPreview: {
-    width: '100%',
-    height: 180,
-    borderRadius: radii.lg,
-    marginBottom: spacing.lg,
-    backgroundColor: colors.lavender,
-  },
-  confirmedList: { gap: spacing.lg },
-  confirmedRegion: {
-    gap: spacing.sm,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: radii.lg,
-    backgroundColor: colors.surface,
-    padding: spacing.lg,
-  },
-  confirmedRegionLabel: { color: colors.text, fontSize: 18, fontWeight: '800' },
-  confirmedBoundary: { color: colors.textMuted, fontSize: 13, lineHeight: 19 },
-  decisionActions: { gap: spacing.sm },
-  regionTextInput: {
-    minHeight: 92,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: radii.md,
-    backgroundColor: colors.background,
-    color: colors.text,
-    fontSize: 15,
-    lineHeight: 22,
-    padding: spacing.md,
-  },
-  cameraScreen: { flex: 1, backgroundColor: colors.text },
-  cameraOverlay: { flex: 1, justifyContent: 'space-between' },
-  cameraTopBar: {
-    minHeight: 60,
+  muted: { color: observationColors.textMuted, fontSize: 14 },
+  inlineLoading: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: spacing.lg,
-    backgroundColor: 'rgba(35, 32, 40, 0.62)',
+    gap: observationSpacing.sm,
+    marginTop: observationSpacing.lg,
   },
-  cancelButton: { width: 64, minHeight: 44, justifyContent: 'center' },
-  cancelText: { color: colors.warmWhite, fontSize: 16, fontWeight: '600' },
+  cancelLink: { minHeight: 44, alignItems: 'center', justifyContent: 'center', marginTop: 8 },
+  cancelLinkLabel: { color: observationColors.action, fontSize: 15, fontWeight: '600' },
+  pageHeader: { gap: observationSpacing.sm, marginBottom: observationSpacing.xl },
+  title: {
+    color: observationColors.text,
+    fontFamily: 'serif',
+    fontSize: 30,
+    lineHeight: 38,
+  },
+  description: { color: observationColors.textMuted, fontSize: 15, lineHeight: 23 },
+  cameraScreen: { flex: 1, backgroundColor: observationColors.forest },
+  systemCameraBackdrop: { backgroundColor: observationColors.forest },
+  cameraSafeArea: { flex: 1, justifyContent: 'space-between' },
+  cameraTopBar: {
+    minHeight: 58,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: observationSpacing.lg,
+    backgroundColor: observationColors.cameraTopBar,
+  },
+  topButton: { width: 64, minHeight: 44, justifyContent: 'center' },
+  topButtonLabel: { color: observationColors.scrimText, fontSize: 15, fontWeight: '600' },
   cameraTitle: {
     flex: 1,
-    color: colors.warmWhite,
+    color: observationColors.scrimText,
     fontSize: 16,
     fontWeight: '700',
     textAlign: 'center',
   },
-  guideArea: {
-    flex: 1,
+  cameraBottom: {
     alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: spacing.xxl,
+    gap: observationSpacing.md,
+    paddingHorizontal: observationSpacing.lg,
+    paddingBottom: observationSpacing.xl,
   },
-  faceGuide: {
-    width: '82%',
-    maxWidth: 330,
-    aspectRatio: 0.72,
-    borderWidth: 2,
-    borderColor: 'rgba(255, 253, 248, 0.92)',
-    borderRadius: radii.pill,
-  },
-  cameraControls: {
-    gap: spacing.lg,
-    paddingHorizontal: spacing.xl,
-    paddingTop: spacing.lg,
-    paddingBottom: spacing.xxl,
-    backgroundColor: 'rgba(35, 32, 40, 0.76)',
-  },
-  cameraInstruction: {
-    color: colors.warmWhite,
-    fontSize: 14,
-    lineHeight: 21,
+  cameraError: {
+    color: observationColors.error,
+    fontSize: 13,
+    lineHeight: 19,
     textAlign: 'center',
   },
-  cameraError: { color: '#FFD8D4', fontSize: 13, lineHeight: 19, textAlign: 'center' },
-  shutterOuter: {
-    width: 78,
-    height: 78,
-    alignSelf: 'center',
+  captureButton: {
+    minWidth: 156,
+    minHeight: 54,
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 4,
-    borderColor: colors.warmWhite,
-    borderRadius: 39,
+    borderRadius: observationRadii.md,
+    backgroundColor: observationColors.surface,
+    paddingHorizontal: observationSpacing.xl,
   },
-  shutterInner: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    backgroundColor: colors.warmWhite,
+  captureButtonLabel: { color: observationColors.forest, fontSize: 16, fontWeight: '800' },
+  qualityPhoto: {
+    width: '100%',
+    aspectRatio: 0.78,
+    borderRadius: observationRadii.camera,
+    backgroundColor: observationColors.forest,
   },
-  pressed: { opacity: 0.76 },
-  disabled: { opacity: 0.45 },
+  progressBar: {
+    minHeight: 52,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: observationSpacing.sm,
+    marginTop: observationSpacing.lg,
+    borderRadius: observationRadii.md,
+    backgroundColor: observationColors.surfaceMuted,
+    paddingHorizontal: observationSpacing.lg,
+  },
+  progressText: { color: observationColors.text, fontSize: 14, fontWeight: '600' },
+  regionChoices: { gap: observationSpacing.md, marginTop: observationSpacing.lg },
+  directionNote: { color: observationColors.textMuted, fontSize: 12, lineHeight: 18 },
+  eventList: { gap: observationSpacing.lg },
+  eventSection: {
+    gap: observationSpacing.md,
+    borderWidth: 1,
+    borderColor: observationColors.border,
+    borderRadius: observationRadii.lg,
+    backgroundColor: observationColors.surface,
+    padding: observationSpacing.lg,
+  },
+  eventTitle: { color: observationColors.text, fontSize: 18, fontWeight: '700' },
+  decisionRow: { gap: observationSpacing.sm },
+  decision: {
+    minHeight: 48,
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: observationColors.border,
+    borderRadius: observationRadii.sm,
+    paddingHorizontal: observationSpacing.md,
+  },
+  decisionSelected: {
+    borderColor: observationColors.sage,
+    backgroundColor: observationColors.sageSoft,
+  },
+  decisionLabel: { color: observationColors.text, fontSize: 14, fontWeight: '600' },
+  pressed: { opacity: 0.78 },
+  disabled: { opacity: 0.44 },
 });

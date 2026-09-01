@@ -1,4 +1,3 @@
-import { Image } from 'expo-image';
 import {
   router,
   Stack,
@@ -17,24 +16,35 @@ import {
   View,
 } from 'react-native';
 
+import { AnalysisScanner } from '@/components/analysis-scanner';
 import { AppButton } from '@/components/app-button';
 import { AppScreen } from '@/components/app-screen';
 import { InlineNotice } from '@/components/inline-notice';
 import { LifeContextSelector } from '@/components/life-context-selector';
-import { colors, radii, spacing } from '@/constants/theme';
+import { ObservationActionBar } from '@/components/observation-action-bar';
+import { ObservationResult } from '@/components/observation-result';
+import {
+  observationColors,
+  observationRadii,
+  observationSpacing,
+} from '@/constants/observation-theme';
 import { ApiError } from '@/lib/api';
+import { userFacingError } from '@/lib/errors';
 import { lifeContextLabel, updateObservationLifeContexts } from '@/lib/life-context';
 import type { LifeContextId } from '@/lib/life-context';
-import { getObservation, updateObservationNote } from '@/lib/observation-api';
+import {
+  getObservation,
+  retryObservationTarget,
+  updateObservationNote,
+} from '@/lib/observation-api';
 import type { Observation } from '@/lib/observation-api';
 import {
   createObservationGenerationGuard,
   nextObservationPollDelay,
   presentObservation,
-  shouldPollObservation,
+  shouldPollObservationTargets,
 } from '@/lib/observation-flow';
 import { observationDetailBackTarget } from '@/lib/observation-navigation';
-import { userFacingError } from '@/lib/errors';
 import { regionById } from '@/lib/region-catalog';
 import { useSession } from '@/providers/session-provider';
 
@@ -64,6 +74,7 @@ export default function ObservationDetailScreen() {
   const [error, setError] = useState<string | null>(null);
   const [notes, setNotes] = useState<Record<number, string>>({});
   const [savingTargetId, setSavingTargetId] = useState<number | null>(null);
+  const [retryingTargetId, setRetryingTargetId] = useState<number | null>(null);
   const [selectedContexts, setSelectedContexts] = useState<LifeContextId[]>([]);
   const [savingContexts, setSavingContexts] = useState(false);
   const [reloadKey, setReloadKey] = useState(0);
@@ -77,23 +88,19 @@ export default function ObservationDetailScreen() {
         setError('观察记录编号无效。');
         return () => guard.invalidate();
       }
-
       const generation = guard.begin();
       let timer: ReturnType<typeof setTimeout> | null = null;
       setLoading(true);
       setError(null);
-
       const load = async (attempt: number) => {
         try {
           const nextObservation = await getObservation(request, observationId);
-          if (!guard.isCurrent(generation)) {
-            return;
-          }
+          if (!guard.isCurrent(generation)) return;
           setObservation(nextObservation);
           setSelectedContexts(nextObservation.life_context_ids);
           setLoading(false);
           setError(null);
-          if (nextObservation.targets.some((target) => shouldPollObservation(target.status))) {
+          if (shouldPollObservationTargets(nextObservation.targets)) {
             timer = setTimeout(
               () => void load(attempt + 1),
               nextObservationPollDelay(attempt),
@@ -106,21 +113,16 @@ export default function ObservationDetailScreen() {
           }
         }
       };
-
       void load(0);
       return () => {
         guard.invalidate();
-        if (timer) {
-          clearTimeout(timer);
-        }
+        if (timer) clearTimeout(timer);
       };
     }, [guard, observationId, reloadKey, request]),
   );
 
   async function saveNote(targetId: number) {
-    if (!observationId || savingTargetId !== null) {
-      return;
-    }
+    if (!observationId || savingTargetId !== null) return;
     const note = notes[targetId] ?? '';
     if (!note.trim()) {
       setError('请写下此刻看到的变化。');
@@ -162,18 +164,62 @@ export default function ObservationDetailScreen() {
     }
   }
 
+  async function retryTarget(targetId: number) {
+    if (!observationId || retryingTargetId !== null) return;
+    setRetryingTargetId(targetId);
+    setError(null);
+    try {
+      const updated = await retryObservationTarget(
+        request,
+        observationId,
+        targetId,
+      );
+      setObservation(updated);
+      setReloadKey((key) => key + 1);
+    } catch (retryError) {
+      setError(userFacingError(retryError));
+    } finally {
+      setRetryingTargetId(null);
+    }
+  }
+
+  const analyzing = observation ? shouldPollObservationTargets(observation.targets) : false;
+  const completedPhotoResults = observation?.targets.some(
+    (target) =>
+      target.status === 'completed' &&
+      target.result_source === 'photo_analysis' &&
+      target.facts,
+  ) ?? false;
+  const showResultActions = Boolean(observation && !analyzing && completedPhotoResults);
+  const complete = () => {
+    if (backTarget === 'native') router.back();
+    else router.replace(backTarget);
+  };
+
   return (
-    <AppScreen safeAreaEdges={['left', 'right', 'bottom']}>
+    <AppScreen
+      backgroundColor={observationColors.background}
+      footer={
+        showResultActions ? (
+          <ObservationActionBar
+            onPrimaryPress={complete}
+            onSecondaryPress={() => router.push('/observation/new')}
+            primaryLabel="完成"
+            secondaryLabel="重新拍摄"
+          />
+        ) : undefined
+      }
+      safeAreaEdges={['left', 'right', 'bottom']}>
       <Stack.Screen
         options={{
-          animation: 'default',
+          animation: 'fade_from_bottom',
           gestureEnabled: true,
           headerBackButtonDisplayMode: 'minimal',
           headerShadowVisible: false,
           headerShown: true,
-          headerStyle: { backgroundColor: colors.background },
-          headerTintColor: colors.irisStrong,
-          title: '观察详情',
+          headerStyle: { backgroundColor: observationColors.background },
+          headerTintColor: observationColors.action,
+          title: analyzing ? 'AI 分析中' : '分析结果',
           ...(backTarget === 'native'
             ? {}
             : {
@@ -185,13 +231,9 @@ export default function ObservationDetailScreen() {
                     onPress={() => router.replace(backTarget)}
                     style={styles.fallbackBack}>
                     <SymbolView
-                      name={{
-                        ios: 'chevron.left',
-                        android: 'arrow_back',
-                        web: 'arrow_back',
-                      }}
+                      name={{ ios: 'chevron.left', android: 'arrow_back', web: 'arrow_back' }}
                       size={23}
-                      tintColor={colors.irisStrong}
+                      tintColor={observationColors.action}
                       weight="semibold"
                     />
                   </Pressable>
@@ -201,7 +243,7 @@ export default function ObservationDetailScreen() {
       />
       {loading && !observation ? (
         <View style={styles.loading}>
-          <ActivityIndicator color={colors.primary} />
+          <ActivityIndicator color={observationColors.action} />
           <Text style={styles.muted}>正在读取最新状态</Text>
         </View>
       ) : null}
@@ -216,109 +258,91 @@ export default function ObservationDetailScreen() {
       {observation ? (
         <>
           <Text style={styles.time}>{recordedAtLabel(observation.recorded_at)}</Text>
-          {observation.photo ? (
-            <Image
-              accessibilityLabel="这次观察保存的原始照片"
-              contentFit="cover"
-              source={{ uri: observation.photo.url }}
-              style={styles.photo}
-            />
+          {analyzing && observation.photo ? (
+            <>
+              <View style={styles.headerCopy}>
+                <Text accessibilityRole="header" style={styles.title}>正在分析今天的照片</Text>
+                <Text style={styles.body}>扫描阶段来自各检测区域的真实任务状态，不显示虚假百分比。</Text>
+              </View>
+              <AnalysisScanner photo={observation.photo} targets={observation.targets} />
+            </>
           ) : null}
-          <View style={styles.targets}>
-            {observation.targets.map((target) => {
-              const presentation = presentObservation(observation, target);
-              const targetLabel =
-                target.scope_type === 'region' && target.region_id
+
+          {!analyzing && completedPhotoResults ? (
+            <ObservationResult observation={observation} />
+          ) : null}
+
+          {!analyzing ? (
+            <View style={styles.fallbacks}>
+              {observation.targets.map((target) => {
+                const presentation = presentObservation(observation, target);
+                const targetLabel = target.region_id
                   ? regionById(target.region_id).label
                   : '历史全脸观察';
-              const note = notes[target.target_id] ?? '';
-              return (
-                <View key={target.target_id} style={styles.targetCard}>
-                  <Text style={styles.targetLabel}>{targetLabel}</Text>
-                  {presentation.kind === 'queued' || presentation.kind === 'processing' ? (
-                    <View style={styles.statusPanel}>
-                      <Text style={styles.statusTitle}>{presentation.title}</Text>
-                      <Text style={styles.statusBody}>{presentation.body}</Text>
+                const note = notes[target.target_id] ?? '';
+                if (presentation.kind === 'user') {
+                  return (
+                    <View key={target.target_id} style={styles.manualResult}>
+                      <Text style={styles.fallbackTitle}>{targetLabel} · 你的观察</Text>
+                      <Text style={styles.manualText}>{presentation.note}</Text>
                     </View>
-                  ) : null}
-                  {presentation.kind === 'photo' ? (
-                    <View style={styles.resultSection}>
-                      <Text style={styles.resultTitle}>{presentation.title}</Text>
-                      <Text style={styles.source}>{presentation.sourceLabel}</Text>
-                      <View style={styles.factPanel}>
-                        {presentation.sections.map((section) => (
-                          <View key={section.label} style={styles.factRow}>
-                            <Text style={styles.factLabel}>{section.label}</Text>
-                            <Text style={styles.factValue}>{section.value}</Text>
-                          </View>
-                        ))}
-                      </View>
-                    </View>
-                  ) : null}
-                  {presentation.kind === 'user' ? (
-                    <View style={styles.resultSection}>
-                      <Text style={styles.resultTitle}>{presentation.title}</Text>
-                      <Text style={styles.source}>{presentation.sourceLabel}</Text>
-                      <Text style={styles.userNote}>{presentation.note}</Text>
-                    </View>
-                  ) : null}
-                  {presentation.kind === 'needs_input' ? (
-                    <View style={styles.resultSection}>
-                      <View style={styles.statusPanel}>
-                        <Text style={styles.statusTitle}>{presentation.title}</Text>
-                        <Text style={styles.statusBody}>{presentation.body}</Text>
-                      </View>
-                      <View style={styles.field}>
-                        <Text style={styles.fieldLabel}>补充{targetLabel}的观察</Text>
-                        <TextInput
-                          accessibilityLabel={`补充${targetLabel}观察文字`}
-                          maxLength={500}
-                          multiline
-                          onChangeText={(value) => {
-                            setNotes((current) => ({
-                              ...current,
-                              [target.target_id]: value,
-                            }));
-                            setError(null);
-                          }}
-                          placeholder="只写此刻真实看到的变化"
-                          placeholderTextColor={colors.textMuted}
-                          style={styles.textInput}
-                          textAlignVertical="top"
-                          value={note}
-                        />
-                        <Text style={styles.counter}>{note.length}/500</Text>
-                      </View>
+                  );
+                }
+                if (presentation.kind !== 'needs_input') return null;
+                return (
+                  <View key={target.target_id} style={styles.needsInput}>
+                    <Text style={styles.fallbackTitle}>{targetLabel}暂时无法完成分析</Text>
+                    <Text style={styles.body}>其他已完成区域仍会保留。你可以补充自己的真实观察。</Text>
+                    {observation.photo ? (
                       <AppButton
-                        label="保存我的观察"
-                        loading={savingTargetId === target.target_id}
-                        onPress={() => void saveNote(target.target_id)}
+                        label="重试 AI 分析"
+                        loading={retryingTargetId === target.target_id}
+                        variant="secondary"
+                        onPress={() => void retryTarget(target.target_id)}
                       />
-                    </View>
-                  ) : null}
-                </View>
-              );
-            })}
-          </View>
-          {observation.targets.every((target) => target.status === 'completed') ? (
+                    ) : null}
+                    <TextInput
+                      accessibilityLabel={`补充${targetLabel}观察文字`}
+                      maxLength={500}
+                      multiline
+                      onChangeText={(value) => {
+                        setNotes((current) => ({ ...current, [target.target_id]: value }));
+                        setError(null);
+                      }}
+                      placeholder="只写此刻真实看到的变化"
+                      placeholderTextColor={observationColors.textMuted}
+                      style={styles.textInput}
+                      textAlignVertical="top"
+                      value={note}
+                    />
+                    <Text style={styles.counter}>{note.length}/500</Text>
+                    <AppButton
+                      label="保存我的观察"
+                      loading={savingTargetId === target.target_id}
+                      variant="secondary"
+                      onPress={() => void saveNote(target.target_id)}
+                    />
+                  </View>
+                );
+              })}
+            </View>
+          ) : null}
+
+          {!analyzing && observation.targets.every((target) => target.status === 'completed') ? (
             <View style={styles.contextSection}>
               <Text style={styles.contextTitle}>当时的生活背景</Text>
-              <Text style={styles.contextBody}>
-                只保存原始背景，不进入 AI、趋势或关联判断。
-              </Text>
+              <Text style={styles.body}>只保存原始背景，不进入 AI、趋势或关联判断。</Text>
               {observation.life_context_completed_at ? (
                 observation.life_context_ids.length ? (
                   <View style={styles.savedContexts}>
                     {observation.life_context_ids.map((contextId) => (
                       <View key={contextId} style={styles.savedContext}>
-                        <Text style={styles.savedContextLabel}>
-                          {lifeContextLabel(contextId)}
-                        </Text>
+                        <Text style={styles.savedContextLabel}>{lifeContextLabel(contextId)}</Text>
                       </View>
                     ))}
                   </View>
                 ) : (
-                  <Text style={styles.contextBody}>这次已跳过生活背景贴纸。</Text>
+                  <Text style={styles.body}>这次已跳过生活背景贴纸。</Text>
                 )
               ) : (
                 <>
@@ -330,6 +354,7 @@ export default function ObservationDetailScreen() {
                   <AppButton
                     label="保存生活背景"
                     loading={savingContexts}
+                    variant="secondary"
                     onPress={() => void saveLifeContexts(selectedContexts)}
                   />
                   <AppButton
@@ -349,89 +374,63 @@ export default function ObservationDetailScreen() {
 }
 
 const styles = StyleSheet.create({
-  fallbackBack: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    minHeight: 44,
-    minWidth: 44,
+  fallbackBack: { minWidth: 44, minHeight: 44, alignItems: 'center', justifyContent: 'center' },
+  loading: { alignItems: 'center', gap: observationSpacing.md, paddingVertical: 32 },
+  muted: { color: observationColors.textMuted, fontSize: 14 },
+  time: { color: observationColors.textMuted, fontSize: 12, marginBottom: observationSpacing.lg },
+  headerCopy: { gap: observationSpacing.sm, marginBottom: observationSpacing.xl },
+  title: {
+    color: observationColors.text,
+    fontFamily: 'serif',
+    fontSize: 28,
+    lineHeight: 36,
   },
-  loading: { alignItems: 'center', gap: spacing.md, paddingVertical: spacing.xxl },
-  muted: { color: colors.textMuted, fontSize: 14 },
-  time: { color: colors.textMuted, fontSize: 13, marginBottom: spacing.md },
-  photo: {
-    width: '100%',
-    aspectRatio: 0.8,
-    borderRadius: radii.lg,
-    backgroundColor: colors.lavender,
-    marginBottom: spacing.xl,
-  },
-  statusPanel: {
-    gap: spacing.sm,
-    borderRadius: radii.lg,
-    backgroundColor: colors.lavender,
-    padding: spacing.xl,
-  },
-  statusTitle: { color: colors.irisStrong, fontSize: 20, fontWeight: '700' },
-  statusBody: { color: colors.text, fontSize: 15, lineHeight: 23 },
-  targets: { gap: spacing.xl },
-  targetCard: {
-    gap: spacing.md,
+  body: { color: observationColors.textMuted, fontSize: 14, lineHeight: 21 },
+  fallbacks: { gap: observationSpacing.lg, marginTop: observationSpacing.xxl },
+  needsInput: {
+    gap: observationSpacing.md,
     borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: radii.lg,
-    backgroundColor: colors.surface,
-    padding: spacing.lg,
+    borderColor: observationColors.border,
+    borderRadius: observationRadii.lg,
+    backgroundColor: observationColors.surface,
+    padding: observationSpacing.lg,
   },
-  targetLabel: { color: colors.irisStrong, fontSize: 19, fontWeight: '800' },
-  resultSection: { gap: spacing.md },
-  resultTitle: { color: colors.text, fontSize: 22, fontWeight: '800' },
-  source: { color: colors.irisStrong, fontSize: 13, fontWeight: '600' },
-  factPanel: {
-    borderRadius: radii.lg,
-    backgroundColor: colors.surfaceMuted,
-    padding: spacing.xl,
-    gap: spacing.lg,
-  },
-  factRow: { gap: spacing.xs },
-  factLabel: { color: colors.textMuted, fontSize: 12, fontWeight: '700' },
-  factValue: { color: colors.text, fontSize: 15, lineHeight: 22 },
-  userNote: {
-    color: colors.text,
-    fontSize: 17,
-    lineHeight: 26,
-    borderRadius: radii.lg,
-    backgroundColor: colors.sage,
-    padding: spacing.xl,
-  },
-  field: { gap: spacing.sm, marginTop: spacing.md },
-  fieldLabel: { color: colors.text, fontSize: 15, fontWeight: '700' },
+  fallbackTitle: { color: observationColors.text, fontSize: 17, fontWeight: '700' },
   textInput: {
-    minHeight: 132,
+    minHeight: 112,
     borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: radii.md,
-    backgroundColor: colors.surface,
-    color: colors.text,
+    borderColor: observationColors.border,
+    borderRadius: observationRadii.md,
+    backgroundColor: observationColors.background,
+    color: observationColors.text,
+    fontSize: 15,
+    lineHeight: 22,
+    padding: observationSpacing.md,
+  },
+  counter: { alignSelf: 'flex-end', color: observationColors.textMuted, fontSize: 12 },
+  manualResult: { gap: observationSpacing.sm },
+  manualText: {
+    color: observationColors.text,
     fontSize: 16,
     lineHeight: 24,
-    padding: spacing.lg,
+    borderRadius: observationRadii.md,
+    backgroundColor: observationColors.surfaceMuted,
+    padding: observationSpacing.lg,
   },
-  counter: { alignSelf: 'flex-end', color: colors.textMuted, fontSize: 12 },
   contextSection: {
-    gap: spacing.md,
-    marginTop: spacing.xxl,
+    gap: observationSpacing.md,
+    marginTop: observationSpacing.xxl,
     borderTopWidth: 1,
-    borderTopColor: colors.border,
-    paddingTop: spacing.xl,
+    borderTopColor: observationColors.border,
+    paddingTop: observationSpacing.xl,
   },
-  contextTitle: { color: colors.text, fontSize: 20, fontWeight: '800' },
-  contextBody: { color: colors.textMuted, fontSize: 14, lineHeight: 21 },
-  savedContexts: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
+  contextTitle: { color: observationColors.text, fontSize: 18, fontWeight: '700' },
+  savedContexts: { flexDirection: 'row', flexWrap: 'wrap', gap: observationSpacing.sm },
   savedContext: {
-    borderRadius: radii.pill,
-    backgroundColor: colors.primarySoft,
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.sm,
+    borderRadius: observationRadii.sm,
+    backgroundColor: observationColors.sageSoft,
+    paddingHorizontal: observationSpacing.md,
+    paddingVertical: observationSpacing.sm,
   },
-  savedContextLabel: { color: colors.irisStrong, fontSize: 14, fontWeight: '700' },
+  savedContextLabel: { color: observationColors.forest, fontSize: 13, fontWeight: '700' },
 });

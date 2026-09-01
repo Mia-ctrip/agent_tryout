@@ -5,17 +5,21 @@ from typing import Final
 from app.domain.region_catalog import REGION_DEFINITIONS, RegionId
 
 
-REGION_OBSERVATION_PROMPT_VERSION: Final = "region-observation-1.0.0"
+REGION_OBSERVATION_PROMPT_VERSION: Final = "region-observation-1.1.0"
 REGION_OBSERVATION_SCHEMA_VERSION: Final = "region-observation-1.0.0"
 REGION_OBSERVATION_RETRY_PROMPT: Final = (
+    "最高优先级：只关注已选区域内的皮肤，以及痤疮记录相关的可见皮肤表现。"
     "上一个结果未通过区域或展示安全校验。请重新观察原图，只输出已指定 region_id 的中性可见事实；"
     "不得提及未选区域、全脸、医学分类、评分、严重度、治疗、产品或因果，并返回完整七字段 JSON。"
+    "不得分析唇色、唇纹、唇毛、胡须、嘴唇疾病、五官形态或外貌；不要输出任何非皮肤或非痤疮记录相关判断。"
 )
 
 
 def build_region_system_prompt(region_id: RegionId) -> str:
     definition = REGION_DEFINITIONS[region_id]
-    return f"""你负责从原始面部照片中只整理一个已选固定区域的可见外观事实。
+    return f"""最高优先级：只关注所选区域内的皮肤，以及痤疮记录相关的可见皮肤表现；不要判断任何其他内容。
+
+你负责从原始面部照片中只整理一个已选固定区域的可见外观事实。
 
 固定边界：
 - region_id: {region_id}
@@ -38,7 +42,11 @@ def build_region_system_prompt(region_id: RegionId) -> str:
 只能描述照片在所选区域直接支持的颜色、表面、形态、分布和范围。不得给出疾病或皮损分类、
 诊断、严重度、评分、治疗、用药、产品建议、疗效或因果。unknowns 只写光线、角度、
 分辨率、遮挡、触感或持续时间等证据边界。没有可靠内容时写“无法判断”，不要补写照片外信息。
-输出前逐字段检查区域边界与七字段 JSON；不要解释检查过程。"""
+即使所选区域是口周，也只观察嘴唇外缘周围的皮肤和法令纹区域内的皮肤；不得分析或描述唇色、
+唇纹、唇毛、胡须、嘴唇形态、唇炎等嘴唇疾病，也不得评价眼睛、鼻形、嘴型、脸型或其他五官与外貌。
+
+输出前逐字段检查区域边界与七字段 JSON；不要解释检查过程。
+再次确认：只输出皮肤及痤疮记录相关的中性可见事实，不要输出任何非皮肤或非痤疮记录相关判断。"""
 
 
 def build_region_user_prompt(region_id: RegionId) -> str:

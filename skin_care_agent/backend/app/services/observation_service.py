@@ -23,6 +23,7 @@ from app.schemas.observation import (
     ObservationTargetOut,
     RegionTargetCreate,
 )
+from app.services import observation_quality_service
 from app.services.storage_service import get_storage
 from app.services.region_event_service import (
     activate_valid_target_event,
@@ -191,6 +192,24 @@ def create_observation(
     try:
         if photo_input is not None:
             width, height, ext = validate_photo_input(photo_input)
+            quality = observation_quality_service.assess_observation_photo(
+                photo_input.data
+            )
+            if quality.status == "failed":
+                raise HTTPException(
+                    status_code=422,
+                    detail={
+                        "message": "photo quality check failed",
+                        "primary_issue": (
+                            quality.primary_issue.model_dump(mode="json")
+                            if quality.primary_issue is not None
+                            else None
+                        ),
+                        "issues": [
+                            issue.model_dump(mode="json") for issue in quality.issues
+                        ],
+                    },
+                )
             storage_key = _build_storage_key(user_id, ext, now)
             storage.put(storage_key, photo_input.data, photo_input.mime_type)
             photo = Photo(
@@ -207,8 +226,8 @@ def create_observation(
                 taken_at=(
                     normalize_utc(photo_input.taken_at) if photo_input.taken_at is not None else None
                 ),
-                quality_status=None,
-                quality_meta=None,
+                quality_status=quality.status,
+                quality_meta=quality.model_dump(mode="json"),
             )
             db.add(photo)
             db.flush()
@@ -299,6 +318,8 @@ def _build_observation_out(
             width=photo.width,
             height=photo.height,
             taken_at=photo.taken_at,
+            quality_status=photo.quality_status,
+            quality_meta=photo.quality_meta,
             url=signed.url,
             url_expires_at=signed.expires_at,
         )
@@ -373,14 +394,23 @@ def list_observations(
     limit: int,
     before_id: int | None,
 ) -> list[ObservationOut]:
-    statement = _bundle_statement(user_id)
+    record_ids = select(ObservationRecord.id).where(
+        ObservationRecord.user_id == user_id,
+        ObservationRecord.deleted_at.is_(None),
+    )
     if before_id is not None:
-        statement = statement.where(ObservationRecord.id < before_id)
+        record_ids = record_ids.where(ObservationRecord.id < before_id)
+    record_ids = record_ids.order_by(
+        ObservationRecord.recorded_at.desc(),
+        ObservationRecord.id.desc(),
+    ).limit(max(1, min(limit, 50)))
+    statement = _bundle_statement(user_id).where(ObservationRecord.id.in_(record_ids))
     rows = db.execute(
         statement.order_by(
             ObservationRecord.recorded_at.desc(),
             ObservationRecord.id.desc(),
-        ).limit(max(1, min(limit, 50)))
+            ObservationTarget.id,
+        )
     ).all()
     grouped: dict[int, tuple[ObservationRecord, list[ObservationTarget], Photo | None]] = {}
     for record, target, photo in rows:
@@ -455,6 +485,38 @@ def replace_failed_observation_note(
     db.refresh(target)
     activate_valid_target_event(db, target.id)
     return _build_observation_out(db, record, targets, photo)
+
+
+def retry_failed_observation_target(
+    db: Session,
+    *,
+    user_id: int,
+    observation_id: int,
+    target_id: int,
+) -> tuple[ObservationRecord, list[ObservationTarget], bool]:
+    record, targets, photo = get_observation(
+        db,
+        user_id=user_id,
+        observation_id=observation_id,
+    )
+    target = next((item for item in targets if item.id == target_id), None)
+    if target is None:
+        raise HTTPException(status_code=404, detail="observation target not found")
+    if target.status in {"queued", "processing"}:
+        return record, targets, False
+    if target.status != "needs_input" or photo is None:
+        raise HTTPException(status_code=409, detail="observation target cannot be retried")
+    target.status = "queued"
+    target.result_source = None
+    target.facts = None
+    target.completed_at = None
+    target.processing_started_at = None
+    target.provider = None
+    target.model = None
+    target.failure_code = None
+    db.commit()
+    db.refresh(target)
+    return record, targets, True
 
 
 def load_life_context_ids(db: Session, observation_id: int) -> list[LifeContextId]:

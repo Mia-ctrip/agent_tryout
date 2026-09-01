@@ -242,6 +242,31 @@ export async function listProductUses(
   return request<ProductUse[]>(`/product-uses?${params.toString()}`);
 }
 
+export async function listAllProductUses(
+  request: AuthenticatedRequest,
+): Promise<ProductUse[]> {
+  const pageSize = 100;
+  const uses: ProductUse[] = [];
+  const seenIds = new Set<number>();
+  let beforeId: number | undefined;
+
+  while (true) {
+    const page = await listProductUses(request, { limit: pageSize, beforeId });
+    for (const use of page) {
+      if (!seenIds.has(use.product_use_id)) {
+        seenIds.add(use.product_use_id);
+        uses.push(use);
+      }
+    }
+    if (page.length < pageSize) break;
+    const nextBeforeId = Math.min(...page.map(({ product_use_id }) => product_use_id));
+    if (!Number.isSafeInteger(nextBeforeId) || nextBeforeId === beforeId) break;
+    beforeId = nextBeforeId;
+  }
+
+  return uses;
+}
+
 export async function getProductUse(
   request: AuthenticatedRequest,
   useId: number,

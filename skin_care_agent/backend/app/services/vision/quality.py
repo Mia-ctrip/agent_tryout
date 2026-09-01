@@ -12,6 +12,7 @@ from dataclasses import dataclass
 from functools import lru_cache
 from math import atan2, degrees
 from pathlib import Path
+from collections.abc import Sequence
 from typing import Any, Literal
 
 import cv2
@@ -30,6 +31,12 @@ MIN_FACE_HEIGHT_RATIO = 0.35
 MAX_ROLL_DEGREES = 15.0
 FRONT_MAX_YAW_PROXY = 0.30
 SIDE_MIN_YAW_PROXY = 0.30
+MAX_FACE_WIDTH_RATIO = 0.82
+MAX_FACE_HEIGHT_RATIO = 0.90
+MAX_FACE_CENTER_X_OFFSET = 0.14
+MIN_FACE_CENTER_Y = 0.34
+MAX_FACE_CENTER_Y = 0.68
+OCCLUSION_KEY_LANDMARKS = (33, 263, 1, 13, 14, 152)
 
 QualityStatus = Literal["passed", "failed"]
 
@@ -42,8 +49,11 @@ QUALITY_ERROR_MESSAGES = {
     "multiple_faces": "画面中只能出现一张脸。",
     "face_cut_off": "面部被裁切，请确保额头、两颊和下巴都在画面内。",
     "face_too_small": "面部距离镜头太远，请靠近后重新拍摄。",
+    "face_too_large": "面部距离镜头太近，请稍微向后移动。",
+    "face_off_center": "面部没有居中，请移到参考框中央。",
     "head_tilted": "头部倾斜过大，请保持手机与头部水平。",
     "view_angle_mismatch": "拍摄角度不符合当前视角提示，请按参考姿势重拍。",
+    "face_occluded": "面部关键区域可能被遮挡，请整理头发或移开遮挡物后重拍。",
 }
 QUALITY_WARNING_MESSAGES = {
     "dynamic_range_extreme": "画面明暗反差较大，建议使用更均匀的光线。",
@@ -61,6 +71,7 @@ class PhotoQualityResult:
     errors: tuple[str, ...]
     warnings: tuple[str, ...]
     metrics: dict[str, Any]
+    landmarks: tuple[tuple[float, float, float], ...] | None = None
 
     @property
     def passed(self) -> bool:
@@ -196,6 +207,38 @@ def _view_error(view_type: str | None, yaw_proxy: float) -> str | None:
     return None
 
 
+def _landmark_confidence(point: Any) -> float | None:
+    values = [
+        float(value)
+        for value in (
+            getattr(point, "visibility", None),
+            getattr(point, "presence", None),
+        )
+        if value is not None
+    ]
+    return min(values) if values else None
+
+
+def key_regions_are_occluded(face: Sequence[Any]) -> bool:
+    """仅在模型确实提供置信度时保守报告关键区域遮挡。"""
+    all_confidences = [
+        confidence
+        for point in face
+        if (confidence := _landmark_confidence(point)) is not None
+    ]
+    if not all_confidences or max(all_confidences) < 0.5:
+        return False
+    key_confidences = [
+        confidence
+        for index in OCCLUSION_KEY_LANDMARKS
+        if index < len(face)
+        and (confidence := _landmark_confidence(face[index])) is not None
+    ]
+    return len(key_confidences) >= 4 and sum(
+        confidence < 0.35 for confidence in key_confidences
+    ) >= 3
+
+
 def assess_photo_quality(
     raw_bytes: bytes,
     *,
@@ -208,6 +251,7 @@ def assess_photo_quality(
     metrics = _image_metrics(rgb)
     errors: list[str] = []
     warnings: list[str] = []
+    landmarks: tuple[tuple[float, float, float], ...] | None = None
 
     if metrics["min_edge"] < MIN_IMAGE_EDGE_PX:
         errors.append("image_too_small")
@@ -230,6 +274,9 @@ def assess_photo_quality(
         errors.append("multiple_faces")
     else:
         face = result.face_landmarks[0]
+        landmarks = tuple(
+            (float(point.x), float(point.y), float(point.z)) for point in face
+        )
         face_box = _face_box(face)
         pose = _pose_metrics(face)
         metrics["face_box"] = face_box
@@ -245,11 +292,24 @@ def assess_photo_quality(
             errors.append("face_too_small")
         if face_box["height"] < MIN_FACE_HEIGHT_RATIO:
             errors.append("face_too_small")
+        if (
+            face_box["width"] > MAX_FACE_WIDTH_RATIO
+            or face_box["height"] > MAX_FACE_HEIGHT_RATIO
+        ):
+            errors.append("face_too_large")
+        if (
+            abs(face_box["center_x"] - 0.5) > MAX_FACE_CENTER_X_OFFSET
+            or face_box["center_y"] < MIN_FACE_CENTER_Y
+            or face_box["center_y"] > MAX_FACE_CENTER_Y
+        ):
+            errors.append("face_off_center")
         if abs(pose["roll_degrees"]) > MAX_ROLL_DEGREES:
             errors.append("head_tilted")
         view_error = _view_error(view_type, pose["yaw_proxy"])
         if view_error:
             errors.append(view_error)
+        if key_regions_are_occluded(face):
+            errors.append("face_occluded")
 
     if metrics["p05_luma"] < 10 or metrics["p95_luma"] > 250:
         warnings.append("dynamic_range_extreme")
@@ -260,4 +320,5 @@ def assess_photo_quality(
         errors=tuple(dict.fromkeys(errors)),
         warnings=tuple(dict.fromkeys(warnings)),
         metrics=metrics,
+        landmarks=landmarks,
     )

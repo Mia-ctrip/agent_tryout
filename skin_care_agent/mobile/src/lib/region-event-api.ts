@@ -31,6 +31,7 @@ export type RegionEvent = {
 export type RegionEventTimepoint = {
   observation_id: number;
   recorded_at: string;
+  recorded_timezone_offset_minutes: number | null;
   recorded_local_date: string;
   life_context_ids: LifeContextId[];
   life_context_completed_at: string | null;

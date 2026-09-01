@@ -9,21 +9,26 @@ from PIL import Image
 
 from app.config import get_settings
 from app.main import app
+from app.schemas.observation_quality import ObservationQualityOut
 from app.services.ai_gateway.gateway import AIGateway
 from app.services.ai_gateway.providers.base import Provider
 from app.services.ai_gateway.routes import ModelBinding, ModelRoute
 from app.services.ai_gateway.types import Capability, UnifiedRequest, UnifiedResponse
+from app.services.observation_quality_service import build_region_geometries
 
 
 def _jpeg() -> bytes:
     output = io.BytesIO()
-    Image.new("RGB", (16, 16), color=(148, 132, 126)).save(output, format="JPEG")
+    Image.new("RGB", (720, 960), color=(148, 132, 126)).save(output, format="JPEG")
     return output.getvalue()
 
 
 class _RegionalClosureProvider(Provider):
     name = "local_closure"
     capabilities = {Capability.TEXT, Capability.VISION, Capability.JSON_MODE}
+
+    def __init__(self) -> None:
+        self.chin_attempts = 0
 
     async def invoke(
         self,
@@ -34,7 +39,9 @@ class _RegionalClosureProvider(Provider):
         del timeout_s
         system = req.messages[0].content
         if "region_id: chin" in system:
-            return UnifiedResponse(text="not-json", provider=self.name, model=model)
+            self.chin_attempts += 1
+            if self.chin_attempts == 1:
+                return UnifiedResponse(text="not-json", provider=self.name, model=model)
         return UnifiedResponse(
             text=json.dumps(req.extra["mock_json"], ensure_ascii=False),
             provider=self.name,
@@ -63,6 +70,17 @@ def test_real_http_region_flow_recovers_independent_states_and_events(
         },
     )
     monkeypatch.setattr("app.services.region_analysis_service.get_gateway", lambda: gateway)
+    quality = ObservationQualityOut(
+        status="passed",
+        primary_issue=None,
+        issues=[],
+        metrics={"face_count": 1, "width": 720, "height": 960},
+        regions=build_region_geometries([(0.5, 0.5, 0.0)] * 478),
+    )
+    monkeypatch.setattr(
+        "app.services.observation_quality_service.assess_observation_photo",
+        lambda _data: quality,
+    )
 
     suffix = uuid4().hex
     email = f"closure-{suffix}@example.test"
@@ -136,16 +154,15 @@ def test_real_http_region_flow_recovers_independent_states_and_events(
         assert before_note.status_code == 200
         assert [event["region_id"] for event in before_note.json()] == ["left_face"]
 
-        noted = client.put(
+        retried = client.post(
             f"/api/v1/observations/{observation_id}/targets/"
-            f"{targets['chin']['target_id']}/note",
+            f"{targets['chin']['target_id']}/retry",
             headers=headers,
-            json={"user_note": "下巴有轻微颗粒感"},
         )
-        assert noted.status_code == 200
-        noted_targets = {row["region_id"]: row for row in noted.json()["targets"]}
-        assert noted_targets["left_face"]["result_source"] == "photo_analysis"
-        assert noted_targets["chin"]["result_source"] == "user_record"
+        assert retried.status_code == 200
+        retried_targets = {row["region_id"]: row for row in retried.json()["targets"]}
+        assert retried_targets["left_face"]["result_source"] == "photo_analysis"
+        assert retried_targets["chin"]["result_source"] == "photo_analysis"
 
         events = client.get("/api/v1/region-events", headers=headers)
         assert events.status_code == 200

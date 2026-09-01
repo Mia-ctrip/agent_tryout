@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import date, datetime
-from typing import Annotated, Literal
+from typing import Annotated, Any, Literal
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field, StringConstraints, field_validator
@@ -27,6 +27,8 @@ class ObservationPhotoOut(BaseModel):
     width: int | None = None
     height: int | None = None
     taken_at: datetime | None = None
+    quality_status: Literal["passed", "failed"] | None = None
+    quality_meta: dict[str, Any] | None = None
     url: str
     url_expires_at: datetime
 

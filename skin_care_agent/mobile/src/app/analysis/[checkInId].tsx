@@ -639,7 +639,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   primaryMetricLabel: {
-    color: '#E6ECE8',
+    color: colors.scrimTextMuted,
     fontSize: 12,
     fontWeight: '700',
   },
@@ -650,7 +650,7 @@ const styles = StyleSheet.create({
     fontWeight: '800',
   },
   metricUnit: {
-    color: '#E6ECE8',
+    color: colors.scrimTextMuted,
     fontSize: 12,
   },
   metricValue: {

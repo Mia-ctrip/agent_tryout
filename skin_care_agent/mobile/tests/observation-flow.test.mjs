@@ -14,6 +14,7 @@ import {
   presentObservationTargets,
   selectRegions,
   setObservationDraftPhoto,
+  clearObservationDraftPhoto,
   setRegionNote,
   shouldPollObservation,
   shouldPollObservationTargets,
@@ -32,6 +33,28 @@ test('changing regions invalidates explicit save confirmation', () => {
   const confirmed = confirmRegionSelection(selected);
   assert.equal(canSaveRegionalDraft(confirmed), true);
   assert.equal(canSaveRegionalDraft(selectRegions(confirmed, ['chin'])), false);
+});
+
+test('retake clears only the temporary photo and keeps the stable draft identity', () => {
+  const original = confirmRegionSelection(
+    selectRegions(
+      setObservationDraftPhoto(
+        createObservationDraft(
+          '11111111-1111-4111-8111-111111111111',
+          new Date('2026-08-21T12:00:00.000Z'),
+        ),
+        'file:///photo.jpg',
+        '2026-08-21T12:00:01.000Z',
+      ),
+      ['right_face'],
+    ),
+  );
+  const retake = clearObservationDraftPhoto(original);
+  assert.equal(retake.clientRequestId, original.clientRequestId);
+  assert.equal(retake.recordedAt, original.recordedAt);
+  assert.equal(retake.photoUri, null);
+  assert.equal(retake.takenAt, null);
+  assert.deepEqual(retake.selectedRegions, ['right_face']);
 });
 
 test('text-only regional draft requires a note for every confirmed region', () => {

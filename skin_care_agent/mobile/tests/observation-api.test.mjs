@@ -5,7 +5,10 @@ import {
   buildObservationForm,
   createObservation,
   getObservation,
+  listAllObservations,
   listObservations,
+  refreshObservationPhotoUrl,
+  retryObservationTarget,
   updateObservationNote,
 } from '../src/lib/observation-api.ts';
 
@@ -102,6 +105,8 @@ test('observation API uses the Slice 1 create, list, detail and note paths', asy
   await listObservations(request, { limit: 12, beforeId: 19 });
   await getObservation(request, 19);
   await updateObservationNote(request, 19, 29, '  今天状态稳定。  ');
+  await retryObservationTarget(request, 19, 29);
+  await refreshObservationPhotoUrl(request, 41);
 
   assert.deepEqual(calls, [
     {
@@ -118,5 +123,28 @@ test('observation API uses the Slice 1 create, list, detail and note paths', asy
         body: JSON.stringify({ user_note: '  今天状态稳定。  ' }),
       },
     },
+    {
+      path: '/observations/19/targets/29/retry',
+      init: { method: 'POST' },
+    },
+    { path: '/photos/41/url', init: undefined },
+  ]);
+});
+
+test('history observation loader follows every backend page', async () => {
+  const calls = [];
+  const firstPage = Array.from({ length: 50 }, (_, index) => ({ observation_id: 100 - index }));
+  const secondPage = [{ observation_id: 50 }, { observation_id: 49 }];
+  const request = async (path) => {
+    calls.push(path);
+    return calls.length === 1 ? firstPage : secondPage;
+  };
+
+  const observations = await listAllObservations(request);
+
+  assert.equal(observations.length, 52);
+  assert.deepEqual(calls, [
+    '/observations?limit=50',
+    '/observations?limit=50&before_id=51',
   ]);
 });

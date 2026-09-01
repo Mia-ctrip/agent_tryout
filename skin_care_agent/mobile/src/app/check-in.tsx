@@ -529,7 +529,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.sm,
-    backgroundColor: 'rgba(20, 24, 21, 0.58)',
+    backgroundColor: colors.cameraScrim,
   },
   backButton: {
     width: 44,
@@ -556,7 +556,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   progressValue: {
-    color: '#E6ECE8',
+    color: colors.scrimTextMuted,
     fontSize: 12,
   },
   topSpacer: {
@@ -573,7 +573,7 @@ const styles = StyleSheet.create({
     maxWidth: 330,
     aspectRatio: 0.72,
     borderWidth: 2,
-    borderColor: 'rgba(255, 255, 255, 0.9)',
+    borderColor: colors.cameraGuide,
     borderRadius: 999,
   },
   instruction: {
@@ -581,7 +581,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.xl,
     paddingTop: spacing.lg,
     paddingBottom: spacing.xxl,
-    backgroundColor: 'rgba(20, 24, 21, 0.72)',
+    backgroundColor: colors.cameraScrimStrong,
   },
   instructionTitle: {
     color: colors.white,
@@ -590,7 +590,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   instructionText: {
-    color: '#F1F4F2',
+    color: colors.white,
     fontSize: 14,
     lineHeight: 21,
     textAlign: 'center',
@@ -603,12 +603,12 @@ const styles = StyleSheet.create({
     gap: spacing.md,
   },
   operationText: {
-    color: '#E6ECE8',
+    color: colors.scrimTextMuted,
     fontSize: 13,
     textAlign: 'center',
   },
   captureError: {
-    color: '#FFD4D0',
+    color: colors.dangerSoft,
     fontSize: 13,
     lineHeight: 19,
     textAlign: 'center',

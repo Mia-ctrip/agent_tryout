@@ -62,6 +62,7 @@ class RegionEventTimepointOut(BaseModel):
 
     observation_id: int
     recorded_at: datetime
+    recorded_timezone_offset_minutes: int | None = None
     recorded_local_date: date
     photo: ObservationPhotoOut | None
     target: ObservationTargetOut

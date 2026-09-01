@@ -234,9 +234,13 @@ def test_region_event_preview_and_list_routes_are_authenticated_and_ordered() ->
     assert listing.json()[0]["event_id"] == event.id
 
 
-def test_event_detail_contains_only_effective_owned_timepoints() -> None:
+@pytest.mark.parametrize("recorded_offset", [480, None])
+def test_event_detail_contains_only_effective_owned_timepoints(
+    recorded_offset: int | None,
+) -> None:
     event = _event(last_on=date(2026, 8, 1))
     record, completed = _effective_target(event.id, date(2026, 8, 1))
+    record.recorded_timezone_offset_minutes = recorded_offset
     record.created_at = datetime(2026, 8, 1, tzinfo=timezone.utc)
     pending = ObservationTarget(
         record_id=record.id,
@@ -261,6 +265,10 @@ def test_event_detail_contains_only_effective_owned_timepoints() -> None:
     assert [row["target"]["target_id"] for row in response.json()["timepoints"]] == [
         completed.id
     ]
+    assert (
+        response.json()["timepoints"][0]["recorded_timezone_offset_minutes"]
+        == recorded_offset
+    )
 
 
 def test_region_event_is_hidden_from_another_user() -> None:

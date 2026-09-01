@@ -1,6 +1,7 @@
 import type { RegionId } from './region-catalog.ts';
 import type { RegionEventDecision } from './region-event-api.ts';
 import type { LifeContextId } from './life-context.ts';
+import type { ObservationQuality } from './observation-quality-api.ts';
 
 export type ObservationTargetStatus =
   | 'queued'
@@ -27,8 +28,15 @@ export type ObservationPhoto = {
   width: number | null;
   height: number | null;
   taken_at: string | null;
+  quality_status: 'passed' | 'failed' | null;
+  quality_meta: ObservationQuality | null;
   url: string;
   url_expires_at: string;
+};
+
+export type ObservationPhotoUrl = {
+  url: string;
+  expires_at: string;
 };
 
 export type ObservationTarget = {
@@ -141,6 +149,33 @@ export async function listObservations(
   return request<Observation[]>(`/observations?${params.toString()}`);
 }
 
+export async function listAllObservations(
+  request: AuthenticatedRequest,
+): Promise<Observation[]> {
+  const pageSize = 50;
+  const observations: Observation[] = [];
+  const seenIds = new Set<number>();
+  let beforeId: number | undefined;
+
+  while (true) {
+    const page = await listObservations(request, { limit: pageSize, beforeId });
+    for (const observation of page) {
+      if (!seenIds.has(observation.observation_id)) {
+        seenIds.add(observation.observation_id);
+        observations.push(observation);
+      }
+    }
+    if (page.length < pageSize) break;
+    const nextBeforeId = Math.min(
+      ...page.map(({ observation_id }) => observation_id),
+    );
+    if (!Number.isSafeInteger(nextBeforeId) || nextBeforeId === beforeId) break;
+    beforeId = nextBeforeId;
+  }
+
+  return observations;
+}
+
 export async function getObservation(
   request: AuthenticatedRequest,
   observationId: number,
@@ -160,5 +195,23 @@ export async function updateObservationNote(
       method: 'PUT',
       body: JSON.stringify({ user_note: userNote }),
     },
+  );
+}
+
+export async function refreshObservationPhotoUrl(
+  request: AuthenticatedRequest,
+  photoId: number,
+): Promise<ObservationPhotoUrl> {
+  return request<ObservationPhotoUrl>(`/photos/${photoId}/url`);
+}
+
+export async function retryObservationTarget(
+  request: AuthenticatedRequest,
+  observationId: number,
+  targetId: number,
+): Promise<Observation> {
+  return request<Observation>(
+    `/observations/${observationId}/targets/${targetId}/retry`,
+    { method: 'POST' },
   );
 }

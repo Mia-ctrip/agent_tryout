@@ -84,6 +84,38 @@ test('canceling the Android system camera produces no capture', async () => {
   assert.equal(picture, null);
 });
 
+test('photo library selection preserves the original asset uri and handles cancellation', async () => {
+  assert.equal(typeof captureModule.selectPhotoFromLibrary, 'function');
+
+  const selected = await captureModule.selectPhotoFromLibrary(async () => ({
+    canceled: false,
+    assets: [
+      {
+        assetId: 'phone-photo',
+        base64: null,
+        duration: null,
+        exif: null,
+        file: null,
+        fileName: 'face-original.jpg',
+        fileSize: 2480137,
+        height: 4032,
+        mimeType: 'image/jpeg',
+        pairedVideoAsset: null,
+        type: 'image',
+        uri: 'file:///phone-face-original.jpg',
+        width: 3024,
+      },
+    ],
+  }));
+  const canceled = await captureModule.selectPhotoFromLibrary(async () => ({
+    canceled: true,
+    assets: null,
+  }));
+
+  assert.deepEqual(selected, { uri: 'file:///phone-face-original.jpg' });
+  assert.equal(canceled, null);
+});
+
 test('system camera is limited to development emulators', () => {
   assert.equal(typeof captureModule.shouldUseSystemCamera, 'function');
 

@@ -8,7 +8,8 @@ test('region catalog keeps fixed order and user physical directions', () => {
     REGIONS.map(({ id }) => id),
     ['forehead', 'left_face', 'right_face', 'nose_area', 'mouth_area', 'chin'],
   );
-  assert.equal(regionById('left_face').label, '你的左侧脸');
+  assert.equal(regionById('left_face').label, '左脸颊');
+  assert.equal(regionById('right_face').label, '右脸颊');
   assert.match(regionById('left_face').boundary, /本人真实左侧/);
   assert.match(regionById('right_face').boundary, /镜像.*不改变/);
 });

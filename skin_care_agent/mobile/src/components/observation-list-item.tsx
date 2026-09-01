@@ -117,7 +117,7 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     left: 0,
-    backgroundColor: 'rgba(111, 99, 183, 0.18)',
+    backgroundColor: colors.brandOverlay,
   },
   textThumbnail: {
     width: 84,

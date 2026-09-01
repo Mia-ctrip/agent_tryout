@@ -25,7 +25,7 @@ test('every MVP tab defines platform-native symbol names', () => {
   }
 });
 
-test('MVP theme exposes the approved seven-color palette', () => {
+test('MVP theme exposes the approved sage palette', () => {
   assert.deepEqual(
     {
       iris: colors.iris,
@@ -37,19 +37,19 @@ test('MVP theme exposes the approved seven-color palette', () => {
       warmWhite: colors.warmWhite,
     },
     {
-      iris: '#8F85CE',
-      irisStrong: '#6F63B7',
-      lavender: '#F2EFF8',
-      sage: '#C5DCCC',
-      amber: '#ECD083',
-      warmGray: '#5A5651',
-      warmWhite: '#FFFDF8',
+      iris: '#9BAD50',
+      irisStrong: '#71813C',
+      lavender: '#EDF1DF',
+      sage: '#EDF1DF',
+      amber: '#E8C76A',
+      warmGray: '#46502C',
+      warmWhite: '#FFFDF7',
     },
   );
 });
 
-test('legacy semantic color keys resolve onto the MVP palette', () => {
-  assert.equal(colors.background, colors.warmWhite);
+test('legacy semantic color keys preserve the sage surface hierarchy', () => {
+  assert.equal(colors.background, '#F8F0DD');
   assert.equal(colors.surface, colors.warmWhite);
   assert.equal(colors.surfaceMuted, colors.lavender);
   assert.equal(colors.text, colors.warmGray);

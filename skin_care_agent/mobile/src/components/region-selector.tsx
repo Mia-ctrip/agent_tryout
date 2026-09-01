@@ -1,6 +1,7 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { colors, radii, spacing } from '@/constants/theme';
+import { radii, spacing } from '@/constants/theme';
+import { productColors } from '@/constants/product-theme';
 import { REGIONS } from '@/lib/region-catalog';
 import type { RegionId } from '@/lib/region-catalog';
 
@@ -60,25 +61,25 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: spacing.md,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: productColors.border,
     borderRadius: radii.md,
-    backgroundColor: colors.surface,
+    backgroundColor: productColors.surface,
     padding: spacing.md,
   },
-  optionSelected: { borderColor: colors.irisStrong, backgroundColor: colors.lavender },
+  optionSelected: { borderColor: productColors.selected, backgroundColor: productColors.surfaceMuted },
   checkbox: {
     width: 24,
     height: 24,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: productColors.border,
     borderRadius: 7,
   },
-  checkboxSelected: { borderColor: colors.irisStrong, backgroundColor: colors.irisStrong },
-  checkmark: { color: colors.warmWhite, fontSize: 15, fontWeight: '800' },
+  checkboxSelected: { borderColor: productColors.actionPrimary, backgroundColor: productColors.actionPrimary },
+  checkmark: { color: productColors.surface, fontSize: 15, fontWeight: '800' },
   copy: { flex: 1, gap: spacing.xs },
-  label: { color: colors.text, fontSize: 16, fontWeight: '700' },
-  boundary: { color: colors.textMuted, fontSize: 13, lineHeight: 19 },
+  label: { color: productColors.textPrimary, fontSize: 16, fontWeight: '700' },
+  boundary: { color: productColors.textSecondary, fontSize: 13, lineHeight: 19 },
   pressed: { opacity: 0.74 },
 });

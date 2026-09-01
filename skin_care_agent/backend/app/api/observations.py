@@ -27,7 +27,9 @@ from app.schemas.observation import (
     ObservationOut,
     RegionTargetCreate,
 )
+from app.schemas.observation_quality import ObservationQualityOut
 from app.services import observation_service
+from app.services import observation_quality_service
 from app.services.observation_worker import run_observation_target
 from app.services.region_event_service import activate_valid_target_event
 
@@ -41,6 +43,22 @@ def _parse_region_targets(value: str) -> list[RegionTargetCreate]:
         return _REGION_TARGETS_ADAPTER.validate_json(value)
     except ValidationError as exc:
         raise HTTPException(status_code=422, detail="invalid region targets") from exc
+
+
+@router.post("/photo-quality", response_model=ObservationQualityOut)
+async def check_observation_photo_quality_endpoint(
+    file: UploadFile = File(...),
+    current_user: User = Depends(get_current_app_user),
+) -> ObservationQualityOut:
+    del current_user
+    data = await file.read()
+    observation_service.validate_photo_input(
+        observation_service.ObservationPhotoInput(
+            data=data,
+            mime_type=file.content_type or "",
+        )
+    )
+    return observation_quality_service.assess_observation_photo(data)
 
 
 @router.post("", response_model=ObservationOut, status_code=status.HTTP_201_CREATED)
@@ -136,6 +154,30 @@ def replace_observation_note_endpoint(
         observation_id=observation_id,
         target_id=target_id,
         user_note=body.user_note,
+    )
+
+
+@router.post("/{observation_id}/targets/{target_id}/retry", response_model=ObservationOut)
+def retry_observation_target_endpoint(
+    observation_id: int,
+    target_id: int,
+    background_tasks: BackgroundTasks,
+    current_user: User = Depends(get_current_app_user),
+    db: Session = Depends(get_db),
+) -> ObservationOut:
+    record, targets, started = observation_service.retry_failed_observation_target(
+        db,
+        user_id=current_user.id,
+        observation_id=observation_id,
+        target_id=target_id,
+    )
+    if started:
+        background_tasks.add_task(run_observation_target, target_id)
+    del record, targets
+    return observation_service.get_observation_out(
+        db,
+        user_id=current_user.id,
+        observation_id=observation_id,
     )
 
 

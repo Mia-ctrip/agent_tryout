@@ -1,0 +1,1340 @@
+<title>金标准 · 观察首页</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,300..600,0..100&family=Inter:wght@400;500;600&family=Noto+Sans+SC:wght@300;400;500;600&family=Noto+Serif+SC:wght@400;500;700&display=swap">
+
+<style>
+  :root {
+    --ground: #EFE8D6;
+    --paper: #F7F1E1;
+    --paper-2: #FBF6E8;
+    --sage: #A9B58F;
+    --sage-soft: #C8CFAF;
+    --moss: #6D7A54;
+    --moss-deep: #4A5638;
+    --earth: #3E362B;
+    --ink: #2E2A21;
+    --text: #46502C;
+    --text-2: #6E6A55;
+    --muted: #8A8670;
+    --hairline: #D9D2BB;
+    --hairline-soft: #E4DEC8;
+    --amber: #C89A45;
+    --clay: #8A4D3E;
+    --clay-soft: #E7D4C4;
+
+    /* Anatomy pane */
+    --annot: #9C8F6C;
+    --annot-line: rgba(156,143,108,0.55);
+  }
+
+  :root:not([data-theme="light"]) {
+    @media (prefers-color-scheme: dark) {
+      --ground: #1B1913;
+      --paper: #2C2A22;
+      --paper-2: #34322A;
+      --sage: #8B9673;
+      --sage-soft: #4E5541;
+      --moss: #8FA070;
+      --moss-deep: #A9B58F;
+      --earth: #EFE8D6;
+      --ink: #F3EDD9;
+      --text: #E5DFC6;
+      --text-2: #B7B098;
+      --muted: #8D8770;
+      --hairline: #423E33;
+      --hairline-soft: #38352C;
+      --amber: #D4B074;
+      --clay: #C48876;
+      --clay-soft: #4A362C;
+      --annot: #B7A97F;
+      --annot-line: rgba(183,169,127,0.5);
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground: #1B1913;
+    --paper: #2C2A22;
+    --paper-2: #34322A;
+    --sage: #8B9673;
+    --sage-soft: #4E5541;
+    --moss: #8FA070;
+    --moss-deep: #A9B58F;
+    --earth: #EFE8D6;
+    --ink: #F3EDD9;
+    --text: #E5DFC6;
+    --text-2: #B7B098;
+    --muted: #8D8770;
+    --hairline: #423E33;
+    --hairline-soft: #38352C;
+    --amber: #D4B074;
+    --clay: #C48876;
+    --clay-soft: #4A362C;
+    --annot: #B7A97F;
+    --annot-line: rgba(183,169,127,0.5);
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ground);
+    color: var(--text);
+    font-family: "Noto Sans SC", "Inter", -apple-system, sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── Page container ────────────────────────── */
+  .stage {
+    min-height: 100vh;
+    padding: 56px 40px 96px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: center;
+  }
+  .stage-inner {
+    max-width: 1240px;
+    width: 100%;
+    display: grid;
+    grid-template-columns: 460px 1fr;
+    gap: 64px;
+    align-items: start;
+  }
+  @media (max-width: 1080px) {
+    .stage-inner { grid-template-columns: 1fr; gap: 40px; }
+    .anatomy { max-width: 460px; }
+  }
+
+  /* ── Meta strip ───────────────────────────── */
+  .meta-strip {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 40px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--hairline);
+    flex-wrap: wrap;
+  }
+  .meta-strip .title {
+    font-family: "Noto Serif SC", serif;
+    font-weight: 500;
+    font-size: 28px;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+    margin: 0;
+    display: flex; align-items: baseline; gap: 14px;
+  }
+  .meta-strip .title .n {
+    font-family: "Fraunces", serif;
+    font-variation-settings: "opsz" 144;
+    font-weight: 300;
+    color: var(--moss);
+    font-size: 32px;
+  }
+  .meta-strip .caption {
+    font-family: "Inter", sans-serif;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+  .meta-strip .caption .sep { color: var(--hairline); margin: 0 8px; }
+
+  /* ── Phone frame ──────────────────────────── */
+  .phone {
+    width: 100%;
+    max-width: 400px;
+    aspect-ratio: 393 / 852;
+    background: #0f0e0b;
+    border-radius: 54px;
+    padding: 12px;
+    box-shadow:
+      0 1px 2px rgba(0,0,0,0.08),
+      0 12px 32px -12px rgba(70,54,30,0.28),
+      0 40px 80px -32px rgba(70,54,30,0.35);
+    position: relative;
+    margin: 0 auto;
+  }
+  .phone::before {
+    /* subtle bezel highlight */
+    content: "";
+    position: absolute;
+    inset: 3px;
+    border-radius: 51px;
+    background: linear-gradient(160deg, #2a2721 0%, #0f0e0b 30%, #0f0e0b 70%, #2a2721 100%);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .screen {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    background: var(--ground);
+    border-radius: 42px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Status bar */
+  .statusbar {
+    height: 44px;
+    padding: 0 30px 0 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: "Inter", -apple-system, sans-serif;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--ink);
+    flex-shrink: 0;
+    position: relative;
+  }
+  .statusbar::before {
+    /* Dynamic island */
+    content: "";
+    position: absolute;
+    top: 11px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 96px; height: 30px;
+    background: #0f0e0b;
+    border-radius: 999px;
+  }
+  .statusbar .icons {
+    display: flex; align-items: center; gap: 5px;
+  }
+  .signal-bars { display: flex; align-items: flex-end; gap: 2px; }
+  .signal-bars span {
+    width: 3px; background: var(--ink); border-radius: 1px;
+  }
+  .signal-bars span:nth-child(1) { height: 4px; }
+  .signal-bars span:nth-child(2) { height: 6px; }
+  .signal-bars span:nth-child(3) { height: 8px; }
+  .signal-bars span:nth-child(4) { height: 10px; }
+  .wifi-icon {
+    width: 15px; height: 11px;
+    border: 2px solid var(--ink);
+    border-bottom: 0;
+    border-radius: 15px 15px 0 0;
+    position: relative;
+  }
+  .battery {
+    width: 26px; height: 12px;
+    border: 1.2px solid var(--ink);
+    border-radius: 3.5px;
+    position: relative;
+    padding: 1.2px;
+  }
+  .battery::after {
+    content: "";
+    position: absolute;
+    right: -3px; top: 3px;
+    width: 2px; height: 5px;
+    background: var(--ink);
+    border-radius: 0 1px 1px 0;
+  }
+  .battery-fill {
+    background: var(--ink);
+    height: 100%; width: 70%;
+    border-radius: 1.5px;
+  }
+
+  /* Scroll content */
+  .content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px 22px 20px;
+    position: relative;
+  }
+  .content::-webkit-scrollbar { display: none; }
+
+  /* ── Header ───────────────────────────────── */
+  .app-header {
+    position: relative;
+    padding: 18px 4px 26px;
+    z-index: 3;
+  }
+  .eyebrow-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 10px;
+  }
+  .eyebrow {
+    font-family: "Inter", sans-serif;
+    font-size: 10.5px;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .amber-date {
+    font-family: "Fraunces", serif;
+    font-variation-settings: "opsz" 96;
+    font-weight: 400;
+    font-size: 13px;
+    color: var(--amber);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.04em;
+  }
+  .h1 {
+    font-family: "Noto Serif SC", serif;
+    font-weight: 500;
+    font-size: 30px;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+    margin: 0 0 8px;
+    text-wrap: balance;
+  }
+  .h1-sub {
+    font-size: 13.5px;
+    color: var(--text-2);
+    line-height: 1.65;
+    margin: 0;
+    max-width: 26ch;
+  }
+
+  /* Header decoration: photo band bleeds off top-right */
+  .hero-photo {
+    position: absolute;
+    top: -22px;
+    right: -30px;
+    width: 180px;
+    height: 260px;
+    z-index: 1;
+    pointer-events: none;
+    border-radius: 0 0 0 24px;
+    overflow: hidden;
+    /*
+     * PHOTO SLOT · hero-photo
+     * 替换指引: 找一张竖构图、暖光、柔焦植物/枝叶 或 玻璃瓶植物剪影摄影
+     * 推荐: unsplash · magnolia branch / soft foliage in warm sun
+     * 尺寸建议: 400 × 580 · 保持竖版
+     * 用法: 将下方 <svg class="hero-photo-fallback"> 换成 <img src="..." style="width:100%;height:100%;object-fit:cover;object-position:left top">
+     */
+  }
+  .hero-photo-fallback {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+  .hero-photo::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(180deg, transparent 0%, transparent 55%, rgba(239,232,214,0.75) 92%, var(--ground) 100%),
+      linear-gradient(270deg, transparent 0%, transparent 60%, rgba(239,232,214,0.55) 92%, var(--ground) 100%);
+    pointer-events: none;
+  }
+  .hero-grain {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    opacity: 0.10;
+    mix-blend-mode: multiply;
+    pointer-events: none;
+  }
+
+  /* ── Camera start panel ────────────────────── */
+  .camera-panel {
+    margin-top: 8px;
+    background: var(--paper);
+    border: 1px solid var(--hairline);
+    border-radius: 24px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    position: relative;
+    z-index: 3;
+  }
+  .camera-preview {
+    aspect-ratio: 4 / 3;
+    border-radius: 16px;
+    background:
+      radial-gradient(120% 90% at 45% 40%, rgba(200,207,175,0.6) 0%, transparent 60%),
+      linear-gradient(160deg, #DDD1B1 0%, #B7C48A 100%);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .camera-preview .frame-guide {
+    width: 78%; height: 82%;
+    border: 1.5px dashed rgba(70,80,44,0.35);
+    border-radius: 45% 45% 42% 42% / 55% 55% 45% 45%;
+  }
+  .camera-preview .hint {
+    position: absolute;
+    left: 14px; bottom: 12px;
+    background: rgba(46,42,33,0.62);
+    color: #F3EDD9;
+    padding: 5px 11px;
+    border-radius: 999px;
+    font-size: 10.5px;
+    font-family: "Inter", sans-serif;
+    letter-spacing: 0.06em;
+    backdrop-filter: blur(4px);
+  }
+  .camera-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .btn {
+    height: 44px;
+    border-radius: 999px;
+    font-family: "Noto Sans SC", sans-serif;
+    font-weight: 500;
+    font-size: 14px;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    cursor: default;
+  }
+  .btn.primary { background: var(--moss-deep); color: #F3EDD9; }
+  .btn.secondary { background: transparent; border: 1px solid var(--moss); color: var(--moss-deep); }
+  .btn .ic {
+    width: 15px; height: 15px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* ── Text button ──────────────────────────── */
+  .text-btn-row {
+    padding: 14px 4px 4px;
+    display: flex;
+    justify-content: center;
+  }
+  .text-btn {
+    font-family: "Noto Sans SC", sans-serif;
+    font-size: 13px;
+    color: var(--moss-deep);
+    text-decoration: none;
+    letter-spacing: 0.04em;
+    padding: 6px 12px;
+  }
+  .text-btn::after {
+    content: "→";
+    margin-left: 4px;
+    color: var(--muted);
+  }
+
+  /* ── Section header ───────────────────────── */
+  .section-h {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 26px 4px 12px;
+  }
+  .section-h .label {
+    font-family: "Noto Serif SC", serif;
+    font-weight: 500;
+    font-size: 17px;
+    color: var(--ink);
+    margin: 0;
+    letter-spacing: -0.003em;
+  }
+  .section-h .count {
+    font-family: "Inter", sans-serif;
+    font-size: 10.5px;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  /* ── Editorial photo band ─────────────────── */
+  /*
+   * PHOTO SLOT · editorial-band
+   * 用途: camera 面板与"正在记录的区域"之间的杂志开章图
+   * 替换指引: 一张横构图、柔焦、暖调植物/自然纹理摄影 (chillmore/且悠 风格)
+   * 尺寸建议: 800 × 260 · 16:5 横版
+   * 用法: 换成 <img src="..." style="width:100%;height:100%;object-fit:cover">
+   */
+  .editorial-band {
+    margin: 26px -22px 4px;
+    height: 158px;
+    position: relative;
+    overflow: hidden;
+    /* 让照片直接顶到手机屏幕左右边缘,像杂志出血 */
+  }
+  .editorial-band .photo-fallback {
+    position: absolute; inset: 0;
+    background:
+      /* soft light bloom, upper-right */
+      radial-gradient(circle at 78% 20%, rgba(255,246,220,0.9) 0%, rgba(255,238,190,0.55) 12%, transparent 30%),
+      radial-gradient(circle at 82% 18%, rgba(255,252,240,0.95) 0%, transparent 8%),
+      /* mid green bloom, left */
+      radial-gradient(circle at 22% 55%, rgba(140,158,110,0.5) 0%, transparent 32%),
+      radial-gradient(circle at 8% 70%, rgba(74,86,56,0.35) 0%, transparent 28%),
+      /* small highlights */
+      radial-gradient(circle at 45% 42%, rgba(200,207,175,0.4) 0%, transparent 12%),
+      radial-gradient(circle at 62% 72%, rgba(232,222,182,0.5) 0%, transparent 14%),
+      /* deep shadow, lower-left */
+      radial-gradient(ellipse 60% 40% at 5% 100%, rgba(46,54,32,0.55) 0%, transparent 60%),
+      /* base gradient */
+      linear-gradient(105deg, #2E3524 0%, #526043 30%, #A9B58F 60%, #E5DDBE 88%, #F7EED2 100%);
+    filter: blur(0.5px);
+  }
+  .editorial-band .band-leaves {
+    position: absolute; inset: 0;
+    pointer-events: none;
+  }
+  .editorial-band .band-grain {
+    position: absolute; inset: 0;
+    opacity: 0.22;
+    mix-blend-mode: overlay;
+    pointer-events: none;
+  }
+  .editorial-band .band-caption {
+    position: absolute;
+    left: 22px;
+    bottom: 16px;
+    z-index: 4;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+  .editorial-band .band-caption .cn {
+    font-family: "Noto Serif SC", serif;
+    font-weight: 500;
+    font-size: 18px;
+    color: #F3EDD9;
+    letter-spacing: -0.005em;
+    text-shadow: 0 1px 12px rgba(46,54,32,0.4);
+  }
+  .editorial-band .band-caption .en {
+    font-family: "Fraunces", serif;
+    font-style: italic;
+    font-variation-settings: "opsz" 140, "SOFT" 100;
+    font-weight: 400;
+    font-size: 12px;
+    color: rgba(243,237,217,0.85);
+    letter-spacing: 0.03em;
+  }
+  .editorial-band .band-corner {
+    position: absolute;
+    right: 22px;
+    top: 16px;
+    z-index: 4;
+    font-family: "Inter", sans-serif;
+    font-size: 9.5px;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(243,237,217,0.6);
+  }
+
+  /* ── Footer atmosphere strip ──────────────── */
+  /*
+   * PHOTO SLOT · footer-atmosphere
+   * 用途: whisper 上方的收尾照片条
+   * 替换指引: 一张宽幅、低对比、极浅暖调的植物/织物摄影
+   * 尺寸建议: 800 × 200 · 4:1 横版
+   */
+  .footer-band {
+    margin: 20px -22px 0;
+    height: 100px;
+    position: relative;
+    overflow: hidden;
+  }
+  .footer-band .photo-fallback {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(circle at 25% 40%, rgba(200,207,175,0.45) 0%, transparent 30%),
+      radial-gradient(circle at 72% 65%, rgba(232,222,182,0.45) 0%, transparent 30%),
+      radial-gradient(circle at 50% 30%, rgba(255,246,220,0.55) 0%, transparent 20%),
+      linear-gradient(180deg, #EFE8D6 0%, #E5DDBE 55%, #EFE8D6 100%);
+    filter: blur(0.5px);
+  }
+  .footer-band .band-fade {
+    position: absolute; inset: 0;
+    background:
+      linear-gradient(90deg, var(--ground) 0%, transparent 12%, transparent 88%, var(--ground) 100%),
+      linear-gradient(180deg, transparent 0%, transparent 60%, rgba(239,232,214,0.5) 100%);
+  }
+  .footer-band .band-sprig {
+    position: absolute;
+    right: 30px; top: 20px;
+    width: 70px; height: 70px;
+    pointer-events: none;
+  }
+
+  /* ── Upgraded thumbnail styles ────────────── */
+  /*
+   * PHOTO SLOTS · region-thumb / obs-thumb
+   * 上线时用真实用户照片(经隐私模糊处理)替换
+   * 当前的 CSS 渐变是"照片替身"——它模拟了柔焦皮肤、Sage 遮罩、hot-spot 位置
+   */
+  .region-card {
+    background: var(--paper);
+    border: 1px solid var(--hairline);
+    border-radius: 22px;
+    padding: 16px;
+    display: grid;
+    grid-template-columns: 60px 1fr;
+    gap: 14px;
+    align-items: center;
+    position: relative;
+  }
+  .region-card .thumb {
+    width: 60px; height: 60px;
+    border-radius: 16px;
+    background:
+      /* soft chin/cheek shadow */
+      radial-gradient(circle at 30% 30%, rgba(255,240,220,0.85) 0%, rgba(230,200,170,0.7) 30%, rgba(180,140,110,0.55) 70%, rgba(120,90,70,0.4) 100%);
+    position: relative;
+    overflow: hidden;
+  }
+  .region-card .thumb::before {
+    content: "";
+    position: absolute; inset: 0;
+    background:
+      /* sage privacy tint */
+      linear-gradient(150deg, rgba(200,207,175,0.35) 0%, rgba(169,181,143,0.45) 100%);
+    mix-blend-mode: multiply;
+  }
+  .region-card .thumb::after {
+    content: "";
+    position: absolute;
+    /* subtle attention dot suggesting the observed area */
+    left: 42%; top: 40%;
+    width: 22%; height: 22%;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(138,77,62,0.55) 0%, rgba(138,77,62,0.15) 60%, transparent 100%);
+    filter: blur(3px);
+  }
+  .region-card .info {
+    display: flex; flex-direction: column; gap: 3px; min-width: 0;
+  }
+  .region-card .region-name {
+    font-family: "Noto Sans SC", sans-serif;
+    font-weight: 500;
+    font-size: 15px;
+    color: var(--ink);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .region-card .status-dot {
+    display: inline-block;
+    width: 6px; height: 6px;
+    border-radius: 999px;
+    background: var(--moss);
+  }
+  .region-card .region-meta {
+    font-size: 12px;
+    color: var(--text-2);
+    line-height: 1.55;
+  }
+  .region-card .range {
+    font-family: "Fraunces", serif;
+    font-variation-settings: "opsz" 96;
+    font-size: 11.5px;
+    color: var(--muted);
+    letter-spacing: 0.04em;
+    font-variant-numeric: tabular-nums;
+    margin-top: 2px;
+  }
+  .region-card .chev {
+    position: absolute;
+    right: 18px; top: 50%;
+    transform: translateY(-50%);
+    color: var(--muted);
+    font-size: 14px;
+  }
+
+  /* ── Observation list ─────────────────────── */
+  .obs-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    background: var(--hairline-soft);
+    border-radius: 20px;
+    overflow: hidden;
+    border: 1px solid var(--hairline);
+  }
+  .obs-row {
+    background: var(--paper);
+    padding: 14px 16px;
+    display: grid;
+    grid-template-columns: 44px 1fr auto;
+    gap: 12px;
+    align-items: center;
+  }
+  .obs-thumb {
+    width: 44px; height: 44px;
+    border-radius: 12px;
+    position: relative;
+    overflow: hidden;
+  }
+  .obs-thumb::before {
+    /* skin-like base */
+    content: "";
+    position: absolute; inset: 0;
+    background: radial-gradient(circle at 30% 30%, rgba(255,240,220,0.9) 0%, rgba(220,190,155,0.65) 45%, rgba(150,110,85,0.5) 100%);
+  }
+  .obs-thumb::after {
+    /* sage privacy tint */
+    content: "";
+    position: absolute; inset: 0;
+    background: linear-gradient(150deg, rgba(200,207,175,0.4), rgba(169,181,143,0.5));
+    mix-blend-mode: multiply;
+  }
+  .obs-thumb.dry::before { background: radial-gradient(circle at 32% 28%, rgba(255,238,210,0.9) 0%, rgba(215,180,140,0.65) 45%, rgba(140,105,75,0.5) 100%); }
+  .obs-thumb.dry::after { background: linear-gradient(150deg, rgba(232,222,182,0.4), rgba(208,199,160,0.5)); mix-blend-mode: multiply; }
+  .obs-thumb.calm::before { background: radial-gradient(circle at 30% 30%, rgba(255,244,220,0.9) 0%, rgba(220,195,160,0.65) 50%, rgba(150,115,90,0.5) 100%); }
+  .obs-thumb.calm::after { background: linear-gradient(150deg, rgba(200,207,175,0.4), rgba(169,181,143,0.5)); mix-blend-mode: multiply; }
+  .obs-thumb.warm::before { background: radial-gradient(circle at 28% 30%, rgba(255,232,205,0.9) 0%, rgba(220,180,140,0.65) 45%, rgba(150,100,75,0.55) 100%); }
+  .obs-thumb.warm::after { background: linear-gradient(150deg, rgba(232,215,180,0.4), rgba(210,190,150,0.5)); mix-blend-mode: multiply; }
+  .obs-info { min-width: 0; }
+  .obs-title {
+    font-family: "Noto Sans SC", sans-serif;
+    font-weight: 500;
+    font-size: 14px;
+    color: var(--ink);
+    margin: 0 0 2px;
+  }
+  .obs-meta {
+    font-size: 11.5px;
+    color: var(--text-2);
+    letter-spacing: 0.02em;
+    line-height: 1.5;
+  }
+  .obs-date {
+    font-family: "Fraunces", serif;
+    font-variation-settings: "opsz" 96;
+    font-weight: 400;
+    font-size: 13px;
+    color: var(--moss);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.04em;
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  /* ── Footer whisper ──────────────────────── */
+  .footer-whisper {
+    text-align: center;
+    padding: 32px 20px 20px;
+    font-family: "Fraunces", serif;
+    font-style: italic;
+    font-variation-settings: "opsz" 140, "SOFT" 100;
+    font-weight: 400;
+    font-size: 13.5px;
+    color: var(--moss);
+    letter-spacing: 0.02em;
+  }
+
+  /* ── Tab bar ─────────────────────────────── */
+  .tabbar {
+    height: 82px;
+    background: var(--paper-2);
+    border-top: 1px solid var(--hairline);
+    padding: 8px 12px 26px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    flex-shrink: 0;
+    position: relative;
+  }
+  .tab {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    padding: 4px 0;
+  }
+  .tab .ic {
+    width: 22px; height: 22px;
+    color: var(--muted);
+    display: block;
+  }
+  .tab .lbl {
+    font-family: "Noto Sans SC", sans-serif;
+    font-size: 10.5px;
+    color: var(--muted);
+    letter-spacing: 0.04em;
+  }
+  .tab.active .ic { color: var(--moss-deep); }
+  .tab.active .lbl { color: var(--moss-deep); font-weight: 500; }
+
+  /* ── Anatomy pane ────────────────────────── */
+  .anatomy {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    padding-top: 44px;
+  }
+  .anatomy h2 {
+    font-family: "Noto Serif SC", serif;
+    font-weight: 500;
+    font-size: 22px;
+    color: var(--ink);
+    margin: 0 0 6px;
+    display: flex; align-items: baseline; gap: 12px;
+  }
+  .anatomy h2 .n {
+    font-family: "Fraunces", serif;
+    font-variation-settings: "opsz" 144;
+    font-weight: 300;
+    color: var(--moss);
+    font-size: 26px;
+  }
+  .anatomy > p.lede {
+    color: var(--text-2);
+    font-size: 13.5px;
+    margin: 0 0 12px;
+    max-width: 44ch;
+  }
+  .anatomy-group {
+    border-top: 1px solid var(--hairline);
+    padding-top: 20px;
+  }
+  .anatomy-group h3 {
+    font-family: "Noto Serif SC", serif;
+    font-weight: 500;
+    font-size: 15px;
+    color: var(--ink);
+    margin: 0 0 12px;
+    display: flex; align-items: baseline; gap: 10px;
+  }
+  .anatomy-group h3 .tag {
+    font-family: "Inter", sans-serif;
+    font-size: 9.5px;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--annot);
+    padding: 2px 8px;
+    border: 1px solid var(--annot-line);
+    border-radius: 999px;
+  }
+  .anatomy-group dl {
+    display: grid;
+    grid-template-columns: 108px 1fr;
+    gap: 8px 20px;
+    margin: 0;
+    font-size: 12.5px;
+  }
+  .anatomy-group dt {
+    color: var(--muted);
+    font-family: "Inter", sans-serif;
+    font-size: 10.5px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding-top: 2px;
+  }
+  .anatomy-group dd {
+    margin: 0;
+    color: var(--text);
+    line-height: 1.55;
+  }
+  .anatomy-group .code {
+    font-family: "SF Mono", ui-monospace, monospace;
+    font-size: 11.5px;
+    color: var(--moss-deep);
+    background: var(--paper-2);
+    padding: 1px 6px;
+    border-radius: 4px;
+  }
+
+  /* Overlay layer callout */
+  .callout {
+    background: var(--paper);
+    border: 1px solid var(--hairline);
+    border-radius: 16px;
+    padding: 14px 16px;
+    margin-top: 14px;
+    font-size: 12.5px;
+    color: var(--text);
+    line-height: 1.6;
+  }
+  .callout strong {
+    color: var(--ink);
+    font-weight: 500;
+    font-family: "Noto Serif SC", serif;
+  }
+  .callout .whisper {
+    font-family: "Fraunces", serif;
+    font-style: italic;
+    font-variation-settings: "opsz" 140, "SOFT" 100;
+    color: var(--moss);
+    font-size: 12.5px;
+  }
+
+  /* Signoff */
+  .signoff {
+    grid-column: 1 / -1;
+    margin-top: 80px;
+    padding-top: 32px;
+    border-top: 1px solid var(--hairline);
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+  .signoff .stamp {
+    font-family: "Fraunces", serif;
+    font-style: italic;
+    font-variation-settings: "opsz" 144, "SOFT" 100;
+    font-weight: 400;
+    color: var(--moss);
+    font-size: 18px;
+  }
+  .signoff .m {
+    font-family: "Inter", sans-serif;
+    font-size: 10.5px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-align: right;
+  }
+</style>
+
+<!-- SVG defs -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <filter id="softFocus" x="-10%" y="-10%" width="120%" height="120%">
+      <feGaussianBlur stdDeviation="3.5"/>
+    </filter>
+    <filter id="softFocusStrong" x="-10%" y="-10%" width="120%" height="120%">
+      <feGaussianBlur stdDeviation="7"/>
+    </filter>
+    <filter id="grain">
+      <feTurbulence type="fractalNoise" baseFrequency="1.7" numOctaves="2" seed="9"/>
+      <feColorMatrix values="0 0 0 0 0.28
+                             0 0 0 0 0.28
+                             0 0 0 0 0.20
+                             0 0 0 0.9 0"/>
+    </filter>
+    <symbol id="sprig" viewBox="-70 -110 140 220">
+      <path d="M -60,90 C -30,40 0,-10 10,-80" stroke="currentColor" stroke-width="1.4" fill="none"/>
+      <ellipse cx="-40" cy="55" rx="20" ry="8" fill="currentColor" transform="rotate(-40 -40 55)"/>
+      <ellipse cx="-8" cy="8" rx="24" ry="9" fill="currentColor" transform="rotate(-30 -8 8)"/>
+      <ellipse cx="20" cy="-52" rx="20" ry="7" fill="currentColor" transform="rotate(-20 20 -52)"/>
+      <ellipse cx="-30" cy="-30" rx="12" ry="5" fill="currentColor" transform="rotate(-55 -30 -30)"/>
+    </symbol>
+  </defs>
+</svg>
+
+<div class="stage">
+  <div class="stage-inner">
+
+    <!-- Meta strip -->
+    <div class="meta-strip">
+      <h1 class="title"><span class="n">01</span>金标准 · 观察首页</h1>
+      <span class="caption">
+        Gold Page 01<span class="sep">·</span>
+        <span>iPhone 15 Pro · 393 × 852</span><span class="sep">·</span>
+        <span>v1.1 骨架 + v1.2 呼吸</span>
+      </span>
+    </div>
+
+    <!-- Phone -->
+    <div class="phone">
+      <div class="screen">
+
+        <!-- Status bar -->
+        <div class="statusbar">
+          <span>9:41</span>
+          <div class="icons">
+            <div class="signal-bars">
+              <span></span><span></span><span></span><span></span>
+            </div>
+            <div class="wifi-icon"></div>
+            <div class="battery"><div class="battery-fill"></div></div>
+          </div>
+        </div>
+
+        <!-- Scrollable content -->
+        <div class="content">
+
+          <!-- App header -->
+          <div class="app-header">
+            <!--
+              PHOTO SLOT · hero-photo
+              替换时: 把整个 <div class="hero-photo"> 内的 <svg class="hero-photo-fallback"> 换成一张真实的竖版摄影
+              示意: <img src="./photos/hero-magnolia.jpg" alt="" class="hero-photo-fallback" style="object-fit:cover">
+            -->
+            <div class="hero-photo">
+              <svg class="hero-photo-fallback" viewBox="0 0 180 260" preserveAspectRatio="xMidYMid slice">
+                <defs>
+                  <linearGradient id="heroBg" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stop-color="#DFEACA"/>
+                    <stop offset="35%" stop-color="#A9B58F"/>
+                    <stop offset="70%" stop-color="#6D7A54"/>
+                    <stop offset="100%" stop-color="#3E4A2E"/>
+                  </linearGradient>
+                  <radialGradient id="heroLight" cx="0.35" cy="0.2" r="0.6">
+                    <stop offset="0%" stop-color="#FFF5D8" stop-opacity="0.85"/>
+                    <stop offset="40%" stop-color="#F0E4B8" stop-opacity="0.3"/>
+                    <stop offset="100%" stop-color="#F0E4B8" stop-opacity="0"/>
+                  </radialGradient>
+                </defs>
+                <!-- Photo replica: soft-focus foliage in warm sun -->
+                <rect width="180" height="260" fill="url(#heroBg)"/>
+                <rect width="180" height="260" fill="url(#heroLight)"/>
+                <!-- Foliage silhouettes -->
+                <g filter="url(#softFocusStrong)" opacity="0.7">
+                  <ellipse cx="20" cy="80" rx="50" ry="18" fill="#4A5638" transform="rotate(-25 20 80)"/>
+                  <ellipse cx="140" cy="180" rx="55" ry="20" fill="#3E4A2E" transform="rotate(35 140 180)"/>
+                  <ellipse cx="60" cy="220" rx="40" ry="14" fill="#526043" transform="rotate(-15 60 220)"/>
+                </g>
+                <g filter="url(#softFocus)" opacity="0.55" color="#6D7A54">
+                  <g transform="translate(120,80) rotate(30) scale(0.5)"><use href="#sprig"/></g>
+                  <g transform="translate(40,150) rotate(-20) scale(0.4)"><use href="#sprig"/></g>
+                </g>
+                <!-- Warm bokeh -->
+                <circle cx="120" cy="50" r="8" fill="#FFF0D0" opacity="0.7" filter="url(#softFocus)"/>
+                <circle cx="90" cy="30" r="4" fill="#FFF5D8" opacity="0.6" filter="url(#softFocus)"/>
+                <circle cx="150" cy="120" r="6" fill="#E5D8A8" opacity="0.5" filter="url(#softFocus)"/>
+              </svg>
+            </div>
+            <svg class="hero-grain" preserveAspectRatio="none">
+              <rect width="100%" height="100%" filter="url(#grain)"/>
+            </svg>
+
+            <div class="eyebrow-row">
+              <span class="eyebrow">Today · 今天</span>
+              <span class="amber-date">08 · 31 · 周一</span>
+            </div>
+            <h1 class="h1">今天，也留下<br>一次真实的观察</h1>
+            <p class="h1-sub">上一次是 3 天前——不着急，回看一下再决定拍不拍。</p>
+          </div>
+
+          <!-- Camera start panel -->
+          <div class="camera-panel">
+            <div class="camera-preview">
+              <div class="frame-guide"></div>
+              <span class="hint">自然光更清晰</span>
+            </div>
+            <div class="camera-actions">
+              <button class="btn primary">
+                <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M6 7h2l2-2h4l2 2h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2z"/>
+                  <circle cx="12" cy="13" r="3.5"/>
+                </svg>
+                打开相机
+              </button>
+              <button class="btn secondary">
+                <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="5" width="18" height="14" rx="2"/>
+                  <path d="M3 15l5-5 4 4 3-3 6 6"/>
+                </svg>
+                从相册选
+              </button>
+            </div>
+          </div>
+
+          <!-- Text button -->
+          <div class="text-btn-row">
+            <a class="text-btn">今天用了什么产品，也顺手记一笔</a>
+          </div>
+
+          <!--
+            PHOTO SLOT · editorial-band
+            替换时: 把整个 <div class="photo-fallback"> 换成一张真实横构图摄影
+            示意: <img src="./photos/editorial-morning.jpg" style="width:100%;height:100%;object-fit:cover">
+          -->
+          <div class="editorial-band">
+            <div class="photo-fallback"></div>
+            <svg class="band-leaves" viewBox="0 0 800 260" preserveAspectRatio="xMidYMid slice">
+              <!-- Soft-focus foreground foliage -->
+              <g filter="url(#softFocusStrong)" opacity="0.55">
+                <ellipse cx="-20" cy="140" rx="120" ry="45" fill="#2E3524" transform="rotate(-15 -20 140)"/>
+                <ellipse cx="720" cy="60" rx="140" ry="50" fill="#4A5638" transform="rotate(20 720 60)"/>
+                <ellipse cx="780" cy="220" rx="90" ry="35" fill="#3E4A2E" transform="rotate(-25 780 220)"/>
+              </g>
+              <g filter="url(#softFocus)" opacity="0.4" color="#526043">
+                <g transform="translate(60,180) rotate(-25) scale(0.6)"><use href="#sprig"/></g>
+                <g transform="translate(680,120) rotate(30) scale(0.7)"><use href="#sprig"/></g>
+              </g>
+              <!-- Warm bokeh dots -->
+              <circle cx="500" cy="80" r="14" fill="#FFF0D0" opacity="0.55" filter="url(#softFocus)"/>
+              <circle cx="440" cy="130" r="8" fill="#FFF5D8" opacity="0.5" filter="url(#softFocus)"/>
+              <circle cx="580" cy="60" r="6" fill="#FFF5D8" opacity="0.6" filter="url(#softFocus)"/>
+              <circle cx="360" cy="180" r="10" fill="#E5D8A8" opacity="0.4" filter="url(#softFocus)"/>
+              <circle cx="620" cy="180" r="7" fill="#F0E4B8" opacity="0.5" filter="url(#softFocus)"/>
+            </svg>
+            <svg class="band-grain" preserveAspectRatio="none">
+              <rect width="100%" height="100%" filter="url(#grain)"/>
+            </svg>
+            <span class="band-corner">Autumn · 秋</span>
+            <div class="band-caption">
+              <span class="cn">此刻的光，也值得被留下</span>
+              <span class="en">Held gently, the light we did not miss</span>
+            </div>
+          </div>
+
+          <!-- Region events -->
+          <div class="section-h">
+            <h3 class="label">正在记录的区域</h3>
+            <span class="count">01 · Ongoing</span>
+          </div>
+          <div class="region-card">
+            <div class="thumb"></div>
+            <div class="info">
+              <div class="region-name">
+                <span class="status-dot"></span>
+                左颊 · 泛红观察中
+              </div>
+              <div class="region-meta">已经连续 3 次留下证据 · 上次 08·28</div>
+              <div class="range">08 · 12 &nbsp;→&nbsp; 至今</div>
+            </div>
+            <span class="chev">›</span>
+          </div>
+
+          <!-- Recent observations -->
+          <div class="section-h">
+            <h3 class="label">最近记录</h3>
+            <span class="count">03 · Recent</span>
+          </div>
+          <div class="obs-list">
+            <div class="obs-row">
+              <div class="obs-thumb calm"></div>
+              <div class="obs-info">
+                <p class="obs-title">左颊 · 中性偏干</p>
+                <div class="obs-meta">自然光 · 1 处发现</div>
+              </div>
+              <div class="obs-date">08 · 31</div>
+            </div>
+            <div class="obs-row">
+              <div class="obs-thumb dry"></div>
+              <div class="obs-info">
+                <p class="obs-title">下巴 · 干燥减轻</p>
+                <div class="obs-meta">自然光 · 无新增发现</div>
+              </div>
+              <div class="obs-date">08 · 28</div>
+            </div>
+            <div class="obs-row">
+              <div class="obs-thumb warm"></div>
+              <div class="obs-info">
+                <p class="obs-title">额头 · 中性</p>
+                <div class="obs-meta">室内暖光 · 需要补充文字</div>
+              </div>
+              <div class="obs-date">08 · 25</div>
+            </div>
+          </div>
+
+          <!--
+            PHOTO SLOT · footer-atmosphere
+            替换时: <img src="./photos/atmosphere-linen.jpg" style="width:100%;height:100%;object-fit:cover">
+          -->
+          <div class="footer-band">
+            <div class="photo-fallback"></div>
+            <svg class="band-sprig" viewBox="-70 -110 140 220">
+              <g filter="url(#softFocus)" opacity="0.42" color="#6D7A54"
+                 transform="rotate(15) scale(0.9)">
+                <use href="#sprig"/>
+              </g>
+            </svg>
+            <div class="band-fade"></div>
+          </div>
+
+          <!-- whisper -->
+          <div class="footer-whisper">Skin deserves its gentle sanctuary.</div>
+
+        </div>
+
+        <!-- Tab bar -->
+        <div class="tabbar">
+          <div class="tab active">
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <circle cx="12" cy="12" r="8"/>
+              <circle cx="12" cy="12" r="3" fill="currentColor" stroke="none"/>
+            </svg>
+            <span class="lbl">观察</span>
+          </div>
+          <div class="tab">
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <path d="M4 20V6a2 2 0 0 1 2-2h8l6 6v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/>
+              <path d="M14 4v6h6"/>
+              <line x1="8" y1="14" x2="16" y2="14"/>
+              <line x1="8" y1="18" x2="14" y2="18"/>
+            </svg>
+            <span class="lbl">历程</span>
+          </div>
+          <div class="tab">
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <path d="M6 3h12l-1 4H7z"/>
+              <path d="M5 7h14l-1 13a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2z"/>
+            </svg>
+            <span class="lbl">产品</span>
+          </div>
+          <div class="tab">
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <circle cx="12" cy="8" r="4"/>
+              <path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/>
+            </svg>
+            <span class="lbl">我的</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Anatomy pane -->
+    <aside class="anatomy">
+      <h2><span class="n">A</span>Anatomy</h2>
+      <p class="lede">
+        每一处像素都能追溯到 v1.1 骨架或 v1.2 呼吸层。工程接手时只读这一列，不会有歧义。
+      </p>
+
+      <div class="anatomy-group">
+        <h3>Header <span class="tag">Hero</span></h3>
+        <dl>
+          <dt>Eyebrow</dt>
+          <dd>Inter 500 · <span class="code">11 / 20 · +0.2em</span> · 色 <span class="code">muted</span></dd>
+          <dt>Amber 日期</dt>
+          <dd>Fraunces 400 opsz 96 · <span class="code">13 · tabular</span> · 色 <span class="code">amber #C89A45</span>（v1.1 唯一 amber 使用点）</dd>
+          <dt>H1</dt>
+          <dd>Noto Serif SC 500 · <span class="code">30 / 36 · −1%</span> · 色 <span class="code">ink</span> · 两行 balance</dd>
+          <dt>Sub</dt>
+          <dd>Noto Sans SC 400 · <span class="code">13.5 / 22</span> · 色 <span class="code">text-2</span> · 26ch</dd>
+          <dt>照片位 A</dt>
+          <dd><span class="code">hero-photo</span> · 180×260 竖版 · 从右上顶部溢出屏幕 · 底部与右侧 <span class="code">ground</span> 色淡出 · 上方叠 10% multiply 颗粒</dd>
+          <dt>颗粒</dt>
+          <dd>hero 区域 <span class="code">multiply 10%</span> · 不覆盖任何证据</dd>
+        </dl>
+      </div>
+
+      <div class="anatomy-group">
+        <h3>Editorial Band <span class="tag">Photo</span></h3>
+        <dl>
+          <dt>照片位 B</dt>
+          <dd><span class="code">editorial-band</span> · 全屏出血 <span class="code">margin: 0 −22</span> · 16:5 横版 · 158px 高</dd>
+          <dt>叠加</dt>
+          <dd>SVG 剪影叶（前景暗调）+ 暖光 bokeh 圆点 + <span class="code">overlay 22%</span> 颗粒</dd>
+          <dt>Caption</dt>
+          <dd>左下 · 中英双行 · 中文 Serif 500 · 英文 Fraunces italic · Ivory 反白 + 阴影</dd>
+          <dt>Corner</dt>
+          <dd>右上 · Inter 9.5 · <span class="code">+0.18em</span> · 季节/主题标（"Autumn · 秋"）</dd>
+          <dt>作用</dt>
+          <dd>杂志开章图 · 让 App 有"页"的感觉 · 每天可随季节/时段轮换</dd>
+        </dl>
+      </div>
+
+      <div class="anatomy-group">
+        <h3>Camera Panel <span class="tag">Primary CTA</span></h3>
+        <dl>
+          <dt>容器</dt>
+          <dd>Paper 卡 · <span class="code">radius 24</span> · 1px hairline · 20px padding</dd>
+          <dt>预览位</dt>
+          <dd>4:3 · <span class="code">radius 16</span> · Sage 渐变底 + 面部椭圆虚线引导 · 左下角 61% 黑胶囊提示</dd>
+          <dt>主 CTA</dt>
+          <dd>Moss-deep 实底 · Ivory 字 · <span class="code">height 44 · pill</span> · 图标 + "打开相机"</dd>
+          <dt>次 CTA</dt>
+          <dd>透明底 · 1px Moss 描边 · Moss-deep 字 · 图标 + "从相册选"</dd>
+          <dt>禁区</dt>
+          <dd>预览位内不叠任何装饰颗粒或剪影——照片位是证据区</dd>
+        </dl>
+      </div>
+
+      <div class="anatomy-group">
+        <h3>Product-use Link <span class="tag">Tertiary</span></h3>
+        <dl>
+          <dt>动线</dt>
+          <dd>弱化文字按钮 · 居中 · Moss-deep 色 · 尾箭头 muted</dd>
+          <dt>文案</dt>
+          <dd>"今天用了什么产品，也顺手记一笔"——邀请语气，非命令</dd>
+        </dl>
+      </div>
+
+      <div class="anatomy-group">
+        <h3>Region Event Card <span class="tag">Ongoing</span></h3>
+        <dl>
+          <dt>状态点</dt>
+          <dd>6px · Moss 实心圆 · "正在记录"的唯一视觉信号</dd>
+          <dt>缩略图</dt>
+          <dd>60×60 · <span class="code">radius 16</span> · 皮肤色底 + Sage 隐私遮罩 + 微陶土热区暗示位置</dd>
+          <dt>三层文字</dt>
+          <dd>区域名（Sans 500 · 15）· 上下文（12 · text-2）· 时间范围（Fraunces 96 · 11.5 · muted）</dd>
+          <dt>不做</dt>
+          <dd>不显示疗效动词、不显示分数、不显示"变好/变差"</dd>
+        </dl>
+      </div>
+
+      <div class="anatomy-group">
+        <h3>Observation List <span class="tag">Timeline</span></h3>
+        <dl>
+          <dt>结构</dt>
+          <dd>单卡三条 · <span class="code">radius 20</span> · 用 1px hairline-soft 做行间隔（不是阴影、不是圆角）</dd>
+          <dt>日期</dt>
+          <dd>Fraunces 96 · 13 · Moss 色 · 右对齐 · <span class="code">MM · DD</span> tabular</dd>
+          <dt>缩略图</dt>
+          <dd>44×44 · 皮肤底 + Sage 隐私遮罩 · 四种柔和调子（calm/dry/warm/…）对应区域状态</dd>
+          <dt>意图</dt>
+          <dd>让每次翻阅像翻页数，日期节奏是主音；文字是次音</dd>
+        </dl>
+      </div>
+
+      <div class="anatomy-group">
+        <h3>Footer Band <span class="tag">Photo</span></h3>
+        <dl>
+          <dt>照片位 C</dt>
+          <dd><span class="code">footer-band</span> · 4:1 · 100px · 极浅暖调</dd>
+          <dt>叠加</dt>
+          <dd>右上一枚 Silhouette 印章 · 左右淡出到 ground · 底部渐变到 ground</dd>
+          <dt>作用</dt>
+          <dd>视觉收尾 · 承接 whisper 副题 · 让页脚不显得空</dd>
+        </dl>
+      </div>
+
+      <div class="anatomy-group">
+        <h3>Tab bar</h3>
+        <dl>
+          <dt>底色</dt>
+          <dd>Paper-2 · 顶部 1px hairline · 无阴影</dd>
+          <dt>激活态</dt>
+          <dd>图标 + 文字 Moss-deep · 无背景高亮、无胶囊、无小红点</dd>
+          <dt>非激活</dt>
+          <dd>Muted 色 · 相同粗细</dd>
+        </dl>
+      </div>
+
+      <div class="callout">
+        <strong>照片位替换清单</strong><br>
+        · <span class="code">hero-photo</span>：竖版 400×580 · 柔焦植物/暖光<br>
+        · <span class="code">editorial-band</span>：横版 800×260 · 16:5 · 开章图<br>
+        · <span class="code">footer-band</span>：横版 800×200 · 4:1 · 收尾氛围<br>
+        · <span class="code">obs-thumb / region-thumb</span>：真实用户照片经隐私模糊 + Sage tint<br>
+        <br>
+        <span class="whisper">照片位之外，v1.2 装饰只做点缀。</span>
+      </div>
+
+      <div class="anatomy-group">
+        <h3>禁区</h3>
+        <dl>
+          <dt>照片本体</dt>
+          <dd>任何装饰不得覆盖到相机预览、缩略图、原图上</dd>
+          <dt>密度区</dt>
+          <dd>Region Card 和 Observation List 内部不出现任何 overlay</dd>
+          <dt>Amber</dt>
+          <dd>只做时间/日期注解 · 全屏最多出现一次</dd>
+          <dt>Clay</dt>
+          <dd>本页不出现——观察首页没有错误/警告态</dd>
+        </dl>
+      </div>
+    </aside>
+
+    <!-- Signoff -->
+    <div class="signoff">
+      <div class="stamp">Real content, quietly held.</div>
+      <div class="m">
+        Gold Page 01 · Observe · v1<br>
+        Skin Care Agent · 2026 · 08 · 31
+      </div>
+    </div>
+
+  </div>
+</div>

@@ -7,6 +7,7 @@ import type {
 import { normalizeRegionIds, regionById } from './region-catalog.ts';
 import type { RegionId } from './region-catalog.ts';
 import type { RegionEventDecision } from './region-event-api.ts';
+import type { ObservationRegionGeometry } from './observation-quality-api.ts';
 
 export type SavePhase = 'idle' | 'capturing' | 'saving' | 'save_failed';
 
@@ -135,6 +136,12 @@ export function setObservationDraftPhoto(
   takenAt: string,
 ): ObservationDraft {
   return { ...draft, photoUri, takenAt };
+}
+
+export function clearObservationDraftPhoto(
+  draft: ObservationDraft,
+): ObservationDraft {
+  return { ...draft, photoUri: null, takenAt: null };
 }
 
 export function observationDraftError(draft: ObservationDraft): string | null {
@@ -291,6 +298,124 @@ export function presentObservationTargets(observation: Observation) {
     targetId: target.target_id,
     presentation: presentObservation(observation, target),
   }));
+}
+
+export type ObservationResultFinding = {
+  label: string;
+  value: string;
+  tone: 'stable' | 'attention';
+};
+
+export type ObservationResultEvidence = {
+  regionId: RegionId;
+  label: string;
+  geometry: ObservationRegionGeometry;
+};
+
+export type ObservationResultModel = {
+  regionLabel: string;
+  summary: string;
+  findings: ObservationResultFinding[];
+  evidence: ObservationResultEvidence[];
+  details: { regionLabel: string; sections: { label: string; value: string }[] }[];
+  completedTargetIds: number[];
+  needsInputTargetIds: number[];
+  comparison: { label: string; note: string; enabled: false };
+  autoSaved: true;
+};
+
+export function buildObservationResultModel(
+  observation: Observation,
+): ObservationResultModel {
+  const completed = observation.targets.filter(
+    (target) =>
+      target.status === 'completed' &&
+      target.result_source === 'photo_analysis' &&
+      target.facts !== null,
+  );
+  const needsInput = observation.targets.filter(
+    (target) => target.status === 'needs_input',
+  );
+  const regionLabels = completed.map((target) =>
+    target.region_id ? regionById(target.region_id).label : '全脸',
+  );
+  const summaries = completed
+    .map((target) => target.facts?.summary.trim() ?? '')
+    .filter(Boolean);
+  const firstFacts = completed[0]?.facts;
+  const findingCandidates: ObservationResultFinding[] = firstFacts
+    ? [
+        ...(firstFacts.daily_appearance[0]
+          ? [
+              {
+                label: '整体表现',
+                value: firstFacts.daily_appearance[0],
+                tone: 'stable' as const,
+              },
+            ]
+          : []),
+        ...((firstFacts.coverage || firstFacts.distribution)
+          ? [
+              {
+                label: '局部分布',
+                value: [firstFacts.coverage, firstFacts.distribution]
+                  .filter(Boolean)
+                  .join('，'),
+                tone: 'attention' as const,
+              },
+            ]
+          : []),
+      ]
+    : [];
+  const geometryByRegion = new Map(
+    (observation.photo?.quality_meta?.regions ?? []).map((geometry) => [
+      geometry.region_id,
+      geometry,
+    ]),
+  );
+  const evidence = completed
+    .flatMap((target) => {
+      if (!target.region_id) return [];
+      const geometry = geometryByRegion.get(target.region_id);
+      return geometry
+        ? [
+            {
+              regionId: target.region_id,
+              label: `${regionById(target.region_id).label}检测区域`,
+              geometry,
+            },
+          ]
+        : [];
+    })
+    .slice(0, 2);
+  const details = completed.map((target) => {
+    const presentation = presentObservation(observation, target);
+    return {
+      regionLabel: target.region_id ? regionById(target.region_id).label : '全脸',
+      sections:
+        presentation.kind === 'photo'
+          ? presentation.sections.filter((section) => section.label !== '本次小结')
+          : [],
+    };
+  });
+  return {
+    regionLabel: regionLabels.join('、') || '本次检测区域',
+    summary:
+      summaries.length > 0
+        ? summaries.join(' ')
+        : '本次暂未形成可展示的照片分析结论。',
+    findings: findingCandidates.slice(0, 2),
+    evidence,
+    details,
+    completedTargetIds: completed.map((target) => target.target_id),
+    needsInputTargetIds: needsInput.map((target) => target.target_id),
+    comparison: {
+      label: '今日与昨日对比',
+      note: '数据积累后开放',
+      enabled: false,
+    },
+    autoSaved: true,
+  };
 }
 
 export function nextObservationPollDelay(attempt: number): number {

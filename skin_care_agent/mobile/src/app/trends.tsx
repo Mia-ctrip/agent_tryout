@@ -449,7 +449,7 @@ const styles = StyleSheet.create({
     padding: spacing.xl,
   },
   primaryMetricLabel: {
-    color: '#E6ECE8',
+    color: colors.scrimTextMuted,
     fontSize: 12,
     fontWeight: '700',
   },
@@ -460,7 +460,7 @@ const styles = StyleSheet.create({
     fontWeight: '800',
   },
   primaryMetricUnit: {
-    color: '#E6ECE8',
+    color: colors.scrimTextMuted,
     fontSize: 12,
   },
   metric: {
