@@ -1,0 +1,113 @@
+<meta charset="UTF-8">
+<style>
+  .dosage-board{padding:6px 2px 24px;color:#40483a}
+  .dosage-intro{display:flex;justify-content:space-between;gap:28px;align-items:end;margin:0 2px 26px;padding:8px 4px 22px;border-bottom:1px solid color-mix(in srgb,var(--border),transparent 22%)}
+  .dosage-intro h2{font:400 31px/1.2 Georgia,'Noto Serif SC',serif;margin:0 0 9px;color:#3d4538}
+  .dosage-intro p{font-size:11px;line-height:1.7;color:#72786b;margin:0;max-width:650px}
+  .prototype-note{font-size:9px;line-height:1.55;letter-spacing:.07em;text-transform:uppercase;color:#6f7962;border-left:1px solid #a9b199;padding-left:15px;max-width:210px}
+  .dosage-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+  .dosage-choice{appearance:none;border:0;background:transparent;padding:0;text-align:left;color:inherit;cursor:pointer;min-width:0}
+  .dosage-choice:focus-visible{outline:2px solid #68745b;outline-offset:5px;border-radius:32px}
+  .device{max-width:344px;margin:auto;padding:8px;border-radius:36px;background:#e8dfcf;border:1px solid #d3c8b6;box-shadow:0 15px 36px rgba(74,68,55,.12);transition:.2s ease}
+  .dosage-choice:hover .device{transform:translateY(-3px);box-shadow:0 19px 42px rgba(74,68,55,.17)}
+  .dosage-choice.is-selected .device{box-shadow:0 0 0 3px #69765b,0 19px 42px rgba(74,68,55,.17)}
+  .mobile{height:686px;position:relative;overflow:hidden;border-radius:28px;background:#f7f1e5;color:#41483b;font-family:Arial,'Noto Sans SC',sans-serif}
+  .mobile-status{height:31px;padding:10px 20px 0;display:flex;align-items:center;justify-content:space-between;font-size:8px;font-weight:500;box-sizing:border-box}
+  .mobile-head{height:45px;padding:0 20px;display:flex;align-items:center;justify-content:space-between}
+  .mobile-head strong{font:400 16px Georgia,'Noto Serif SC',serif;letter-spacing:.1em}
+  .profile-dot{width:26px;height:26px;border:1px solid #aeb69e;border-radius:50%;display:grid;place-items:center;font-size:8px;color:#5d6754}
+  .content{padding:17px 20px 78px}
+  .headline{font:400 28px/1.16 Georgia,'Noto Serif SC',serif;margin:0;color:#3f473a}
+  .subcopy{font-size:10px;line-height:1.58;color:#747a6d;margin:8px 0 0}
+  .cta{height:48px;border-radius:25px;background:#4e5a44;color:#fffdf8;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;letter-spacing:.03em}
+  .secondary{text-align:center;font-size:9px;color:#6d7564;margin-top:9px}
+  .footnav{position:absolute;left:0;right:0;bottom:0;height:64px;background:rgba(248,244,235,.95);border-top:1px solid rgba(108,111,96,.16);backdrop-filter:blur(9px);display:grid;grid-template-columns:repeat(4,1fr);padding:0 12px 8px;box-sizing:border-box;align-items:center}
+  .footnav span{text-align:center;font-size:8px;color:#858a7e;padding-top:18px;position:relative}
+  .footnav span:before{content:'';position:absolute;left:50%;top:2px;transform:translateX(-50%);width:12px;height:12px;border:1px solid currentColor;border-radius:50%}
+  .footnav span.on{color:#4f5b45;font-weight:500}
+  .footnav span.on:after{content:'';position:absolute;left:calc(50% + 8px);top:1px;width:4px;height:4px;border-radius:50%;background:#69765b}
+
+  /* A: 15% image dosage */
+  .light .hero-row{display:grid;grid-template-columns:1fr 96px;gap:16px;align-items:end;margin-bottom:22px}
+  .light .postcard{height:154px;border-radius:50px 50px 20px 50px;background:url('assets/motion-reference-6.jpg') center/cover no-repeat;position:relative;overflow:hidden}
+  .light .postcard:after{content:'';position:absolute;inset:0;background:rgba(47,58,43,.12)}
+  .light .cta{margin-top:4px}
+  .light .record-strip{display:grid;grid-template-columns:72px 1fr;gap:12px;align-items:center;margin-top:26px;padding-top:17px;border-top:1px solid #d8d1c3}
+  .light .record-img{height:70px;border-radius:16px;background:url('assets/motion-reference-2.jpg') 45% 58%/220% no-repeat}
+  .record-text b{display:block;font:400 15px Georgia,'Noto Serif SC',serif;margin-bottom:5px}
+  .record-text p{font-size:9px;line-height:1.55;color:#767d6f;margin:0}
+  .quote{margin-top:22px;padding:12px 0 12px 15px;border-left:2px solid #aab398;font:400 13px/1.65 Georgia,'Noto Serif SC',serif;color:#68715e}
+
+  /* B: 28% image dosage */
+  .balanced .content{padding-top:10px}
+  .balanced .headline{font-size:27px}
+  .collage{height:245px;margin-top:17px;position:relative}
+  .collage-main{position:absolute;left:0;top:0;width:76%;height:224px;border-radius:80px 18px 80px 18px;background:url('assets/motion-reference-7.jpg') center 1%/cover no-repeat;overflow:hidden}
+  .collage-main:after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(39,51,37,.02),rgba(40,49,36,.18))}
+  .collage-orbit{position:absolute;right:0;bottom:0;width:104px;height:104px;border-radius:50%;border:7px solid #f7f1e5;background:url('assets/motion-reference-6.jpg') 46% 42%/cover no-repeat;box-sizing:border-box}
+  .collage-caption{position:absolute;left:16px;bottom:34px;z-index:2;color:#fff;font-size:8px;line-height:1.5;letter-spacing:.12em;text-transform:uppercase}
+  .balanced .cta{margin-top:12px}
+  .microcopy{display:flex;justify-content:space-between;margin-top:18px;padding-top:13px;border-top:1px solid #d9d2c4;font-size:9px;color:#747b6d}
+  .microcopy strong{color:#4c5548;font-weight:500}
+
+  /* C: 42% image dosage */
+  .story .content{padding-top:8px}
+  .story .story-stage{height:325px;position:relative;margin-bottom:20px}
+  .story .story-bg{position:absolute;inset:0;border-radius:24px;background:#dbe0ce}
+  .story .frame-one{position:absolute;left:14px;top:14px;width:58%;height:185px;border-radius:17px;background:url('assets/motion-reference-7.jpg') center top/cover no-repeat;box-shadow:0 8px 20px rgba(60,65,49,.12)}
+  .story .frame-two{position:absolute;right:14px;top:56px;width:34%;height:145px;border-radius:17px;background:url('assets/motion-reference-2.jpg') 43% 48%/190% no-repeat;box-shadow:0 8px 20px rgba(60,65,49,.12)}
+  .story .frame-three{position:absolute;left:44px;right:34px;bottom:13px;height:113px;border-radius:17px;background:url('assets/motion-reference-5.jpg') center bottom/cover no-repeat;box-shadow:0 8px 20px rgba(60,65,49,.12)}
+  .story-label{position:absolute;left:19px;bottom:20px;z-index:4;background:rgba(247,242,232,.9);padding:7px 10px;border-radius:99px;font-size:8px;letter-spacing:.1em;color:#56604f}
+  .story .headline{font-size:24px}
+  .story-title-row{display:grid;grid-template-columns:1fr 100px;gap:10px;align-items:end}
+  .story .cta{height:45px;font-size:11px}
+  .story .secondary{text-align:left;margin-top:13px}
+
+  .meta{max-width:344px;margin:14px auto 0;padding:0 4px}
+  .meta small{display:block;font-size:8px;letter-spacing:.14em;color:#778168;margin-bottom:5px}
+  .meta h3{font:400 18px Georgia,'Noto Serif SC',serif;margin:0 0 6px;color:#434b3e}
+  .meta p{font-size:10px;line-height:1.55;color:#747a6d;margin:0}
+  .recommended{display:inline-block;margin-top:8px;padding:4px 8px;border-radius:99px;background:#dfe5d4;color:#55614b;font-size:8px;letter-spacing:.05em}
+  .rule-note{margin:27px 3px 0;padding-top:17px;border-top:1px solid color-mix(in srgb,var(--border),transparent 22%);font-size:10px;line-height:1.65;color:#72796a}
+  .rule-note b{color:#4d5649;font-weight:500}
+  @media(max-width:980px){.dosage-grid{grid-template-columns:1fr}.dosage-intro{display:block}.prototype-note{margin-top:14px;padding-left:0;padding-top:11px;border-left:0;border-top:1px solid #b9c0aa;max-width:none}.device,.meta{max-width:360px}}
+</style>
+
+<div class="dosage-board">
+  <div class="dosage-intro">
+    <div><h2>真实影像，应该出现多少？</h2><p>这次不比较颜色，而是比较参考素材作为“临时占位图”进入页面后的视觉比例。三版都会在正式上线前替换为拥有使用权的原创或授权图片。</p></div>
+    <div class="prototype-note">Prototype only<br>Reference images are not production assets</div>
+  </div>
+
+  <div class="dosage-grid">
+    <button class="dosage-choice light" data-choice="image-dosage-a-15" onclick="document.querySelectorAll('.dosage-choice').forEach(x=>x.classList.remove('is-selected'));this.classList.add('is-selected');toggleSelect(this)" aria-label="选择 A，轻触点缀">
+      <div class="device"><div class="mobile">
+        <div class="mobile-status"><span>9:41</span><span>● ◔ ▰</span></div><div class="mobile-head"><strong>观察</strong><span class="profile-dot">Y</span></div>
+        <div class="content"><div class="hero-row"><div><h3 class="headline">今天，也留下一次真实观察</h3><p class="subcopy">自然光 · 正脸 · 不修饰</p></div><div class="postcard"></div></div><div class="cta">开始今天的观察</div><div class="secondary">从相册选择</div><div class="record-strip"><div class="record-img"></div><div class="record-text"><b>本周的档案</b><p>3 次观察<br>最近记录于 8 月 29 日</p></div></div><div class="quote">慢慢看见变化，<br>不急着定义好坏。</div></div>
+        <div class="footnav"><span class="on">观察</span><span>档案</span><span>产品</span><span>我的</span></div>
+      </div></div>
+      <div class="meta"><small>A · IMAGE 15%</small><h3>轻触点缀</h3><p>影像只是一个呼吸点，最安全耐用；但品牌记忆仍然偏弱。</p></div>
+    </button>
+
+    <button class="dosage-choice balanced" data-choice="image-dosage-b-28" onclick="document.querySelectorAll('.dosage-choice').forEach(x=>x.classList.remove('is-selected'));this.classList.add('is-selected');toggleSelect(this)" aria-label="选择 B，编辑拼贴">
+      <div class="device"><div class="mobile">
+        <div class="mobile-status"><span>9:41</span><span>● ◔ ▰</span></div><div class="mobile-head"><strong>肌肤档案</strong><span class="profile-dot">Y</span></div>
+        <div class="content"><h3 class="headline">今天，也留下一次<br>真实观察</h3><p class="subcopy">让皮肤的变化，被温和而诚实地保存。</p><div class="collage"><div class="collage-main"><span class="collage-caption">31 AUG<br>NATURAL LIGHT</span></div><div class="collage-orbit"></div></div><div class="cta">开始今天的观察</div><div class="secondary">从相册选择</div><div class="microcopy"><span><strong>3 次</strong> 本周观察</span><span><strong>2 个</strong> 记录部位</span><span>查看档案 →</span></div></div>
+        <div class="footnav"><span class="on">观察</span><span>档案</span><span>产品</span><span>我的</span></div>
+      </div></div>
+      <div class="meta"><small>B · IMAGE 28%</small><h3>编辑拼贴</h3><p>两块不同尺度的影像形成主题与节奏，同时保留明确行动路径。</p><span class="recommended">我的推荐 · 有辨识度且可长期使用</span></div>
+    </button>
+
+    <button class="dosage-choice story" data-choice="image-dosage-c-42" onclick="document.querySelectorAll('.dosage-choice').forEach(x=>x.classList.remove('is-selected'));this.classList.add('is-selected');toggleSelect(this)" aria-label="选择 C，沉浸叙事">
+      <div class="device"><div class="mobile">
+        <div class="mobile-status"><span>9:41</span><span>● ◔ ▰</span></div><div class="mobile-head"><strong>肌肤档案</strong><span class="profile-dot">Y</span></div>
+        <div class="content"><div class="story-stage"><div class="story-bg"></div><div class="frame-one"></div><div class="frame-two"></div><div class="frame-three"></div><span class="story-label">慢养 · 真实 · 长期</span></div><div class="story-title-row"><div><h3 class="headline">留下一次<br>真实观察</h3><p class="subcopy">自然光 · 正脸 · 不修饰</p></div><div class="cta">开始观察</div></div><div class="secondary">从相册选择　·　查看最近记录</div></div>
+        <div class="footnav"><span class="on">观察</span><span>档案</span><span>产品</span><span>我的</span></div>
+      </div></div>
+      <div class="meta"><small>C · IMAGE 42%</small><h3>沉浸叙事</h3><p>最像品牌画册，首次打开很吸引人；但容易压过产品任务，也更依赖持续高质量摄影。</p></div>
+    </button>
+  </div>
+
+  <div class="rule-note"><b>新的素材规则：</b>参考图现在只承担原型中的气氛占位和构图验证。正式设计会为每一个影像槽位定义拍摄清单、裁切比例、光线、主体、留白方向与替换标准，避免将来换图后整体风格坍塌。</div>
+</div>
+

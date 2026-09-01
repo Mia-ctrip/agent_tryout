@@ -1,0 +1,1494 @@
+<title>Botanical Overlay v1.2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,300..600,0..100&family=Inter:wght@400;500;600&family=Noto+Sans+SC:wght@300;400;500;600&family=Noto+Serif+SC:wght@400;500;700&display=swap">
+
+<style>
+  :root {
+    --ground: #EFE8D6;
+    --paper: #F7F1E1;
+    --paper-2: #FBF6E8;
+    --sage: #A9B58F;
+    --sage-soft: #C8CFAF;
+    --moss: #6D7A54;
+    --moss-deep: #4A5638;
+    --earth: #3E362B;
+    --ink: #2E2A21;
+    --text: #46502C;
+    --text-2: #6E6A55;
+    --muted: #8A8670;
+    --hairline: #D9D2BB;
+    --hairline-soft: #E4DEC8;
+    --amber: #C89A45;
+    --clay: #8A4D3E;
+    --clay-soft: #E7D4C4;
+  }
+
+  :root:not([data-theme="light"]) {
+    @media (prefers-color-scheme: dark) {
+      --ground: #22201A;
+      --paper: #2C2A22;
+      --paper-2: #34322A;
+      --sage: #8B9673;
+      --sage-soft: #4E5541;
+      --moss: #8FA070;
+      --moss-deep: #A9B58F;
+      --earth: #EFE8D6;
+      --ink: #F3EDD9;
+      --text: #E5DFC6;
+      --text-2: #B7B098;
+      --muted: #8D8770;
+      --hairline: #423E33;
+      --hairline-soft: #38352C;
+      --amber: #D4B074;
+      --clay: #C48876;
+      --clay-soft: #4A362C;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground: #22201A;
+    --paper: #2C2A22;
+    --paper-2: #34322A;
+    --sage: #8B9673;
+    --sage-soft: #4E5541;
+    --moss: #8FA070;
+    --moss-deep: #A9B58F;
+    --earth: #EFE8D6;
+    --ink: #F3EDD9;
+    --text: #E5DFC6;
+    --text-2: #B7B098;
+    --muted: #8D8770;
+    --hairline: #423E33;
+    --hairline-soft: #38352C;
+    --amber: #D4B074;
+    --clay: #C48876;
+    --clay-soft: #4A362C;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ground);
+    color: var(--text);
+    font-family: "Noto Sans SC", "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 15px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .page {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 64px 40px 96px;
+  }
+  @media (max-width: 640px) { .page { padding: 40px 22px 72px; } }
+
+  /* ── Typography ─────────────────────────────── */
+  .eyebrow {
+    font-family: "Inter", sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .caption {
+    font-family: "Inter", sans-serif;
+    font-size: 12px;
+    color: var(--text-2);
+    letter-spacing: 0.06em;
+  }
+  .whisper {
+    font-family: "Fraunces", serif;
+    font-style: italic;
+    font-variation-settings: "opsz" 140, "SOFT" 100;
+    font-weight: 400;
+    color: var(--moss);
+  }
+
+  /* ── Cover ───────────────────────────────────── */
+  .cover {
+    position: relative;
+    padding: 60px 0 80px;
+    overflow: hidden;
+  }
+  .cover .eyebrow { margin-bottom: 40px; display: flex; gap: 12px; align-items: baseline; }
+  .cover .eyebrow .sep { color: var(--hairline); }
+  .cover h1 {
+    font-family: "Noto Serif SC", serif;
+    font-weight: 500;
+    font-size: clamp(38px, 6vw, 62px);
+    line-height: 1.16;
+    letter-spacing: -0.012em;
+    color: var(--ink);
+    margin: 0 0 20px;
+    text-wrap: balance;
+    position: relative;
+    z-index: 2;
+  }
+  .cover h1 em {
+    font-style: normal;
+    color: var(--moss);
+    background-image: linear-gradient(transparent 78%, var(--sage-soft) 78%, var(--sage-soft) 96%, transparent 96%);
+    padding: 0 .05em;
+  }
+  .cover .latin {
+    font-family: "Fraunces", serif;
+    font-style: italic;
+    font-variation-settings: "opsz" 140, "SOFT" 100;
+    font-weight: 400;
+    font-size: 22px;
+    color: var(--moss);
+    margin: 0 0 28px;
+    position: relative;
+    z-index: 2;
+  }
+  .cover .thesis {
+    max-width: 58ch;
+    font-size: 16.5px;
+    line-height: 1.72;
+    color: var(--text);
+    margin: 0;
+    position: relative;
+    z-index: 2;
+  }
+  .cover .thesis strong { font-weight: 500; color: var(--ink); }
+
+  .cover-atmosphere {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  /* ── Section ─────────────────────────────────── */
+  .section {
+    margin-top: 88px;
+    padding-top: 40px;
+    border-top: 1px solid var(--hairline);
+  }
+  .section-head {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: end;
+    gap: 20px;
+    margin-bottom: 24px;
+  }
+  .section-title {
+    font-family: "Noto Serif SC", serif;
+    font-size: 28px;
+    font-weight: 500;
+    letter-spacing: -0.005em;
+    color: var(--ink);
+    margin: 0;
+    display: flex; align-items: baseline; gap: 16px;
+  }
+  .section-title .n {
+    font-family: "Fraunces", serif;
+    font-variation-settings: "opsz" 144;
+    font-weight: 300;
+    font-size: 34px;
+    color: var(--moss);
+    letter-spacing: -0.02em;
+  }
+  .section-lede {
+    max-width: 64ch;
+    color: var(--text-2);
+    font-size: 14.5px;
+    margin: 4px 0 32px;
+  }
+
+  /* ── Technique rows ──────────────────────────── */
+  .tech {
+    display: grid;
+    grid-template-columns: 1fr 1.35fr;
+    gap: 32px;
+    padding: 32px 0;
+    border-bottom: 1px solid var(--hairline-soft);
+    align-items: start;
+  }
+  .tech:last-child { border-bottom: none; }
+  @media (max-width: 720px) { .tech { grid-template-columns: 1fr; gap: 20px; } }
+
+  .tech-meta { padding-right: 8px; }
+  .tech-num {
+    font-family: "Fraunces", serif;
+    font-variation-settings: "opsz" 144;
+    font-weight: 300;
+    font-size: 44px;
+    color: var(--moss);
+    letter-spacing: -0.02em;
+    line-height: 1;
+    margin-bottom: 10px;
+  }
+  .tech-name-cn {
+    font-family: "Noto Serif SC", serif;
+    font-weight: 500;
+    font-size: 22px;
+    color: var(--ink);
+    margin: 0 0 2px;
+    letter-spacing: -0.005em;
+  }
+  .tech-name-en {
+    font-family: "Fraunces", serif;
+    font-style: italic;
+    font-variation-settings: "opsz" 120, "SOFT" 80;
+    font-weight: 400;
+    font-size: 15px;
+    color: var(--moss);
+    margin: 0 0 16px;
+  }
+  .tech-desc {
+    font-size: 14.5px;
+    color: var(--text-2);
+    line-height: 1.7;
+    margin: 0 0 18px;
+    max-width: 40ch;
+  }
+  .kv {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: 6px 16px;
+    font-size: 12.5px;
+    margin-top: 12px;
+  }
+  .kv dt {
+    color: var(--muted);
+    font-family: "Inter", sans-serif;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    font-size: 10.5px;
+  }
+  .kv dd { margin: 0; color: var(--text); }
+  .kv .code {
+    font-family: "SF Mono", "JetBrains Mono", ui-monospace, monospace;
+    font-size: 12px;
+    color: var(--moss-deep);
+  }
+
+  .tech-demo {
+    aspect-ratio: 4 / 3;
+    border-radius: 20px;
+    background: var(--paper);
+    border: 1px solid var(--hairline-soft);
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .tech-demo .demo-label {
+    position: absolute;
+    left: 20px; bottom: 18px;
+    z-index: 5;
+    display: flex; flex-direction: column; gap: 2px;
+  }
+  .tech-demo .demo-label .cn {
+    font-family: "Noto Serif SC", serif;
+    font-weight: 500;
+    font-size: 17px;
+    color: var(--ink);
+  }
+  .tech-demo .demo-label .en {
+    font-family: "Fraunces", serif;
+    font-style: italic;
+    font-variation-settings: "opsz" 120, "SOFT" 90;
+    font-weight: 400;
+    font-size: 12px;
+    color: var(--moss);
+    letter-spacing: 0.02em;
+  }
+
+  /* ── Demo 01 · Bokeh ─────────────────────────── */
+  .bokeh {
+    position: absolute; inset: 0;
+    background:
+      /* dominant warm bloom, upper-right — 主光源 */
+      radial-gradient(circle at 78% 22%, rgba(255,238,190,0.85) 0%, rgba(255,230,170,0.5) 10%, transparent 26%),
+      radial-gradient(circle at 82% 18%, rgba(255,246,220,0.9) 0%, transparent 8%),
+      /* secondary cool bloom, mid-right */
+      radial-gradient(circle at 68% 44%, rgba(200,207,175,0.55) 0%, transparent 18%),
+      /* small mid highlights, near main */
+      radial-gradient(circle at 60% 26%, rgba(255,240,200,0.5) 0%, transparent 10%),
+      radial-gradient(circle at 74% 60%, rgba(232,222,182,0.42) 0%, transparent 12%),
+      /* distant tiny bokeh — 前景失焦 */
+      radial-gradient(circle at 22% 72%, rgba(169,181,143,0.35) 0%, transparent 14%),
+      radial-gradient(circle at 14% 58%, rgba(200,207,175,0.28) 0%, transparent 10%),
+      radial-gradient(circle at 34% 82%, rgba(232,222,182,0.32) 0%, transparent 9%),
+      radial-gradient(circle at 46% 12%, rgba(200,154,69,0.14) 0%, transparent 12%),
+      /* deep shadow lower-left — 建立景深 */
+      radial-gradient(ellipse 80% 60% at 10% 100%, rgba(74,86,56,0.18) 0%, transparent 60%),
+      /* ground gradient with directional falloff */
+      linear-gradient(115deg, #E8DDBE 0%, #EFE5CC 40%, #F7EED2 70%, #FBF5DC 100%);
+    filter: blur(1.2px);
+  }
+  .bokeh-highlight {
+    position: absolute;
+    top: 12%;
+    right: 14%;
+    width: 22%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: radial-gradient(circle at 40% 40%, rgba(255,250,225,0.85) 0%, rgba(255,240,200,0.35) 45%, transparent 70%);
+    filter: blur(6px);
+  }
+  .bokeh-highlight-2 {
+    position: absolute;
+    bottom: 22%;
+    left: 12%;
+    width: 12%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: radial-gradient(circle at 45% 45%, rgba(200,207,175,0.65) 0%, transparent 60%);
+    filter: blur(4px);
+  }
+
+  /* ── Demo 02 · Ink Print · Pressed leaf ────── */
+  .print-scene {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(120% 90% at 50% 45%, #FBF5DE 0%, #F5EDCE 55%, #E9DEB8 100%);
+  }
+  .print-scene::before {
+    content: "";
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(circle at 20% 30%, rgba(74,54,30,0.05), transparent 40%),
+      radial-gradient(circle at 80% 70%, rgba(74,54,30,0.06), transparent 42%);
+    mix-blend-mode: multiply;
+  }
+  .print-leaf-wrap {
+    position: relative;
+    z-index: 3;
+    width: 62%;
+    height: 78%;
+    transform: rotate(-8deg);
+    filter: url(#inkPrint);
+  }
+  .print-fibers {
+    position: absolute; inset: 0;
+    z-index: 2;
+    opacity: 0.35;
+    mix-blend-mode: multiply;
+  }
+  .print-grain-layer {
+    position: absolute; inset: 0;
+    z-index: 4;
+    opacity: 0.14;
+    mix-blend-mode: multiply;
+    pointer-events: none;
+  }
+
+  /* ── Demo 03 · Kinetic ──────────────────────── */
+  .kinetic-bed {
+    position: absolute; inset: 0;
+    background: linear-gradient(120deg, #1F2416 0%, #2E3524 40%, #3F4B31 100%);
+  }
+  .kinetic-streaks-1 {
+    position: absolute; inset: -6% -6%;
+    background:
+      linear-gradient(112deg,
+        transparent 0%,
+        rgba(200,207,175,0.35) 4%,
+        rgba(232,238,206,0.55) 8%,
+        rgba(200,207,175,0.28) 12%,
+        transparent 18%,
+        rgba(200,207,175,0.22) 26%,
+        rgba(232,238,206,0.42) 32%,
+        transparent 40%,
+        rgba(200,207,175,0.3) 50%,
+        rgba(232,238,206,0.5) 56%,
+        transparent 64%,
+        rgba(200,207,175,0.2) 74%,
+        rgba(200,207,175,0.32) 82%,
+        transparent 92%);
+    filter: blur(2.5px);
+    transform: skewY(-4deg);
+  }
+  .kinetic-streaks-2 {
+    position: absolute; inset: -6% -6%;
+    background:
+      linear-gradient(108deg,
+        transparent 0%,
+        rgba(180,190,150,0.16) 10%,
+        transparent 22%,
+        rgba(180,190,150,0.22) 42%,
+        transparent 55%,
+        rgba(180,190,150,0.18) 72%,
+        transparent 88%);
+    filter: blur(6px);
+    transform: skewY(-2deg);
+    mix-blend-mode: screen;
+  }
+  .kinetic-highlights {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 40% 8% at 30% 22%, rgba(232,238,206,0.35), transparent 70%),
+      radial-gradient(ellipse 30% 5% at 68% 58%, rgba(232,238,206,0.28), transparent 70%),
+      radial-gradient(ellipse 22% 4% at 20% 78%, rgba(200,207,175,0.22), transparent 70%);
+    filter: blur(4px);
+  }
+  .kinetic-leaves {
+    position: absolute; inset: 0;
+    z-index: 3;
+    pointer-events: none;
+  }
+  .kinetic-grain {
+    position: absolute; inset: 0;
+    opacity: 0.22;
+    mix-blend-mode: overlay;
+    z-index: 4;
+    pointer-events: none;
+  }
+
+  /* ── Demo 04 · Grain ────────────────────────── */
+  .grain-scene {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(120% 90% at 30% 35%, rgba(255,246,225,0.85) 0%, transparent 55%),
+      radial-gradient(80% 70% at 85% 75%, rgba(200,154,69,0.14) 0%, transparent 60%),
+      linear-gradient(160deg, #F4EDD8 0%, #EFE5CC 55%, #E5DAB8 100%);
+  }
+  .grain-bottle {
+    position: absolute;
+    right: 22%;
+    bottom: 12%;
+    width: 30%;
+    height: 68%;
+    background:
+      linear-gradient(120deg,
+        rgba(255,253,247,0.72) 0%,
+        rgba(232,222,193,0.32) 40%,
+        rgba(200,190,160,0.22) 70%,
+        rgba(180,168,138,0.38) 100%);
+    border-radius: 22% 22% 14% 14% / 12% 12% 8% 8%;
+    box-shadow:
+      inset 6px 4px 14px rgba(255,253,247,0.5),
+      inset -10px -6px 22px rgba(120,108,80,0.28),
+      0 12px 40px -18px rgba(80,70,50,0.25);
+    filter: blur(0.5px);
+  }
+  .grain-bottle::before {
+    content: "";
+    position: absolute;
+    left: 30%; right: 30%;
+    top: -22%;
+    height: 26%;
+    background:
+      linear-gradient(160deg, rgba(180,168,138,0.55), rgba(140,130,100,0.7));
+    border-radius: 40% 40% 8% 8% / 40% 40% 8% 8%;
+  }
+  .grain-bottle::after {
+    content: "";
+    position: absolute;
+    left: 12%; right: 12%;
+    top: 34%;
+    height: 40%;
+    background:
+      linear-gradient(100deg, transparent 0%, rgba(255,253,247,0.42) 30%, transparent 60%);
+    border-radius: 999px;
+    filter: blur(3px);
+  }
+  .grain-leaf-shadow {
+    position: absolute;
+    left: -8%;
+    top: -10%;
+    width: 55%;
+    height: 55%;
+    color: rgba(109,122,84,0.42);
+  }
+  .grain-svg {
+    position: absolute;
+    top: 0; bottom: 0;
+    right: 0; width: 40%;
+    opacity: 0.32;
+    mix-blend-mode: multiply;
+    z-index: 4;
+    pointer-events: none;
+  }
+  .grain-divider {
+    position: absolute;
+    top: 12%;
+    bottom: 12%;
+    right: 40%;
+    width: 1px;
+    background: repeating-linear-gradient(
+      to bottom,
+      rgba(46,42,33,0.25) 0px,
+      rgba(46,42,33,0.25) 3px,
+      transparent 3px,
+      transparent 7px
+    );
+    z-index: 5;
+  }
+
+  /* ── Demo 05 · Silhouette ───────────────────── */
+  .silhouette-bed {
+    position: absolute; inset: 0;
+    background: linear-gradient(160deg, var(--paper) 0%, var(--paper-2) 55%, #EDE6CD 100%);
+  }
+
+  /* ── Rules table ────────────────────────────── */
+  .rules {
+    background: var(--paper);
+    border: 1px solid var(--hairline);
+    border-radius: 22px;
+    overflow: hidden;
+  }
+  .rules-row {
+    display: grid;
+    grid-template-columns: 140px 1fr 1fr;
+    gap: 20px;
+    padding: 18px 24px;
+    border-bottom: 1px solid var(--hairline-soft);
+    align-items: baseline;
+  }
+  .rules-row:last-child { border-bottom: none; }
+  .rules-row.head {
+    background: var(--paper-2);
+    padding-top: 12px; padding-bottom: 12px;
+  }
+  .rules-row.head span {
+    font-family: "Inter", sans-serif;
+    font-size: 10.5px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .rules-row .surface {
+    font-family: "Noto Serif SC", serif;
+    font-weight: 500;
+    font-size: 15px;
+    color: var(--ink);
+  }
+  .rules-row .use, .rules-row .not {
+    font-size: 13.5px;
+    color: var(--text);
+    line-height: 1.6;
+  }
+  .rules-row .not { color: var(--text-2); }
+  .rules-row .use::before {
+    content: "✓";
+    display: inline-block;
+    margin-right: 8px;
+    color: var(--moss);
+    font-family: "Inter", sans-serif;
+    font-weight: 500;
+  }
+  .rules-row .not::before {
+    content: "×";
+    display: inline-block;
+    margin-right: 8px;
+    color: var(--clay);
+    font-family: "Inter", sans-serif;
+    font-weight: 500;
+  }
+  @media (max-width: 720px) {
+    .rules-row { grid-template-columns: 1fr; gap: 6px; padding: 16px 18px; }
+    .rules-row.head { display: none; }
+    .rules-row .surface::before {
+      content: "Surface · ";
+      font-family: "Inter", sans-serif;
+      font-size: 10px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-right: 6px;
+    }
+  }
+
+  /* ── Scenes ─────────────────────────────────── */
+  .scenes {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+  @media (max-width: 900px) { .scenes { grid-template-columns: 1fr; } }
+
+  .scene {
+    background: var(--paper);
+    border: 1px solid var(--hairline);
+    border-radius: 22px;
+    overflow: hidden;
+  }
+  .scene-frame {
+    aspect-ratio: 3 / 4.4;
+    position: relative;
+    overflow: hidden;
+    background: var(--paper-2);
+  }
+  .scene-meta {
+    padding: 18px 20px 22px;
+    border-top: 1px solid var(--hairline-soft);
+  }
+  .scene-meta h4 {
+    font-family: "Noto Serif SC", serif;
+    font-weight: 500;
+    font-size: 16px;
+    margin: 0 0 3px;
+    color: var(--ink);
+  }
+  .scene-meta .tag {
+    font-family: "Inter", sans-serif;
+    font-size: 10.5px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 0 0 10px;
+    display: block;
+  }
+  .scene-meta p {
+    font-size: 13px;
+    color: var(--text-2);
+    margin: 0;
+    line-height: 1.6;
+  }
+  .scene-meta .techlist {
+    display: flex; flex-wrap: wrap; gap: 6px;
+    margin-top: 12px;
+  }
+  .scene-meta .techchip {
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: var(--paper-2);
+    border: 1px solid var(--hairline-soft);
+    font-size: 11px;
+    color: var(--text-2);
+    font-family: "Inter", sans-serif;
+    letter-spacing: 0.04em;
+  }
+
+  /* Scene 1: Ritual */
+  .sc-ritual {
+    background: linear-gradient(160deg, #2A311F 0%, #4A5638 55%, #2E3524 100%);
+    color: #EFE8D6;
+    position: relative;
+  }
+  .sc-ritual .kinetic-layer {
+    position: absolute; inset: 0;
+    background: linear-gradient(112deg,
+      transparent 0%, rgba(200,207,175,0.16) 12%, transparent 22%,
+      rgba(200,207,175,0.2) 40%, transparent 55%,
+      rgba(200,207,175,0.14) 70%, transparent 88%);
+    filter: blur(1px);
+  }
+  .sc-ritual .content {
+    position: absolute; inset: 0;
+    padding: 28px 24px 24px;
+    display: flex; flex-direction: column; justify-content: space-between;
+    z-index: 3;
+  }
+  .sc-ritual .brand {
+    font-family: "Noto Serif SC", serif;
+    font-weight: 500;
+    font-size: 22px;
+    letter-spacing: 0.02em;
+  }
+  .sc-ritual .quote-cn {
+    font-family: "Noto Serif SC", serif;
+    font-weight: 400;
+    font-size: 20px;
+    line-height: 1.55;
+    color: #EFE8D6;
+    margin: 0 0 8px;
+    text-wrap: balance;
+  }
+  .sc-ritual .quote-en {
+    font-family: "Fraunces", serif;
+    font-style: italic;
+    font-variation-settings: "opsz" 140, "SOFT" 100;
+    font-weight: 400;
+    font-size: 14px;
+    color: rgba(239,232,214,0.75);
+    margin: 0;
+  }
+  .sc-ritual .date {
+    font-family: "Inter", sans-serif;
+    font-size: 10.5px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: rgba(239,232,214,0.55);
+  }
+
+  /* Scene 2: Empty state */
+  .sc-empty {
+    background: var(--paper);
+    position: relative;
+    overflow: hidden;
+  }
+  .sc-empty .content {
+    position: absolute; inset: 0;
+    padding: 32px 24px;
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    text-align: center;
+    z-index: 3;
+    gap: 12px;
+  }
+  .sc-empty h3 {
+    font-family: "Noto Serif SC", serif;
+    font-weight: 500;
+    font-size: 22px;
+    color: var(--ink);
+    margin: 0;
+    text-wrap: balance;
+    max-width: 16ch;
+    line-height: 1.35;
+  }
+  .sc-empty .en {
+    font-family: "Fraunces", serif;
+    font-style: italic;
+    font-variation-settings: "opsz" 140, "SOFT" 100;
+    font-weight: 400;
+    font-size: 13px;
+    color: var(--moss);
+    margin: 0;
+  }
+  .sc-empty .cta {
+    margin-top: 10px;
+    padding: 10px 22px;
+    background: var(--moss-deep);
+    color: #F3EDD9;
+    border-radius: 999px;
+    font-size: 13px;
+    font-family: "Noto Sans SC", sans-serif;
+  }
+
+  /* Scene 3: Hero */
+  .sc-hero {
+    background: linear-gradient(165deg, var(--paper) 0%, var(--paper-2) 55%, #E9E2C7 100%);
+    position: relative;
+    overflow: hidden;
+  }
+  .sc-hero .content {
+    position: absolute; inset: 0;
+    padding: 26px 22px 24px;
+    display: flex; flex-direction: column; justify-content: flex-end;
+    z-index: 3;
+  }
+  .sc-hero .eyebrow2 {
+    font-family: "Inter", sans-serif;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+  .sc-hero h3 {
+    font-family: "Noto Serif SC", serif;
+    font-weight: 500;
+    font-size: 22px;
+    color: var(--ink);
+    margin: 0 0 4px;
+    line-height: 1.28;
+    text-wrap: balance;
+  }
+  .sc-hero .meta {
+    font-family: "Inter", sans-serif;
+    font-size: 11px;
+    color: var(--text-2);
+    letter-spacing: 0.06em;
+    font-variant-numeric: tabular-nums;
+  }
+  .sc-hero .amber {
+    position: absolute;
+    top: 22px; right: 22px;
+    z-index: 4;
+    font-family: "Fraunces", serif;
+    font-variation-settings: "opsz" 96;
+    font-weight: 400;
+    font-size: 12px;
+    color: var(--amber);
+    letter-spacing: 0.08em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ── Params ─────────────────────────────────── */
+  .params {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  @media (max-width: 720px) { .params { grid-template-columns: 1fr; } }
+  .param-card {
+    background: var(--paper);
+    border: 1px solid var(--hairline);
+    border-radius: 20px;
+    padding: 22px 24px;
+  }
+  .param-card h4 {
+    font-family: "Noto Serif SC", serif;
+    font-weight: 500;
+    font-size: 15.5px;
+    margin: 0 0 12px;
+    color: var(--ink);
+  }
+  .param-card .code-block {
+    font-family: "SF Mono", ui-monospace, monospace;
+    font-size: 12px;
+    color: var(--moss-deep);
+    background: var(--paper-2);
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: 1px solid var(--hairline-soft);
+    line-height: 1.7;
+    overflow-x: auto;
+    white-space: pre;
+  }
+
+  /* ── Signoff ────────────────────────────────── */
+  .signoff {
+    margin-top: 88px;
+    padding-top: 40px;
+    border-top: 1px solid var(--hairline);
+    display: flex; justify-content: space-between; align-items: baseline;
+    gap: 24px; flex-wrap: wrap;
+  }
+  .signoff .stamp {
+    font-family: "Fraunces", serif;
+    font-style: italic;
+    font-variation-settings: "opsz" 144, "SOFT" 100;
+    font-weight: 400;
+    color: var(--moss);
+    font-size: 22px;
+    max-width: 30ch;
+    line-height: 1.4;
+  }
+  .signoff .meta {
+    font-family: "Inter", sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-align: right;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .cover h1, .section-title { opacity: 0; transform: translateY(6px); animation: rise .7s ease forwards; }
+    @keyframes rise { to { opacity: 1; transform: none; } }
+  }
+</style>
+
+<!-- ── SVG defs: shared filters and leaf paths ───────────────────────── -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <!-- Ink-print displacement: subtle organic distortion + grain -->
+    <filter id="inkPrint" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="4" result="noise"/>
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="3.2"/>
+    </filter>
+    <!-- Coarser print for the largest layer -->
+    <filter id="inkPrintCoarse" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.5" numOctaves="2" seed="7" result="noise"/>
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="5"/>
+    </filter>
+    <!-- Film grain: monochrome noise, used with mix-blend -->
+    <filter id="grain">
+      <feTurbulence type="fractalNoise" baseFrequency="1.7" numOctaves="2" seed="12"/>
+      <feColorMatrix values="0 0 0 0 0.28
+                             0 0 0 0 0.28
+                             0 0 0 0 0.20
+                             0 0 0 0.9 0"/>
+    </filter>
+    <!-- Silhouette blur (soft focus for foliage) -->
+    <filter id="softFocus" x="-10%" y="-10%" width="120%" height="120%">
+      <feGaussianBlur stdDeviation="4"/>
+    </filter>
+    <filter id="softFocusStrong" x="-10%" y="-10%" width="120%" height="120%">
+      <feGaussianBlur stdDeviation="9"/>
+    </filter>
+
+    <!-- One abstract leaf shape, used across techniques -->
+    <symbol id="leaf" viewBox="-60 -110 120 220">
+      <path d="M 0,-100 C 40,-70 55,-30 45,20 C 38,60 20,90 0,105 C -20,90 -38,60 -45,20 C -55,-30 -40,-70 0,-100 Z"
+            fill="currentColor"/>
+      <path d="M 0,-95 L 0,100" stroke="rgba(46,42,33,0.25)" stroke-width="1" fill="none"/>
+    </symbol>
+
+    <!-- Small sprig: a stem + three leaves -->
+    <symbol id="sprig" viewBox="-70 -110 140 220">
+      <path d="M -60,90 C -30,40 0,-10 10,-80" stroke="currentColor" stroke-width="1.2" fill="none"/>
+      <ellipse cx="-40" cy="55" rx="18" ry="7" fill="currentColor" transform="rotate(-40 -40 55)"/>
+      <ellipse cx="-8" cy="8" rx="22" ry="8" fill="currentColor" transform="rotate(-30 -8 8)"/>
+      <ellipse cx="20" cy="-52" rx="18" ry="6" fill="currentColor" transform="rotate(-20 20 -52)"/>
+    </symbol>
+
+    <!-- Pressed leaf with full venation (main vein + secondary + tertiary net) -->
+    <symbol id="pressedLeaf" viewBox="-100 -160 200 320">
+      <!-- Leaf blade — soft chlorophyll green-yellow -->
+      <path d="M 0,-150
+               C 50,-130 80,-90 82,-30
+               C 84,30 62,90 30,130
+               C 15,148 5,155 0,158
+               C -5,155 -15,148 -30,130
+               C -62,90 -84,30 -82,-30
+               C -80,-90 -50,-130 0,-150 Z"
+            fill="#B7C48A" opacity="0.55"/>
+      <!-- Subtle deeper wash for depth -->
+      <path d="M 0,-150
+               C 50,-130 80,-90 82,-30
+               C 84,30 62,90 30,130
+               C 15,148 5,155 0,158
+               C -5,155 -15,148 -30,130
+               C -62,90 -84,30 -82,-30
+               C -80,-90 -50,-130 0,-150 Z"
+            fill="url(#leafShade)" opacity="0.5"/>
+      <!-- Petiole (stem) -->
+      <path d="M 0,158 L 0,175" stroke="#6D7A54" stroke-width="2.4" stroke-linecap="round" fill="none" opacity="0.7"/>
+      <!-- Main vein (midrib) -->
+      <path d="M 0,-148 C 2,-100 3,-40 2,20 C 1,80 0,130 0,158"
+            stroke="#6D7A54" stroke-width="1.8" stroke-linecap="round" fill="none" opacity="0.75"/>
+      <!-- Secondary veins — pinnate pairs -->
+      <g stroke="#6D7A54" stroke-width="0.9" fill="none" stroke-linecap="round" opacity="0.7">
+        <!-- Right side -->
+        <path d="M 2,-120 C 22,-118 45,-108 62,-88"/>
+        <path d="M 2,-92  C 28,-88  56,-72  74,-48"/>
+        <path d="M 2,-58  C 30,-52  60,-30  78,0"/>
+        <path d="M 2,-22  C 30,-14  60,10   78,42"/>
+        <path d="M 2,14   C 28,22   54,44   68,78"/>
+        <path d="M 2,50   C 24,58   44,80   54,110"/>
+        <path d="M 2,86   C 18,92   30,110  36,132"/>
+        <path d="M 2,118  C 10,124  18,138  22,150"/>
+        <!-- Left side (mirror) -->
+        <path d="M -2,-120 C -22,-118 -45,-108 -62,-88"/>
+        <path d="M -2,-92  C -28,-88  -56,-72  -74,-48"/>
+        <path d="M -2,-58  C -30,-52  -60,-30  -78,0"/>
+        <path d="M -2,-22  C -30,-14  -60,10   -78,42"/>
+        <path d="M -2,14   C -28,22   -54,44   -68,78"/>
+        <path d="M -2,50   C -24,58   -44,80   -54,110"/>
+        <path d="M -2,86   C -18,92   -30,110  -36,132"/>
+        <path d="M -2,118  C -10,124  -18,138  -22,150"/>
+      </g>
+      <!-- Tertiary net — fine cross-veins between secondaries -->
+      <g stroke="#6D7A54" stroke-width="0.35" fill="none" opacity="0.5">
+        <!-- Right upper -->
+        <path d="M 18,-118 C 22,-108 26,-96 30,-88"/>
+        <path d="M 36,-116 C 42,-104 46,-94 48,-86"/>
+        <path d="M 20,-88 C 26,-78 32,-68 36,-58"/>
+        <path d="M 40,-84 C 46,-72 52,-62 56,-52"/>
+        <path d="M 58,-80 C 62,-68 66,-58 68,-48"/>
+        <path d="M 22,-54 C 30,-42 38,-30 42,-20"/>
+        <path d="M 44,-48 C 52,-34 58,-22 62,-12"/>
+        <path d="M 64,-42 C 70,-28 74,-16 76,-6"/>
+        <path d="M 22,-18 C 30,-6 38,6 42,18"/>
+        <path d="M 44,-12 C 52,4 58,18 62,30"/>
+        <path d="M 64,-6 C 70,10 74,22 76,34"/>
+        <path d="M 20,20 C 28,32 36,44 40,54"/>
+        <path d="M 42,26 C 50,40 56,54 60,64"/>
+        <path d="M 60,32 C 64,44 66,58 66,70"/>
+        <path d="M 18,58 C 24,68 30,78 34,86"/>
+        <path d="M 38,62 C 44,74 48,86 50,96"/>
+        <path d="M 54,66 C 58,78 60,90 60,100"/>
+        <path d="M 14,92 C 18,100 22,108 24,116"/>
+        <path d="M 28,96 C 32,106 34,116 36,124"/>
+        <!-- Left mirror -->
+        <path d="M -18,-118 C -22,-108 -26,-96 -30,-88"/>
+        <path d="M -36,-116 C -42,-104 -46,-94 -48,-86"/>
+        <path d="M -20,-88 C -26,-78 -32,-68 -36,-58"/>
+        <path d="M -40,-84 C -46,-72 -52,-62 -56,-52"/>
+        <path d="M -58,-80 C -62,-68 -66,-58 -68,-48"/>
+        <path d="M -22,-54 C -30,-42 -38,-30 -42,-20"/>
+        <path d="M -44,-48 C -52,-34 -58,-22 -62,-12"/>
+        <path d="M -64,-42 C -70,-28 -74,-16 -76,-6"/>
+        <path d="M -22,-18 C -30,-6 -38,6 -42,18"/>
+        <path d="M -44,-12 C -52,4 -58,18 -62,30"/>
+        <path d="M -64,-6 C -70,10 -74,22 -76,34"/>
+        <path d="M -20,20 C -28,32 -36,44 -40,54"/>
+        <path d="M -42,26 C -50,40 -56,54 -60,64"/>
+        <path d="M -60,32 C -64,44 -66,58 -66,70"/>
+        <path d="M -18,58 C -24,68 -30,78 -34,86"/>
+        <path d="M -38,62 C -44,74 -48,86 -50,96"/>
+        <path d="M -54,66 C -58,78 -60,90 -60,100"/>
+        <path d="M -14,92 C -18,100 -22,108 -24,116"/>
+        <path d="M -28,96 C -32,106 -34,116 -36,124"/>
+      </g>
+      <!-- Subtle warm-yellow patches — aged pressed color -->
+      <ellipse cx="-24" cy="-40" rx="18" ry="24" fill="#D4B074" opacity="0.14"/>
+      <ellipse cx="30" cy="60" rx="20" ry="14" fill="#C89A45" opacity="0.10"/>
+    </symbol>
+
+    <!-- Radial shading gradient for leaf depth -->
+    <radialGradient id="leafShade" cx="45%" cy="30%" r="70%">
+      <stop offset="0%" stop-color="#DFE6BE" stop-opacity="0.9"/>
+      <stop offset="60%" stop-color="#B7C48A" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#6D7A54" stop-opacity="0.4"/>
+    </radialGradient>
+  </defs>
+</svg>
+
+<div class="page">
+
+  <!-- ── Cover ─────────────────────────────────── -->
+  <header class="cover">
+    <div class="cover-atmosphere">
+      <svg width="100%" height="100%" viewBox="0 0 1000 400" preserveAspectRatio="xMaxYMid slice" aria-hidden="true">
+        <g filter="url(#softFocusStrong)" opacity="0.55">
+          <g color="#A9B58F" transform="translate(880,80) rotate(20)"><use href="#leaf"/></g>
+          <g color="#C8CFAF" transform="translate(940,180) rotate(-8) scale(0.7)"><use href="#leaf"/></g>
+          <g color="#6D7A54" transform="translate(820,300) rotate(45) scale(0.5)"><use href="#leaf"/></g>
+        </g>
+        <g filter="url(#softFocus)" opacity="0.35" color="#A9B58F"
+           transform="translate(760,240) rotate(-15) scale(0.55)">
+          <use href="#sprig"/>
+        </g>
+      </svg>
+    </div>
+
+    <div class="eyebrow">
+      <span>Skin Care Agent</span><span class="sep">·</span>
+      <span>Botanical Overlay</span><span class="sep">·</span>
+      <span>v1.2 · 补充</span>
+    </div>
+    <h1>骨架已经立住了，<br>接下来是<em>呼吸</em>。</h1>
+    <p class="latin">Where the page breathes, a plant may quietly grow.</p>
+    <p class="thesis">
+      v1.1 定的是 <strong>秩序</strong>——象牙的底、苔藓的重点、克制的层级。这一份 v1.2 定的是 <strong>空气</strong>——
+      在 hero、空状态、仪式时刻这些"允许氛围出场"的角落，放入五种"痕迹感"的植物语言：
+      散景、拓印、拖影、颗粒、剪影。它们从不参与信息，只参与感受。
+    </p>
+  </header>
+
+  <!-- ── 01 · The Five Techniques ──────────────── -->
+  <section class="section">
+    <div class="section-head">
+      <h2 class="section-title"><span class="n">01</span>五种痕迹</h2>
+      <span class="eyebrow">Five Traces</span>
+    </div>
+    <p class="section-lede">
+      每一种手法都取自"过程留下的痕迹"，不是"完成的物件"。所以画面永远软、永远像隔着一层——像相纸的散景、像宣纸的拓印、像雨水冲过玻璃的拖影。这五种手法可以单用，也可以叠加。</p>
+
+    <!-- 01.1 Bokeh -->
+    <div class="tech">
+      <div class="tech-meta">
+        <div class="tech-num">01</div>
+        <h3 class="tech-name-cn">散景</h3>
+        <p class="tech-name-en">Bokeh · 光斑</p>
+        <p class="tech-desc">
+          大光圈拍植物时留下的柔光斑。用径向渐变色斑 + 整体 blur 生成——是"看进去、化开来"的感觉。日常界面里最安全的一种氛围，因为它没有形状，只有光。
+        </p>
+        <dl class="kv">
+          <dt>Ground</dt><dd>Paper / Paper-2 渐变</dd>
+          <dt>Bloom</dt><dd>Sage-soft 55% · Sage 42% · Amber 10%</dd>
+          <dt>Blur</dt><dd class="code">filter: blur(1.5–3px)</dd>
+          <dt>Where</dt><dd>Hero、卡片头部、Onboarding 底</dd>
+        </dl>
+      </div>
+      <div class="tech-demo">
+        <div class="bokeh"></div>
+        <div class="bokeh-highlight"></div>
+        <div class="bokeh-highlight-2"></div>
+        <div class="demo-label">
+          <span class="cn">柔和的光斑</span>
+          <span class="en">Light letting itself go</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 01.2 Ink Print -->
+    <div class="tech">
+      <div class="tech-meta">
+        <div class="tech-num">02</div>
+        <h3 class="tech-name-cn">拓印</h3>
+        <p class="tech-name-en">Ink Print · 敲拓叶脉</p>
+        <p class="tech-desc">
+          真实压制过的一整片叶——主脉、侧脉、细密网脉都留在纸上。SVG 手绘完整叶片 + 宣纸纤维底 + <span style="font-family:monospace">feDisplacementMap</span> 让边缘微微失焦，模拟汁液渗透宣纸的痕迹。绿色和暖黄色因氧化并存，是"存在过、留下来"的证据。
+        </p>
+        <dl class="kv">
+          <dt>Object</dt><dd>单片完整叶 · 主脉 + 8 对侧脉 + 网脉</dd>
+          <dt>Palette</dt><dd>叶绿 #B7C48A + 老黄 #C89A45 · opacity 55%</dd>
+          <dt>Paper</dt><dd>宣纸纤维 turbulence 底纹</dd>
+          <dt>Where</dt><dd>章节分隔、Onboarding、月度回顾角落</dd>
+        </dl>
+      </div>
+      <div class="tech-demo">
+        <div class="print-scene"></div>
+        <!-- paper fiber texture: subtle turbulence multiplied into the ground -->
+        <svg class="print-fibers" preserveAspectRatio="none">
+          <filter id="paperFibers">
+            <feTurbulence type="fractalNoise" baseFrequency="0.02 0.9" numOctaves="2" seed="3"/>
+            <feColorMatrix values="0 0 0 0 0.62
+                                   0 0 0 0 0.55
+                                   0 0 0 0 0.40
+                                   0 0 0 0.35 0"/>
+          </filter>
+          <rect width="100%" height="100%" filter="url(#paperFibers)"/>
+        </svg>
+        <div class="print-leaf-wrap">
+          <svg viewBox="-100 -180 200 360" width="100%" height="100%" preserveAspectRatio="xMidYMid meet">
+            <use href="#pressedLeaf"/>
+          </svg>
+        </div>
+        <svg class="print-grain-layer" preserveAspectRatio="none">
+          <rect width="100%" height="100%" filter="url(#grain)"/>
+        </svg>
+        <div class="demo-label">
+          <span class="cn">一片被轻轻压过的叶</span>
+          <span class="en">Pressed leaf, on paper made of fiber</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 01.3 Kinetic Wash -->
+    <div class="tech">
+      <div class="tech-meta">
+        <div class="tech-num">03</div>
+        <h3 class="tech-name-cn">拖影</h3>
+        <p class="tech-name-en">Kinetic Wash · 动感冲刷</p>
+        <p class="tech-desc">
+          "气味地图"那张的秘诀。快门慢一档，绿意被拉成一条条水彩。用 112° 的多层线性渐变 + 轻 blur 模拟——只在深色仪式底上出现，因为它需要"有东西在动"的错觉。
+        </p>
+        <dl class="kv">
+          <dt>Ground</dt><dd>Moss-deep 森林深绿</dd>
+          <dt>Streaks</dt><dd>Sage-soft 60% · 多带宽随机</dd>
+          <dt>Angle</dt><dd>108–118° · 别正对</dd>
+          <dt>Where</dt><dd>仪式屏、月度回顾、启动页</dd>
+        </dl>
+      </div>
+      <div class="tech-demo" style="background: #1F2416;">
+        <div class="kinetic-bed"></div>
+        <div class="kinetic-streaks-1"></div>
+        <div class="kinetic-streaks-2"></div>
+        <div class="kinetic-highlights"></div>
+        <svg class="kinetic-leaves" preserveAspectRatio="xMidYMid slice" viewBox="0 0 400 300">
+          <g filter="url(#softFocus)" opacity="0.32" color="#C8CFAF"
+             transform="translate(60, 40) rotate(-18) scale(0.55)">
+            <use href="#sprig"/>
+          </g>
+          <g filter="url(#softFocusStrong)" opacity="0.28" color="#A9B58F"
+             transform="translate(340, 240) rotate(35) scale(0.6)">
+            <use href="#leaf"/>
+          </g>
+        </svg>
+        <svg class="kinetic-grain" preserveAspectRatio="none">
+          <rect width="100%" height="100%" filter="url(#grain)"/>
+        </svg>
+        <div class="demo-label">
+          <span class="cn" style="color:#F3EDD9;">被拉长的绿意</span>
+          <span class="en" style="color:rgba(239,232,214,0.7);">Greenery, drawn out by time</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 01.4 Grain -->
+    <div class="tech">
+      <div class="tech-meta">
+        <div class="tech-num">04</div>
+        <h3 class="tech-name-cn">颗粒</h3>
+        <p class="tech-name-en">Film Grain · 胶片粒子</p>
+        <p class="tech-desc">
+          让数字画面有"看得见的呼吸"。SVG turbulence 生成的中性颗粒，混合模式 multiply 或 overlay，叠在任何底上都不改变色相。密度 14–24%。这是从 v1.1 到 v1.2 视觉气质跃迁的关键一枚。
+        </p>
+        <dl class="kv">
+          <dt>Source</dt><dd class="code">feTurbulence baseFrequency 1.7</dd>
+          <dt>Blend</dt><dd>multiply（浅底）/ overlay（深底）</dd>
+          <dt>Opacity</dt><dd>14–24% · 不超过 28</dd>
+          <dt>Where</dt><dd>可以叠在任何允许氛围的表面</dd>
+        </dl>
+      </div>
+      <div class="tech-demo">
+        <div class="grain-scene"></div>
+        <svg class="grain-leaf-shadow" viewBox="-60 -110 120 220" preserveAspectRatio="xMidYMid meet">
+          <g filter="url(#softFocusStrong)">
+            <use href="#sprig"/>
+          </g>
+        </svg>
+        <div class="grain-bottle"></div>
+        <svg class="grain-svg" preserveAspectRatio="none">
+          <rect width="100%" height="100%" filter="url(#grain)"/>
+        </svg>
+        <div class="grain-divider"></div>
+        <div style="position:absolute; top:14px; left:16px; z-index:6;
+                    font-family:'Inter',sans-serif; font-size:9.5px; font-weight:500;
+                    letter-spacing:0.18em; text-transform:uppercase; color:var(--muted);">
+          原图
+        </div>
+        <div style="position:absolute; top:14px; right:16px; z-index:6;
+                    font-family:'Inter',sans-serif; font-size:9.5px; font-weight:500;
+                    letter-spacing:0.18em; text-transform:uppercase; color:var(--moss-deep);">
+          +22% 颗粒
+        </div>
+        <div class="demo-label">
+          <span class="cn">左边是数字，右边像照片</span>
+          <span class="en">Grain, the sound of stillness</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 01.5 Silhouette -->
+    <div class="tech">
+      <div class="tech-meta">
+        <div class="tech-num">05</div>
+        <h3 class="tech-name-cn">剪影</h3>
+        <p class="tech-name-en">Foliage Whisper · 叶影低语</p>
+        <p class="tech-desc">
+          抽象枝叶剪影经 Gaussian blur 大幅柔化后作为氛围。永远出现在边角、永远越出画面（不居中、不完整）——它是背景的呼吸，不是主角。绝不用真实照片的抠图。
+        </p>
+        <dl class="kv">
+          <dt>Object</dt><dd>抽象 SVG 枝叶（不可以是照片）</dd>
+          <dt>Blur</dt><dd class="code">feGaussianBlur 4–12</dd>
+          <dt>Placement</dt><dd>边角越出画面 · 30–70% 出血</dd>
+          <dt>Color</dt><dd>Sage / Moss · 25–45% opacity</dd>
+        </dl>
+      </div>
+      <div class="tech-demo">
+        <div class="silhouette-bed"></div>
+        <svg width="100%" height="100%" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice" style="position:absolute; inset:0;">
+          <!-- Distant background: soft, low-opacity -->
+          <g filter="url(#softFocusStrong)" opacity="0.35" color="#C8CFAF"
+             transform="translate(50, 30) rotate(-15) scale(1.1)">
+            <use href="#sprig"/>
+          </g>
+          <!-- Mid focus: recognizable but soft — main subject -->
+          <g filter="url(#softFocus)" opacity="0.7" color="#6D7A54"
+             transform="translate(-10, 60) rotate(-20) scale(1.2)">
+            <use href="#sprig"/>
+          </g>
+          <!-- Near-sharp accent on the right — clarity anchor -->
+          <g opacity="0.55" color="#4A5638"
+             transform="translate(340, 220) rotate(28) scale(0.75)">
+            <use href="#leaf"/>
+          </g>
+          <!-- Warm shadow accent -->
+          <g filter="url(#softFocus)" opacity="0.32" color="#8A4D3E"
+             transform="translate(290, 40) rotate(-18) scale(0.5)">
+            <use href="#leaf"/>
+          </g>
+        </svg>
+        <div class="demo-label">
+          <span class="cn">越出画面的枝叶</span>
+          <span class="en">A shadow, gently passing through</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 02 · Rules ────────────────────────────── -->
+  <section class="section">
+    <div class="section-head">
+      <h2 class="section-title"><span class="n">02</span>使用规则</h2>
+      <span class="eyebrow">Where it goes · Where it doesn't</span>
+    </div>
+    <p class="section-lede">
+      装饰语言的价值取决于"哪里不用"。凡是承担 <strong>信息、证据、判断</strong> 的表面，一概不出现装饰。核心心法：Overlay is a whisper, never a caption.</p>
+
+    <div class="rules">
+      <div class="rules-row head">
+        <span>Surface</span><span>可以出现</span><span>禁止出现</span>
+      </div>
+      <div class="rules-row">
+        <div class="surface">观察首页 Hero</div>
+        <div class="use">Bokeh · Silhouette 边角越出 · 极轻 Grain</div>
+        <div class="not">Kinetic · 完整叶片居中 · 强对比色斑</div>
+      </div>
+      <div class="rules-row">
+        <div class="surface">用户照片位</div>
+        <div class="use">照片周围的留白允许极轻 Grain（overlay 8%）</div>
+        <div class="not">任何叠加到照片本身的 overlay 或滤镜</div>
+      </div>
+      <div class="rules-row">
+        <div class="surface">区域事件详情</div>
+        <div class="use">页面底部一个 Silhouette 边角作为收尾呼吸</div>
+        <div class="not">在图片对比区、字段列表区放任何装饰</div>
+      </div>
+      <div class="rules-row">
+        <div class="surface">历程时间线</div>
+        <div class="use">日期分组的分隔处允许一枚极小 Silhouette 印章</div>
+        <div class="not">列表卡片内部 · 任何背景色斑</div>
+      </div>
+      <div class="rules-row">
+        <div class="surface">空状态</div>
+        <div class="use">Bokeh 或 Print · 一句 whisper 副题</div>
+        <div class="not">Kinetic（太重）· 拟人化插画</div>
+      </div>
+      <div class="rules-row">
+        <div class="surface">仪式屏 · 月度回顾</div>
+        <div class="use">Kinetic + Grain · 深底反白 · whisper 副题</div>
+        <div class="not">Ivory 底 · 明亮 CTA · 表单密度</div>
+      </div>
+      <div class="rules-row">
+        <div class="surface">品牌启动 / Onboarding</div>
+        <div class="use">Print 叠层 · Silhouette · 极轻 Grain</div>
+        <div class="not">立即 CTA · 完整信息密度</div>
+      </div>
+      <div class="rules-row">
+        <div class="surface">表单、设置、错误</div>
+        <div class="use">纯净 Paper 底 · 无任何装饰</div>
+        <div class="not">所有装饰层 · 无一例外</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 03 · Scenes ───────────────────────────── -->
+  <section class="section">
+    <div class="section-head">
+      <h2 class="section-title"><span class="n">03</span>三个场景示范</h2>
+      <span class="eyebrow">Composition Studies</span>
+    </div>
+    <p class="section-lede">
+      同一套装饰词汇，在三种典型场景下的"配比"。仪式时刻允许多种叠加，日常 hero 只用一种，收尾章节只用一枚小印。
+    </p>
+
+    <div class="scenes">
+      <!-- Scene: Monthly Ritual -->
+      <div class="scene">
+        <div class="scene-frame sc-ritual">
+          <div class="kinetic-layer"></div>
+          <svg width="100%" height="100%" style="position:absolute; inset:0;" preserveAspectRatio="xMidYMid slice" viewBox="0 0 300 400">
+            <g filter="url(#softFocusStrong)" opacity="0.35" color="#C8CFAF"
+               transform="translate(30, 40) rotate(-20) scale(0.7)">
+              <use href="#sprig"/>
+            </g>
+            <g filter="url(#softFocus)" opacity="0.28" color="#A9B58F"
+               transform="translate(270, 340) rotate(45) scale(0.5)">
+              <use href="#leaf"/>
+            </g>
+            <rect width="100%" height="100%" filter="url(#grain)" opacity="0.18" style="mix-blend-mode:overlay;"/>
+          </svg>
+          <div class="content">
+            <div class="brand">八月回望</div>
+            <div>
+              <p class="quote-cn">这个月，你为自己<br>留下了 <span style="color:#C8CFAF">28</span> 次观察</p>
+              <p class="quote-en">You quietly kept twenty-eight windows into yourself.</p>
+            </div>
+            <div class="date">2026 · 08 · 31</div>
+          </div>
+        </div>
+        <div class="scene-meta">
+          <span class="tag">Ritual · 月度回顾</span>
+          <h4>深底 · 拖影 · 剪影 · 颗粒</h4>
+          <p>四种手法叠加。允许在这里做，因为一年只出现十二次。</p>
+          <div class="techlist">
+            <span class="techchip">Kinetic</span>
+            <span class="techchip">Silhouette</span>
+            <span class="techchip">Grain</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Scene: Empty state -->
+      <div class="scene">
+        <div class="scene-frame sc-empty">
+          <div style="position:absolute; inset:0; background:
+            radial-gradient(circle at 30% 30%, rgba(200,207,175,0.5), transparent 32%),
+            radial-gradient(circle at 78% 68%, rgba(169,181,143,0.35), transparent 30%),
+            radial-gradient(circle at 82% 22%, rgba(232,222,182,0.5), transparent 24%);
+            filter: blur(2px);"></div>
+          <svg width="100%" height="100%" style="position:absolute; inset:0;" preserveAspectRatio="xMidYMid slice" viewBox="0 0 300 400">
+            <g filter="url(#inkPrint)" opacity="0.20" color="#A9B58F"
+               transform="translate(150, 130) rotate(-8) scale(0.55)">
+              <use href="#leaf"/>
+            </g>
+            <g filter="url(#inkPrint)" opacity="0.16" color="#8A4D3E"
+               transform="translate(148, 120) rotate(6) scale(0.55)">
+              <use href="#leaf"/>
+            </g>
+          </svg>
+          <div class="content">
+            <span class="whisper">A quiet page, waiting</span>
+            <h3>还没有你的第一张<br>今日观察</h3>
+            <p class="en">Skin deserves to find its gentle sanctuary.</p>
+            <div class="cta">开始今天的观察</div>
+          </div>
+        </div>
+        <div class="scene-meta">
+          <span class="tag">Empty state · 观察首页</span>
+          <h4>散景 · 拓印 · whisper 副题</h4>
+          <p>只两种手法，浅浅的。空状态是邀请，不是宣言。</p>
+          <div class="techlist">
+            <span class="techchip">Bokeh</span>
+            <span class="techchip">Print</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Scene: Daily Hero -->
+      <div class="scene">
+        <div class="scene-frame sc-hero">
+          <svg width="100%" height="100%" style="position:absolute; inset:0;" preserveAspectRatio="xMidYMid slice" viewBox="0 0 300 400">
+            <g filter="url(#softFocusStrong)" opacity="0.32" color="#A9B58F"
+               transform="translate(280, -20) rotate(30) scale(0.9)">
+              <use href="#sprig"/>
+            </g>
+            <g filter="url(#softFocus)" opacity="0.25" color="#C8CFAF"
+               transform="translate(-30, 380) rotate(-40) scale(0.55)">
+              <use href="#leaf"/>
+            </g>
+            <rect width="100%" height="100%" filter="url(#grain)" opacity="0.10" style="mix-blend-mode:multiply;"/>
+          </svg>
+          <div class="amber">08 · 31</div>
+          <div class="content">
+            <div class="eyebrow2">Today · 今天</div>
+            <h3>今天，也留下<br>一次真实观察</h3>
+            <div class="meta">自然光 · 上次观察 3 天前</div>
+          </div>
+        </div>
+        <div class="scene-meta">
+          <span class="tag">Daily hero · 观察首页</span>
+          <h4>剪影角落 · 极轻颗粒</h4>
+          <p>日常屏最多两种，且必须让位给主标题与操作。</p>
+          <div class="techlist">
+            <span class="techchip">Silhouette</span>
+            <span class="techchip">Grain</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 04 · Params & Tokens ──────────────────── -->
+  <section class="section">
+    <div class="section-head">
+      <h2 class="section-title"><span class="n">04</span>参数与 Token</h2>
+      <span class="eyebrow">For engineers</span>
+    </div>
+    <p class="section-lede">
+      装饰层不是自由创作，而是有边界的参数。以下是可以直接落到 <span style="font-family:monospace">theme.ts</span> 的一组 overlay tokens，与 v1.1 的 color/spacing/radii 平行。
+    </p>
+
+    <div class="params">
+      <div class="param-card">
+        <h4>Opacity 密度阶梯</h4>
+        <div class="code-block">overlay.whisper   = 0.08   // 极轻，日常表面
+overlay.soft      = 0.16   // 空状态、次要氛围
+overlay.medium    = 0.28   // 印章叠印、剪影
+overlay.strong    = 0.45   // 只在仪式深底上
+// 任何单一装饰层不得 &gt; 0.55</div>
+      </div>
+      <div class="param-card">
+        <h4>Blur 模糊阶梯</h4>
+        <div class="code-block">blur.grain     = 0px      // 颗粒不模糊
+blur.bokeh     = 2px      // 散景整体
+blur.foliage-1 = 4px      // 剪影 · 中焦
+blur.foliage-2 = 9px      // 剪影 · 大焦
+blur.foliage-3 = 14px     // 边角出血远景</div>
+      </div>
+      <div class="param-card">
+        <h4>Blend 模式</h4>
+        <div class="code-block">grain-on-light  → multiply
+grain-on-dark   → overlay
+silhouette      → normal + opacity
+kinetic-streak  → normal + opacity
+print-layer     → normal (SVG displacement)</div>
+      </div>
+      <div class="param-card">
+        <h4>Motion（可选）</h4>
+        <div class="code-block">// 只在仪式屏允许缓慢漂移
+foliage-drift   : 24s ease-in-out infinite
+// 幅度极小，不超过 6px / 3deg
+translate: 0 → 4px 0
+rotate:    0 → -1.5deg
+// prefers-reduced-motion → 全部关闭</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Sign-off ──────────────────────────────── -->
+  <footer class="signoff">
+    <div class="stamp">A plant does not perform.<br>It just lets the light through.</div>
+    <div class="meta">
+      Botanical Overlay v1.2<br>
+      Skin Care Agent · 2026 · 08 · 31
+    </div>
+  </footer>
+
+</div>
