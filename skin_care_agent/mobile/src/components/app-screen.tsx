@@ -12,12 +12,15 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import type { SafeAreaViewProps } from 'react-native-safe-area-context';
 
 import { colors, maxContentWidth, spacing } from '@/constants/theme';
+import { appScreenPresentation } from '@/lib/app-shell';
+import type { AppScreenVariant } from '@/lib/app-shell';
 
 type AppScreenProps = PropsWithChildren<{
   footer?: ReactNode;
   contentStyle?: StyleProp<ViewStyle>;
   safeAreaEdges?: SafeAreaViewProps['edges'];
   backgroundColor?: string;
+  variant?: AppScreenVariant;
 }>;
 
 export function AppScreen({
@@ -25,19 +28,32 @@ export function AppScreen({
   footer,
   contentStyle,
   safeAreaEdges,
-  backgroundColor = colors.background,
+  backgroundColor,
+  variant = 'paper',
 }: AppScreenProps) {
+  const presentation = appScreenPresentation(variant);
+  const resolvedBackground = backgroundColor ?? presentation.background;
+  const { gap, rowGap, columnGap } = StyleSheet.flatten(contentStyle) ?? {};
   return (
-    <SafeAreaView edges={safeAreaEdges} style={[styles.safeArea, { backgroundColor }]}>
+    <SafeAreaView edges={safeAreaEdges} style={[styles.safeArea, { backgroundColor: resolvedBackground }]}>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         style={styles.keyboard}>
         <ScrollView
-          contentContainerStyle={[styles.scrollContent, contentStyle]}
+          contentContainerStyle={[
+            styles.scrollContent,
+            {
+              paddingHorizontal: presentation.horizontalPadding,
+              paddingVertical: presentation.verticalPadding,
+            },
+            contentStyle,
+          ]}
           keyboardShouldPersistTaps="handled">
-          <View style={styles.content}>{children}</View>
+          <View style={[styles.content, { gap, rowGap, columnGap }, presentation.edgeToEdge && styles.edgeToEdgeContent]}>
+            {children}
+          </View>
         </ScrollView>
-        {footer ? <View style={[styles.footer, { backgroundColor }]}>{footer}</View> : null}
+        {footer ? <View style={[styles.footer, { backgroundColor: resolvedBackground }]}>{footer}</View> : null}
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
@@ -61,6 +77,7 @@ const styles = StyleSheet.create({
     width: '100%',
     maxWidth: maxContentWidth,
   },
+  edgeToEdgeContent: { maxWidth: '100%' },
   footer: {
     borderTopWidth: StyleSheet.hairlineWidth,
     borderTopColor: colors.border,

@@ -97,11 +97,9 @@ const styles = StyleSheet.create({
     minHeight: 112,
     flexDirection: 'row',
     gap: spacing.lg,
-    borderRadius: radii.md,
-    backgroundColor: colors.surface,
-    borderWidth: 1,
+    borderBottomWidth: StyleSheet.hairlineWidth,
     borderColor: colors.border,
-    padding: spacing.md,
+    paddingVertical: spacing.md,
   },
   pressed: { opacity: 0.78 },
   thumbnailFrame: {

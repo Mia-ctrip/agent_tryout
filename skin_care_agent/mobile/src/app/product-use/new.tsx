@@ -5,6 +5,7 @@ import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { AppButton } from '@/components/app-button';
 import { AppScreen } from '@/components/app-screen';
+import { EditorialText } from '@/components/editorial-text';
 import { InlineNotice } from '@/components/inline-notice';
 import { ProductSearchPicker } from '@/components/product-search-picker';
 import { colors, radii, spacing } from '@/constants/theme';
@@ -60,7 +61,7 @@ export default function NewProductUseScreen() {
   }
 
   return (
-    <AppScreen safeAreaEdges={['left', 'right', 'bottom']}>
+    <AppScreen variant="form" safeAreaEdges={['left', 'right', 'bottom']}>
       <Stack.Screen
         options={{
           headerShown: true,
@@ -72,7 +73,7 @@ export default function NewProductUseScreen() {
         }}
       />
       <View style={styles.header}>
-        <Text style={styles.title}>这次实际用了什么？</Text>
+        <EditorialText role="pageTitle" style={styles.title}>这次实际用了什么？</EditorialText>
         <Text style={styles.description}>可以多选，也可以不选产品并保存“未注明产品”。</Text>
       </View>
       {error ? <InlineNotice tone="error" message={error} /> : null}
@@ -189,7 +190,7 @@ export default function NewProductUseScreen() {
 
 const styles = StyleSheet.create({
   header: { gap: spacing.sm, marginBottom: spacing.xl },
-  title: { color: colors.text, fontSize: 28, fontWeight: '800' },
+  title: { color: colors.ink, fontSize: 28, lineHeight: 38, fontWeight: '400' },
   description: { color: colors.textMuted, fontSize: 15, lineHeight: 22 },
   section: { gap: spacing.md, marginBottom: spacing.xl },
   sectionTitle: { color: colors.text, fontSize: 17, fontWeight: '700' },

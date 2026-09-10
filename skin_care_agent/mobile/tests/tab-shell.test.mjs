@@ -37,19 +37,19 @@ test('MVP theme exposes the approved sage palette', () => {
       warmWhite: colors.warmWhite,
     },
     {
-      iris: '#9BAD50',
-      irisStrong: '#71813C',
-      lavender: '#EDF1DF',
-      sage: '#EDF1DF',
-      amber: '#E8C76A',
+      iris: '#A9B58F',
+      irisStrong: '#4A5638',
+      lavender: '#C8CFAF',
+      sage: '#A9B58F',
+      amber: '#C89A45',
       warmGray: '#46502C',
-      warmWhite: '#FFFDF7',
+      warmWhite: '#FBF6E8',
     },
   );
 });
 
-test('legacy semantic color keys preserve the sage surface hierarchy', () => {
-  assert.equal(colors.background, '#F8F0DD');
+test('legacy semantic color keys preserve the quiet botanical surface hierarchy', () => {
+  assert.equal(colors.background, '#F7F1E1');
   assert.equal(colors.surface, colors.warmWhite);
   assert.equal(colors.surfaceMuted, colors.lavender);
   assert.equal(colors.text, colors.warmGray);

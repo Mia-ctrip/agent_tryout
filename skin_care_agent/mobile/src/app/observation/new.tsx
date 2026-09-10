@@ -11,6 +11,7 @@ import {
   Pressable,
   StyleSheet,
   Text,
+  TextInput,
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -40,7 +41,6 @@ import {
   faceAnalysisReducer,
   liveGuidanceFromQuality,
   photoRecoveryPrimaryLabel,
-  regionSelectionCta,
 } from '@/lib/face-analysis-flow';
 import type { CaptureGuidanceStatus, FacePhotoSource } from '@/lib/face-analysis-flow';
 import { buildObservationForm, createObservation } from '@/lib/observation-api';
@@ -58,6 +58,7 @@ import {
   createObservationDraft,
   observationDraftToInput,
   setObservationDraftPhoto,
+  setRegionNote,
   setRegionEventDecision,
 } from '@/lib/observation-flow';
 import type { ObservationDraft } from '@/lib/observation-flow';
@@ -417,6 +418,11 @@ export default function NewObservationScreen() {
     void prepareAnalysis(confirmed);
   }
 
+  function toggleObservationRegion(regionId: RegionId) {
+    setNotice(null);
+    dispatch({ type: 'region_toggled', regionId });
+  }
+
   function confirmEventsAndAnalyze() {
     const decisionError = regionEventDecisionError(eventPreviews, draft.eventDecisions);
     if (decisionError) {
@@ -515,6 +521,10 @@ export default function NewObservationScreen() {
             <Text style={styles.cameraTitle}>拍摄正脸照片</Text>
             <View style={styles.topButton} />
           </View>
+          <View style={styles.captureContext}>
+            <Text style={styles.captureContextLabel}>全脸观察 · 正面自然光</Text>
+            <Text style={styles.captureContextHint}>无滤镜 · 保持稳定距离</Text>
+          </View>
           <View style={styles.cameraBottom}>
             {notice ? <Text style={styles.cameraError}>{notice}</Text> : null}
             <Pressable
@@ -525,12 +535,15 @@ export default function NewObservationScreen() {
               onPress={() => void capturePhoto()}
               style={({ pressed }) => [
                 styles.captureButton,
+                !useSystemCamera && styles.shutterButton,
                 pressed && styles.pressed,
                 !useSystemCamera && !cameraReady && styles.disabled,
               ]}>
-              <Text style={styles.captureButtonLabel}>
-                {useSystemCamera ? '打开系统相机' : '拍摄'}
-              </Text>
+              {useSystemCamera ? (
+                <Text style={styles.captureButtonLabel}>打开系统相机</Text>
+              ) : (
+                <View style={styles.shutterButtonInner} />
+              )}
             </Pressable>
           </View>
         </SafeAreaView>
@@ -595,37 +608,85 @@ export default function NewObservationScreen() {
         backgroundColor={observationColors.background}
         footer={
           <ObservationActionBar
+            layout="inline"
             onPrimaryPress={startAnalysis}
             onSecondaryPress={retake}
             primaryDisabled={flow.selectedRegions.length === 0}
-            primaryLabel={regionSelectionCta(flow.selectedRegions)}
+            primaryLabel="使用这张照片"
             secondaryLabel="重新拍摄"
           />
         }>
         <View style={styles.pageHeader}>
-          <Text accessibilityRole="header" style={styles.title}>这次想重点看看哪里？</Text>
+          <Text accessibilityRole="header" style={styles.title}>确认照片</Text>
           <Text style={styles.description}>
-            系统建议的位置会预先选中，你还可以选择任意需要关注的区域。
+            先确认照片是否可用，再选择这次想记录的位置。
           </Text>
         </View>
-        <FaceRegionMap
-          activeRegion={flow.activeRegion}
-          calloutMode="all"
-          geometry={flow.quality.regions}
-          onToggle={(regionId) => dispatch({ type: 'region_toggled', regionId })}
-          photoUri={flow.photoUri}
-          required={flow.requiredRegions}
-          selected={flow.selectedRegions}
-          sourceSize={sourceSize(flow.quality)}
-        />
+        <View style={styles.confirmPhotoFrame}>
+          <FaceRegionMap
+            activeRegion={flow.activeRegion}
+            aspectRatio={1}
+            calloutMode="all"
+            geometry={flow.quality.regions}
+            onToggle={toggleObservationRegion}
+            photoUri={flow.photoUri}
+            required={flow.requiredRegions}
+            selected={flow.selectedRegions}
+            sourceSize={sourceSize(flow.quality)}
+          />
+          <View style={styles.rawPhotoBadge}>
+            <Text style={styles.rawPhotoBadgeLabel}>原始照片 · 未修饰</Text>
+          </View>
+        </View>
+        <View style={styles.photoUsability}>
+          <View style={styles.usabilityMark}>
+            <Text style={styles.usabilityMarkLabel}>✓</Text>
+          </View>
+          <View style={styles.usabilityCopy}>
+            <Text style={styles.usabilityTitle}>光线与清晰度可以使用</Text>
+            <Text style={styles.usabilityDescription}>照片会按原图保存，不自动美化。</Text>
+          </View>
+        </View>
         <View style={styles.regionChoices}>
+          <View style={styles.confirmSectionHeader}>
+            <Text style={styles.confirmSectionTitle}>这次观察哪里？</Text>
+              <Text style={styles.confirmSectionMeta}>可选择多个区域</Text>
+          </View>
           <RegionChoiceBar
-            onToggle={(regionId) => dispatch({ type: 'region_toggled', regionId })}
+            onToggle={toggleObservationRegion}
             required={flow.requiredRegions}
             selected={flow.selectedRegions}
           />
           <Text style={styles.directionNote}>左右均指你本人真实左右，与自拍预览是否镜像无关。</Text>
         </View>
+        {flow.selectedRegions.length > 0 ? (
+          <View style={styles.feelingSection}>
+            <View style={styles.confirmSectionHeader}>
+              <Text style={styles.confirmSectionTitle}>补充当天感受</Text>
+              <Text style={styles.confirmSectionMeta}>可选</Text>
+            </View>
+            <Text style={styles.feelingHint}>只记录你的原话，例如睡眠、刺痛或紧绷感。</Text>
+            {flow.selectedRegions.map((regionId) => (
+              <View key={regionId} style={styles.feelingField}>
+                <Text style={styles.feelingLabel}>{regionById(regionId).label}</Text>
+                <TextInput
+                  accessibilityLabel={`${regionById(regionId).label}当天感受，可选`}
+                  maxLength={500}
+                  multiline
+                  onChangeText={(value) =>
+                    setDraft((current) => setRegionNote(current, regionId, value))
+                  }
+                  placeholder="写下一句今天的感受"
+                  placeholderTextColor={observationColors.textMuted}
+                  style={styles.feelingInput}
+                  textAlignVertical="top"
+                  value={draft.notes[regionId] ?? ''}
+                />
+              </View>
+            ))}
+          </View>
+        ) : null}
+        {notice ? <InlineNotice tone="error" message={notice} /> : null}
       </AppScreen>
     );
   }
@@ -760,7 +821,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: observationSpacing.lg,
-    backgroundColor: observationColors.cameraTopBar,
+    backgroundColor: 'transparent',
   },
   topButton: { width: 64, minHeight: 44, justifyContent: 'center' },
   topButtonLabel: { color: observationColors.scrimText, fontSize: 15, fontWeight: '600' },
@@ -771,6 +832,23 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     textAlign: 'center',
   },
+  captureContext: {
+    position: 'absolute',
+    top: 88,
+    alignSelf: 'center',
+    alignItems: 'center',
+    gap: observationSpacing.xs,
+    borderRadius: 999,
+    backgroundColor: observationColors.statusShade,
+    paddingVertical: observationSpacing.sm,
+    paddingHorizontal: observationSpacing.lg,
+  },
+  captureContextLabel: {
+    color: observationColors.scrimText,
+    fontSize: 13,
+    fontWeight: '700',
+  },
+  captureContextHint: { color: observationColors.scrimText, fontSize: 12, opacity: 0.82 },
   cameraBottom: {
     alignItems: 'center',
     gap: observationSpacing.md,
@@ -788,9 +866,24 @@ const styles = StyleSheet.create({
     minHeight: 54,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: observationRadii.md,
+    borderRadius: 999,
     backgroundColor: observationColors.surface,
     paddingHorizontal: observationSpacing.xl,
+  },
+  shutterButton: {
+    minWidth: 72,
+    width: 72,
+    minHeight: 72,
+    borderWidth: 3,
+    borderColor: observationColors.scrimText,
+    backgroundColor: 'transparent',
+    paddingHorizontal: 5,
+  },
+  shutterButtonInner: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: observationColors.scrimText,
   },
   captureButtonLabel: { color: observationColors.forest, fontSize: 16, fontWeight: '800' },
   qualityPhoto: {
@@ -811,8 +904,69 @@ const styles = StyleSheet.create({
     paddingHorizontal: observationSpacing.lg,
   },
   progressText: { color: observationColors.text, fontSize: 14, fontWeight: '600' },
+  confirmPhotoFrame: { position: 'relative' },
+  rawPhotoBadge: {
+    position: 'absolute',
+    left: observationSpacing.md,
+    bottom: observationSpacing.md,
+    borderRadius: 999,
+    backgroundColor: observationColors.statusShade,
+    paddingVertical: 6,
+    paddingHorizontal: observationSpacing.md,
+  },
+  rawPhotoBadgeLabel: { color: observationColors.scrimText, fontSize: 12, fontWeight: '600' },
+  photoUsability: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: observationSpacing.md,
+    paddingVertical: observationSpacing.lg,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: observationColors.border,
+  },
+  usabilityMark: {
+    width: 32,
+    height: 32,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: observationColors.sage,
+  },
+  usabilityMarkLabel: { color: observationColors.action, fontSize: 16, fontWeight: '700' },
+  usabilityCopy: { flex: 1, gap: 2 },
+  usabilityTitle: { color: observationColors.text, fontSize: 15, fontWeight: '700' },
+  usabilityDescription: { color: observationColors.textMuted, fontSize: 12, lineHeight: 18 },
   regionChoices: { gap: observationSpacing.md, marginTop: observationSpacing.lg },
+  confirmSectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    justifyContent: 'space-between',
+    gap: observationSpacing.md,
+  },
+  confirmSectionTitle: { color: observationColors.text, fontSize: 17, fontWeight: '700' },
+  confirmSectionMeta: { color: observationColors.textMuted, fontSize: 12 },
   directionNote: { color: observationColors.textMuted, fontSize: 12, lineHeight: 18 },
+  feelingSection: {
+    gap: observationSpacing.md,
+    marginTop: observationSpacing.xl,
+    paddingTop: observationSpacing.lg,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: observationColors.border,
+  },
+  feelingHint: { color: observationColors.textMuted, fontSize: 13, lineHeight: 20 },
+  feelingField: { gap: observationSpacing.sm },
+  feelingLabel: { color: observationColors.text, fontSize: 13, fontWeight: '600' },
+  feelingInput: {
+    minHeight: 64,
+    borderWidth: 1,
+    borderColor: observationColors.border,
+    borderRadius: observationRadii.md,
+    backgroundColor: observationColors.surface,
+    color: observationColors.text,
+    fontSize: 15,
+    lineHeight: 22,
+    padding: observationSpacing.md,
+  },
   eventList: { gap: observationSpacing.lg },
   eventSection: {
     gap: observationSpacing.md,

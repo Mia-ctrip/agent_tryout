@@ -31,6 +31,7 @@ type FaceRegionMapProps = {
   onToggle: (regionId: RegionId) => void;
   disabled?: boolean;
   calloutMode?: 'active' | 'all';
+  aspectRatio?: number;
 };
 
 export function FaceRegionMap({
@@ -43,6 +44,7 @@ export function FaceRegionMap({
   onToggle,
   disabled = false,
   calloutMode = 'active',
+  aspectRatio = 0.78,
 }: FaceRegionMapProps) {
   const [viewportSize, setViewportSize] = useState<Size>({ width: 0, height: 0 });
   const resolvedPhotoUri = useMemo(
@@ -71,7 +73,7 @@ export function FaceRegionMap({
     <View
       accessibilityLabel="照片检测区域图"
       onLayout={onLayout}
-      style={styles.root}>
+      style={[styles.root, { aspectRatio }]}>
       <Image contentFit="cover" source={{ uri: resolvedPhotoUri }} style={StyleSheet.absoluteFill} />
       {overlay ? (
         <Image

@@ -10,6 +10,7 @@ import {
 
 import { AppButton } from '@/components/app-button';
 import { AppScreen } from '@/components/app-screen';
+import { EditorialText } from '@/components/editorial-text';
 import { HistoryEventRow } from '@/components/history-event-row';
 import { HistoryFaceOverview } from '@/components/history-face-overview';
 import { InlineNotice } from '@/components/inline-notice';
@@ -97,7 +98,7 @@ export default function HistoryScreen() {
   return (
     <AppScreen>
       <View style={styles.header}>
-        <Text style={styles.title}>历程</Text>
+        <EditorialText role="pageTitle" style={styles.title}>历程</EditorialText>
         <Text style={styles.description}>从你关心的区域，回看真实记录。</Text>
       </View>
 
@@ -266,15 +267,14 @@ export default function HistoryScreen() {
 }
 
 const styles = StyleSheet.create({
-  header: { gap: spacing.sm, marginBottom: spacing.xl },
+  header: { alignItems: 'center', gap: spacing.sm, marginBottom: spacing.lg },
   title: {
-    color: colors.text,
-    fontFamily: 'serif',
+    color: colors.ink,
     fontSize: 34,
     lineHeight: 42,
-    fontWeight: '700',
+    fontWeight: '400',
   },
-  description: { color: colors.textMuted, fontSize: 16, lineHeight: 24 },
+  description: { color: colors.textMuted, fontSize: 14, lineHeight: 24, textAlign: 'center' },
   loading: { alignItems: 'center', gap: spacing.md, paddingVertical: spacing.hero },
   muted: { color: colors.textMuted, fontSize: 14, lineHeight: 21 },
   picker: {
@@ -288,7 +288,7 @@ const styles = StyleSheet.create({
   section: { marginTop: spacing.xxl },
   sectionHeadingRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
   sectionHeadingCopy: { flex: 1, gap: spacing.xs },
-  sectionTitle: { color: colors.text, fontSize: 19, fontWeight: '700' },
+  sectionTitle: { color: colors.earth, fontSize: 18, fontWeight: '500' },
   sectionHint: { marginTop: spacing.xs, color: colors.textMuted, fontSize: 13, lineHeight: 19 },
   dismiss: { color: colors.actionPrimary, fontSize: 14, fontWeight: '700', padding: spacing.sm },
   rows: { marginTop: spacing.sm },

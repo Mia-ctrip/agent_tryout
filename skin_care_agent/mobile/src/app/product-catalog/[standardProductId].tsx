@@ -3,6 +3,7 @@ import { useCallback, useState } from 'react';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 
 import { AppScreen } from '@/components/app-screen';
+import { EditorialText } from '@/components/editorial-text';
 import { InlineNotice } from '@/components/inline-notice';
 import { ProductImage } from '@/components/product-image';
 import { colors, spacing } from '@/constants/theme';
@@ -42,7 +43,7 @@ export default function StandardProductDetailScreen() {
       {!product && !error ? <ActivityIndicator color={colors.primary} /> : null}
       {product ? (
         <View style={styles.content}>
-          <Text style={styles.title}>{product.official_name}</Text>
+          <EditorialText role="pageTitle" style={styles.title}>{product.official_name}</EditorialText>
           <ProductImage accessibilityLabel={`${product.official_name} 官方产品图片`} category={product.product_category} uri={product.image_url} />
           <Text style={styles.meta}>{product.brand_name} · {product.formula_version}</Text>
           <Text style={styles.boundary}>产品资料仅用于记录，不构成诊断或使用建议。</Text>
@@ -63,7 +64,7 @@ export default function StandardProductDetailScreen() {
 
 const styles = StyleSheet.create({
   content: { gap: spacing.md },
-  title: { color: colors.text, fontSize: 28, fontWeight: '800' },
+  title: { color: colors.ink, fontSize: 28, lineHeight: 38, fontWeight: '400' },
   meta: { color: colors.irisStrong, fontSize: 15 },
   boundary: { color: colors.textMuted, fontSize: 14, lineHeight: 21 },
   document: { gap: spacing.sm, marginTop: spacing.md },

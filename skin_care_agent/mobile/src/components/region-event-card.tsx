@@ -1,6 +1,6 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { colors, radii, spacing } from '@/constants/theme';
+import { colors, spacing } from '@/constants/theme';
 import type { RegionEvent } from '@/lib/region-event-api';
 import { regionById } from '@/lib/region-catalog';
 
@@ -33,16 +33,14 @@ export function RegionEventCard({
 const styles = StyleSheet.create({
   card: {
     gap: spacing.sm,
-    borderWidth: 1,
+    borderBottomWidth: StyleSheet.hairlineWidth,
     borderColor: colors.border,
-    borderRadius: radii.md,
-    backgroundColor: colors.surface,
-    padding: spacing.lg,
+    paddingVertical: spacing.lg,
   },
   heading: { flexDirection: 'row', justifyContent: 'space-between', gap: spacing.md },
-  region: { color: colors.text, fontSize: 18, fontWeight: '800' },
+  region: { color: colors.earth, fontSize: 17, fontWeight: '500' },
   status: { color: colors.irisStrong, fontSize: 13, fontWeight: '700' },
-  date: { color: colors.text, fontSize: 14 },
+  date: { color: colors.textMuted, fontSize: 12 },
   boundary: { color: colors.textMuted, fontSize: 13, lineHeight: 19 },
   pressed: { opacity: 0.76 },
 });

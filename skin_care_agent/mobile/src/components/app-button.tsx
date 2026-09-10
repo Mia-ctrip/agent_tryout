@@ -1,14 +1,16 @@
-import { ActivityIndicator, Pressable, StyleSheet, Text, ViewStyle } from 'react-native';
+import { ActivityIndicator, Pressable, StyleProp, StyleSheet, Text, ViewStyle } from 'react-native';
 
-import { colors, radii, spacing } from '@/constants/theme';
+import { spacing } from '@/constants/theme';
+import { appButtonPresentation } from '@/lib/app-shell';
+import type { AppButtonVariant } from '@/lib/app-shell';
 
 type AppButtonProps = {
   label: string;
   onPress: () => void;
   loading?: boolean;
   disabled?: boolean;
-  variant?: 'primary' | 'secondary' | 'text';
-  style?: ViewStyle;
+  variant?: AppButtonVariant;
+  style?: StyleProp<ViewStyle>;
 };
 
 export function AppButton({
@@ -20,28 +22,30 @@ export function AppButton({
   style,
 }: AppButtonProps) {
   const unavailable = disabled || loading;
-  const labelStyle =
-    variant === 'primary'
-      ? styles.primaryLabel
-      : variant === 'secondary'
-        ? styles.secondaryLabel
-        : styles.textLabel;
+  const presentation = appButtonPresentation(variant);
   return (
     <Pressable
       accessibilityRole="button"
+      accessibilityState={{ disabled: unavailable, busy: loading }}
       disabled={unavailable}
       onPress={onPress}
       style={({ pressed }) => [
         styles.base,
-        styles[variant],
+        {
+          minHeight: presentation.minHeight,
+          borderRadius: presentation.borderRadius,
+          backgroundColor: presentation.backgroundColor,
+          borderColor: presentation.borderColor,
+          borderWidth: presentation.borderColor === 'transparent' ? 0 : 1,
+        },
         pressed && !unavailable && styles.pressed,
         unavailable && styles.disabled,
         style,
       ]}>
       {loading ? (
-        <ActivityIndicator color={variant === 'primary' ? colors.white : colors.primary} />
+        <ActivityIndicator color={presentation.labelColor} />
       ) : (
-        <Text style={[styles.label, labelStyle]}>{label}</Text>
+        <Text style={[styles.label, { color: presentation.labelColor }]}>{label}</Text>
       )}
     </Pressable>
   );
@@ -49,21 +53,9 @@ export function AppButton({
 
 const styles = StyleSheet.create({
   base: {
-    minHeight: 52,
-    borderRadius: radii.md,
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: spacing.xl,
-  },
-  primary: {
-    backgroundColor: colors.primary,
-  },
-  secondary: {
-    backgroundColor: colors.primarySoft,
-  },
-  text: {
-    minHeight: 44,
-    backgroundColor: 'transparent',
   },
   pressed: {
     opacity: 0.82,
@@ -72,16 +64,9 @@ const styles = StyleSheet.create({
     opacity: 0.45,
   },
   label: {
-    fontSize: 16,
-    fontWeight: '700',
-  },
-  primaryLabel: {
-    color: colors.white,
-  },
-  secondaryLabel: {
-    color: colors.primary,
-  },
-  textLabel: {
-    color: colors.primary,
+    fontSize: 15,
+    lineHeight: 22,
+    fontWeight: '500',
+    textAlign: 'center',
   },
 });

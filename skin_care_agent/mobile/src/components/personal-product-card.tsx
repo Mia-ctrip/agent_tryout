@@ -2,7 +2,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { ProductImage } from '@/components/product-image';
 import { productColors } from '@/constants/product-theme';
-import { radii, spacing } from '@/constants/theme';
+import { spacing } from '@/constants/theme';
 import type { PersonalProduct } from '@/lib/product-api';
 import { productLastUsedLabel } from '@/lib/product-ui';
 
@@ -52,23 +52,17 @@ const styles = StyleSheet.create({
     minHeight: 100,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 14,
-    borderWidth: 1,
+    gap: spacing.lg,
+    borderBottomWidth: StyleSheet.hairlineWidth,
     borderColor: productColors.border,
-    borderRadius: 20,
-    backgroundColor: productColors.surface,
-    padding: 12,
-    shadowColor: productColors.shadow,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.06,
-    shadowRadius: 12,
-    elevation: 1,
+    backgroundColor: productColors.background,
+    paddingVertical: spacing.lg,
   },
   copy: { flex: 1, minWidth: 0, gap: spacing.xs },
-  heading: { flexDirection: 'row', alignItems: 'flex-start', gap: spacing.sm },
-  name: { flex: 1, color: productColors.textPrimary, fontSize: 16, lineHeight: 21, fontWeight: '700' },
-  countBadge: { borderRadius: radii.pill, backgroundColor: productColors.surfaceMuted, paddingHorizontal: 10, paddingVertical: 5 },
-  count: { color: productColors.actionPrimary, fontSize: 11, fontWeight: '700' },
+  heading: { alignItems: 'flex-start', gap: spacing.xs },
+  name: { color: productColors.textPrimary, fontSize: 16, lineHeight: 23, fontWeight: '500' },
+  countBadge: { paddingVertical: 2 },
+  count: { color: productColors.actionPrimary, fontSize: 11, fontWeight: '500' },
   meta: { color: productColors.textSecondary, fontSize: 12, lineHeight: 17 },
   lastUsedRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 3 },
   dot: { width: 7, height: 7, borderRadius: 4, backgroundColor: productColors.brand },

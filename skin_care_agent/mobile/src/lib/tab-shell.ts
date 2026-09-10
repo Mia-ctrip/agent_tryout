@@ -1,5 +1,7 @@
 import type { AndroidSymbol, SFSymbol } from 'expo-symbols';
 
+import { colors } from '../constants/theme.ts';
+
 export type MvpTabRoute = 'observe' | 'history' | 'products' | 'me';
 
 export type MvpTabSpec = {
@@ -50,3 +52,9 @@ export const TAB_SPECS: readonly MvpTabSpec[] = [
     },
   },
 ] as const;
+
+export function tabVisualState(focused: boolean) {
+  return focused
+    ? { color: colors.mossDeep, fontWeight: '700' as const, indicatorOpacity: 1 }
+    : { color: colors.muted, fontWeight: '500' as const, indicatorOpacity: 0 };
+}

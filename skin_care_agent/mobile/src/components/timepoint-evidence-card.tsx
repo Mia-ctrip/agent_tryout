@@ -1,6 +1,7 @@
 import { StyleSheet, Text, View } from 'react-native';
 
 import { AppButton } from '@/components/app-button';
+import { EditorialText } from '@/components/editorial-text';
 import { InlineNotice } from '@/components/inline-notice';
 import { colors, radii, spacing } from '@/constants/theme';
 import { formatHistoryDateTime, timepointSourceLabel } from '@/lib/history-flow';
@@ -34,12 +35,12 @@ export function TimepointEvidenceCard({
     <View accessibilityLiveRegion="polite" style={styles.card}>
       <View style={styles.heading}>
         <Text style={styles.eyebrow}>当天观察记录</Text>
-        <Text style={styles.date}>
+        <EditorialText role="sectionTitle" style={styles.date}>
           {formatHistoryDateTime(
             timepoint.recorded_at,
             timepoint.recorded_timezone_offset_minutes,
           )}
-        </Text>
+        </EditorialText>
       </View>
 
       {note ? (
@@ -91,8 +92,8 @@ const styles = StyleSheet.create({
     padding: spacing.xl,
   },
   heading: { gap: spacing.xs },
-  eyebrow: { color: colors.actionPrimary, fontSize: 12, fontWeight: '800' },
-  date: { color: colors.text, fontSize: 19, fontWeight: '700' },
+  eyebrow: { color: colors.textMuted, fontSize: 11, letterSpacing: 1 },
+  date: { color: colors.ink, fontSize: 23, lineHeight: 32 },
   section: { gap: spacing.xs },
   label: { color: colors.textMuted, fontSize: 12, fontWeight: '700' },
   body: { color: colors.text, fontSize: 15, lineHeight: 23 },

@@ -37,7 +37,7 @@ export default function LoginScreen() {
   }
 
   return (
-    <AppScreen contentStyle={styles.screen}>
+    <AppScreen variant="form" contentStyle={styles.screen}>
       <BrandHeader
         title="继续记录你的变化"
         description="用一张照片或一段文字，留下此刻真实可见的状态。"

@@ -1,4 +1,4 @@
-import { forwardRef } from 'react';
+import { forwardRef, useState } from 'react';
 import { StyleSheet, Text, TextInput, TextInputProps, View } from 'react-native';
 
 import { colors, radii, spacing } from '@/constants/theme';
@@ -9,17 +9,21 @@ type FormFieldProps = TextInputProps & {
 };
 
 export const FormField = forwardRef<TextInput, FormFieldProps>(function FormField(
-  { label, hint, style, ...props },
+  { label, hint, style, onFocus, onBlur, ...props },
   ref,
 ) {
+  const [focused, setFocused] = useState(false);
   return (
     <View style={styles.container}>
       <Text style={styles.label}>{label}</Text>
       <TextInput
+        accessibilityLabel={label}
         ref={ref}
         placeholderTextColor={colors.textMuted}
         selectionColor={colors.primary}
-        style={[styles.input, style]}
+        style={[styles.input, focused && styles.focused, style]}
+        onFocus={(event) => { setFocused(true); onFocus?.(event); }}
+        onBlur={(event) => { setFocused(false); onBlur?.(event); }}
         {...props}
       />
       {hint ? <Text style={styles.hint}>{hint}</Text> : null}
@@ -51,4 +55,5 @@ const styles = StyleSheet.create({
     fontSize: 12,
     lineHeight: 18,
   },
+  focused: { borderColor: colors.moss, borderWidth: 2 },
 });

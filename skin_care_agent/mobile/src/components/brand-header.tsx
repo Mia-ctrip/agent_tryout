@@ -1,6 +1,7 @@
 import { StyleSheet, Text, View } from 'react-native';
+import { EditorialText } from '@/components/editorial-text';
 
-import { colors, radii, spacing } from '@/constants/theme';
+import { colors, spacing } from '@/constants/theme';
 
 type BrandHeaderProps = {
   eyebrow?: string;
@@ -11,11 +12,8 @@ type BrandHeaderProps = {
 export function BrandHeader({ eyebrow = 'SKIN CARE AGENT', title, description }: BrandHeaderProps) {
   return (
     <View style={styles.container}>
-      <View style={styles.mark}>
-        <View style={styles.markInner} />
-      </View>
       <Text style={styles.eyebrow}>{eyebrow}</Text>
-      <Text style={styles.title}>{title}</Text>
+      <EditorialText role="pageTitle" style={styles.title}>{title}</EditorialText>
       <Text style={styles.description}>{description}</Text>
     </View>
   );
@@ -26,21 +24,6 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     marginBottom: spacing.xxl,
   },
-  mark: {
-    width: 44,
-    height: 44,
-    borderRadius: radii.pill,
-    backgroundColor: colors.primarySoft,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: spacing.xl,
-  },
-  markInner: {
-    width: 18,
-    height: 18,
-    borderRadius: radii.pill,
-    backgroundColor: colors.primary,
-  },
   eyebrow: {
     color: colors.primary,
     fontSize: 12,
@@ -50,10 +33,9 @@ const styles = StyleSheet.create({
   },
   title: {
     color: colors.text,
-    fontSize: 34,
-    lineHeight: 42,
-    fontWeight: '700',
-    letterSpacing: -0.8,
+    fontSize: 30,
+    lineHeight: 40,
+    fontWeight: '400',
   },
   description: {
     color: colors.textMuted,

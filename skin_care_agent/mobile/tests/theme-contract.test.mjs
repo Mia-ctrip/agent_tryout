@@ -4,13 +4,34 @@ import { join } from 'node:path';
 import test from 'node:test';
 import { fileURLToPath } from 'node:url';
 
-import { colors } from '../src/constants/theme.ts';
+import { colors, overlayOpacity, spacing } from '../src/constants/theme.ts';
 
-test('shared theme exposes the approved sage semantic palette', () => {
-  assert.equal(colors.background, '#F8F0DD');
-  assert.equal(colors.primary, '#71813C');
-  assert.equal(colors.iris, '#9BAD50');
+test('shared theme exposes the quiet botanical semantic palette', () => {
+  assert.equal(colors.ground, '#EFE8D6');
+  assert.equal(colors.paper, '#F7F1E1');
+  assert.equal(colors.paperElevated, '#FBF6E8');
+  assert.equal(colors.sage, '#A9B58F');
+  assert.equal(colors.sageSoft, '#C8CFAF');
+  assert.equal(colors.moss, '#6D7A54');
+  assert.equal(colors.mossDeep, '#4A5638');
+  assert.equal(colors.earth, '#3E362B');
+  assert.equal(colors.ink, '#2E2A21');
   assert.equal(colors.text, '#46502C');
+  assert.equal(colors.hairline, '#D9D2BB');
+  assert.equal(colors.hairlineSoft, '#E4DEC8');
+  assert.equal(colors.amber, '#C89A45');
+  assert.equal(colors.clay, '#8A4D3E');
+});
+
+test('shared theme exposes the complete spacing and decorative intensity scales', () => {
+  assert.equal(spacing.xxxl, 40);
+  assert.equal(spacing.ritual, 64);
+  assert.deepEqual(overlayOpacity, {
+    whisper: 0.08,
+    soft: 0.16,
+    medium: 0.28,
+    strong: 0.45,
+  });
 });
 
 const retiredPurple = /#8F85CE|#6F63B7|#F2EFF8|rgba\(111,\s*99,\s*183/i;
@@ -31,7 +52,7 @@ test('mobile source no longer contains the retired purple palette', () => {
 
 test('Expo launch configuration uses the same cream background as the app', () => {
   const appConfig = readFileSync(fileURLToPath(new URL('../app.json', import.meta.url)), 'utf8');
-  assert.match(appConfig, /"backgroundColor": "#F8F0DD"/);
+  assert.match(appConfig, /"backgroundColor": "#F7F1E1"/);
 });
 
 test('legacy routes do not retain retired opaque foreground colors', () => {

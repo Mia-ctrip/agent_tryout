@@ -3,10 +3,11 @@ import { useCallback, useState } from 'react';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 
 import { AppScreen } from '@/components/app-screen';
+import { EditorialText } from '@/components/editorial-text';
 import { InlineNotice } from '@/components/inline-notice';
 import { ProductImage } from '@/components/product-image';
 import { productColors } from '@/constants/product-theme';
-import { spacing } from '@/constants/theme';
+import { colors, radii, spacing } from '@/constants/theme';
 import { userFacingError } from '@/lib/errors';
 import { getPersonalProduct, getStandardProduct } from '@/lib/product-api';
 import type { PersonalProductDetail, StandardProductDetail } from '@/lib/product-api';
@@ -87,12 +88,12 @@ export default function ProductDetailScreen() {
               accessibilityLabel={`${product.name} 当前产品图片`}
               category={standard?.product_category ?? null}
               radius={22}
-              size={132}
+              size={104}
               uri={product.image_url}
             />
             <View style={styles.heroCopy}>
               <Text style={styles.eyebrow}>{product.source_type === 'standard' ? 'STANDARD PRODUCT' : 'MY PRODUCT'}</Text>
-              <Text style={styles.title}>{product.name}</Text>
+              <EditorialText role="pageTitle" style={styles.title}>{product.name}</EditorialText>
               {productMeta ? <Text style={styles.metadata}>{productMeta}</Text> : null}
               <Text style={styles.sourceType}>{product.source_type === 'standard' ? '标准目录产品' : '用户自建产品'}</Text>
             </View>
@@ -111,7 +112,7 @@ export default function ProductDetailScreen() {
           </View>
 
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>官方说明书</Text>
+            <EditorialText role="sectionTitle" style={styles.sectionTitle}>官方说明书</EditorialText>
             {documentError ? <InlineNotice tone="error" message={`说明书暂时无法读取：${documentError}`} /> : null}
             {document ? (
               <View style={styles.manualCard}>
@@ -131,7 +132,7 @@ export default function ProductDetailScreen() {
 
           <View style={styles.section}>
             <View style={styles.sectionHeading}>
-              <Text style={styles.sectionTitle}>最近使用记录</Text>
+              <EditorialText role="sectionTitle" style={styles.sectionTitle}>最近使用记录</EditorialText>
               <Text style={styles.sectionCount}>全部 {product.use_count} 次</Text>
             </View>
             {product.uses.length ? (
@@ -160,24 +161,24 @@ export default function ProductDetailScreen() {
 const styles = StyleSheet.create({
   screenContent: { paddingHorizontal: 20, paddingTop: spacing.md, paddingBottom: 56 },
   content: { gap: 24 },
-  heroCard: { flexDirection: 'row', alignItems: 'center', gap: 18, borderRadius: 24, backgroundColor: productColors.surface, padding: 16 },
+  heroCard: { flexDirection: 'row', alignItems: 'center', gap: spacing.lg, paddingVertical: spacing.lg },
   heroCopy: { flex: 1, gap: 6 },
   eyebrow: { color: productColors.actionPrimary, fontSize: 9.5, fontWeight: '700', letterSpacing: 1.5 },
-  title: { color: productColors.textPrimary, fontSize: 24, lineHeight: 31, fontWeight: '700' },
+  title: { color: colors.ink, fontSize: 24, lineHeight: 33, fontWeight: '400' },
   metadata: { color: productColors.textSecondary, fontSize: 13, lineHeight: 19 },
   sourceType: { alignSelf: 'flex-start', color: productColors.actionPrimary, fontSize: 11, fontWeight: '700', borderRadius: 99, backgroundColor: productColors.surfaceMuted, paddingHorizontal: 10, paddingVertical: 5 },
-  factRow: { minHeight: 82, flexDirection: 'row', alignItems: 'stretch', borderRadius: 20, backgroundColor: productColors.surfaceMuted, paddingVertical: 14 },
+  factRow: { minHeight: 82, flexDirection: 'row', alignItems: 'stretch', borderTopWidth: StyleSheet.hairlineWidth, borderBottomWidth: StyleSheet.hairlineWidth, borderColor: productColors.border, paddingVertical: spacing.lg },
   fact: { flex: 1, justifyContent: 'center', alignItems: 'center', gap: 5, paddingHorizontal: 8 },
   factDivider: { width: StyleSheet.hairlineWidth, backgroundColor: productColors.border },
   factLabel: { color: productColors.textSecondary, fontSize: 11 },
   factValue: { color: productColors.textPrimary, fontSize: 23, fontWeight: '700' },
   factUnit: { fontSize: 12, fontWeight: '500' },
-  factDate: { color: productColors.textPrimary, fontSize: 15, lineHeight: 22, fontWeight: '700' },
+  factDate: { color: productColors.textPrimary, fontSize: 14, lineHeight: 22, fontWeight: '500' },
   section: { gap: 11 },
   sectionHeading: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  sectionTitle: { color: productColors.textPrimary, fontSize: 17, fontWeight: '700' },
+  sectionTitle: { color: colors.ink, fontSize: 21, lineHeight: 30, fontWeight: '400' },
   sectionCount: { color: productColors.actionPrimary, fontSize: 12, fontWeight: '600' },
-  manualCard: { gap: 10, borderRadius: 18, backgroundColor: productColors.surface, padding: 16 },
+  manualCard: { gap: spacing.md, borderRadius: radii.md, backgroundColor: productColors.surface, padding: spacing.lg },
   manualLabel: { color: productColors.actionPrimary, fontSize: 12, fontWeight: '700' },
   manualBody: { color: productColors.textPrimary, fontSize: 14, lineHeight: 23 },
   manualSource: { color: productColors.textSecondary, fontSize: 11, lineHeight: 17 },
@@ -186,7 +187,7 @@ const styles = StyleSheet.create({
   uses: { gap: 10 },
   useRow: { minHeight: 66, flexDirection: 'row', alignItems: 'center', gap: 12 },
   timelineDot: { width: 10, height: 10, borderRadius: 5, borderWidth: 2, borderColor: productColors.background, backgroundColor: productColors.brand },
-  useCard: { flex: 1, gap: 6, borderWidth: 1, borderColor: productColors.border, borderRadius: 16, backgroundColor: productColors.surface, paddingHorizontal: 15, paddingVertical: 12 },
+  useCard: { flex: 1, gap: spacing.sm, borderBottomWidth: StyleSheet.hairlineWidth, borderColor: productColors.border, paddingVertical: spacing.md },
   useDate: { color: productColors.textPrimary, fontSize: 12.5, fontWeight: '700' },
   useNote: { color: productColors.textSecondary, fontSize: 12, lineHeight: 18 },
 });

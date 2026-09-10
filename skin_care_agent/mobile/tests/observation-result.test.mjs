@@ -63,7 +63,6 @@ test('result model keeps summary separate, limits findings and never invents adv
   assert.ok(model.findings.length > 0 && model.findings.length <= 2);
   assert.ok(model.evidence.length <= 2);
   assert.ok(model.details.every((detail) => detail.sections.every((section) => section.label !== '本次小结')));
-  assert.equal(model.comparison.enabled, false);
   const allCopy = JSON.stringify(model);
   assert.doesNotMatch(allCopy, /评分|得分|商品|购买|护理方案|产品推荐/);
 });
@@ -82,4 +81,16 @@ test('completed sibling results remain available when another target needs input
   assert.equal(model.completedTargetIds.includes(1), true);
   assert.equal(model.needsInputTargetIds.includes(2), true);
   assert.match(model.summary, /额头整体表现较稳定/);
+});
+
+test('result model preserves user words and offers only process guidance', () => {
+  const withNote = target(1, 'forehead');
+  withNote.user_note = '昨晚睡得较晚，今天没有刺痛。';
+  const model = buildObservationResultModel(observation([withNote]));
+
+  assert.deepEqual(model.userNotes, [
+    { regionLabel: '额头', note: '昨晚睡得较晚，今天没有刺痛。' },
+  ]);
+  assert.equal(model.nextStep.title, '在相近条件下继续观察');
+  assert.doesNotMatch(JSON.stringify(model.nextStep), /治疗|用药|停药|购买/);
 });

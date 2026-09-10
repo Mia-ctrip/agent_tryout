@@ -62,7 +62,7 @@ export default function ConsentsScreen() {
   }
 
   return (
-    <AppScreen>
+    <AppScreen variant="form">
       <BrandHeader
         eyebrow="BEFORE WE START"
         title="先确认数据与服务边界"

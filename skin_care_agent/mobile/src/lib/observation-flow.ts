@@ -318,9 +318,10 @@ export type ObservationResultModel = {
   findings: ObservationResultFinding[];
   evidence: ObservationResultEvidence[];
   details: { regionLabel: string; sections: { label: string; value: string }[] }[];
+  userNotes: { regionLabel: string; note: string }[];
+  nextStep: { title: string; body: string };
   completedTargetIds: number[];
   needsInputTargetIds: number[];
-  comparison: { label: string; note: string; enabled: false };
   autoSaved: true;
 };
 
@@ -398,6 +399,15 @@ export function buildObservationResultModel(
           : [],
     };
   });
+  const userNotes = observation.targets.flatMap((target) => {
+    if (!target.user_note?.trim()) return [];
+    return [
+      {
+        regionLabel: target.region_id ? regionById(target.region_id).label : '全脸',
+        note: target.user_note,
+      },
+    ];
+  });
   return {
     regionLabel: regionLabels.join('、') || '本次检测区域',
     summary:
@@ -407,13 +417,13 @@ export function buildObservationResultModel(
     findings: findingCandidates.slice(0, 2),
     evidence,
     details,
+    userNotes,
+    nextStep: {
+      title: '在相近条件下继续观察',
+      body: '之后再次拍摄时，尽量使用相近光线、角度和距离，方便回看真实变化。',
+    },
     completedTargetIds: completed.map((target) => target.target_id),
     needsInputTargetIds: needsInput.map((target) => target.target_id),
-    comparison: {
-      label: '今日与昨日对比',
-      note: '数据积累后开放',
-      enabled: false,
-    },
     autoSaved: true,
   };
 }

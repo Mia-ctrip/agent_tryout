@@ -4,6 +4,7 @@ import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 
 import { AppButton } from '@/components/app-button';
 import { AppScreen } from '@/components/app-screen';
+import { EditorialText } from '@/components/editorial-text';
 import { InlineNotice } from '@/components/inline-notice';
 import { RegionTimechain } from '@/components/region-timechain';
 import { TimepointEvidenceCard } from '@/components/timepoint-evidence-card';
@@ -163,7 +164,7 @@ export default function RegionEventDetailScreen() {
       {event && region ? (
         <>
           <View style={styles.header}>
-            <Text style={styles.title}>{region.label} · 这一段记录</Text>
+            <EditorialText role="pageTitle" style={styles.title}>{region.label} · 这一段记录</EditorialText>
             <Text style={styles.meta}>
               {formatHistoryShortDate(event.started_local_date)}—
               {formatHistoryShortDate(event.last_valid_local_date)} · {event.timepoints.length} 个时间点
@@ -306,16 +307,15 @@ const styles = StyleSheet.create({
   noticeGroup: { gap: spacing.xs },
   header: { gap: spacing.sm, marginBottom: spacing.xl },
   title: {
-    color: colors.text,
-    fontFamily: 'serif',
-    fontSize: 28,
-    lineHeight: 37,
-    fontWeight: '700',
+    color: colors.ink,
+    fontSize: 26,
+    lineHeight: 36,
+    fontWeight: '400',
   },
-  meta: { color: colors.text, fontSize: 14, fontWeight: '700' },
-  status: { color: colors.actionPrimary, fontSize: 13, fontWeight: '700' },
+  meta: { color: colors.textMuted, fontSize: 14, lineHeight: 22 },
+  status: { color: colors.actionPrimary, fontSize: 12, fontWeight: '500' },
   timelineSection: { gap: spacing.xs },
-  sectionTitle: { color: colors.text, fontSize: 18, fontWeight: '700' },
+  sectionTitle: { color: colors.earth, fontSize: 16, fontWeight: '500' },
   sectionHint: { color: colors.textMuted, fontSize: 12, lineHeight: 18 },
   emptyState: {
     gap: spacing.sm,
@@ -338,7 +338,7 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.sm,
   },
   contextLabel: { flex: 1, color: colors.textMuted, fontSize: 13, lineHeight: 19 },
-  contextDate: { color: colors.textMuted, fontSize: 11 },
+  contextDate: { flexShrink: 1, maxWidth: '40%', color: colors.textMuted, fontSize: 11, lineHeight: 18 },
   contextSkipped: { color: colors.textMuted, fontSize: 12, paddingVertical: spacing.sm },
   contextUnavailable: { marginTop: spacing.md, color: colors.textMuted, fontSize: 12 },
   contextErrorRow: { alignItems: 'flex-start', gap: spacing.xs },

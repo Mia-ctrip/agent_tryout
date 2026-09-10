@@ -9,7 +9,8 @@ function source(path) {
 test('history overview stays abstract and routes explicit region evidence', () => {
   const face = source('../src/components/history-face-overview.tsx');
   const overview = source('../src/app/(tabs)/history.tsx');
-  assert.doesNotMatch(face, /expo-image|<Image/);
+  assert.match(face, /source=\{\{ uri: svgDataUri\(portraitLines\) \}\}/);
+  assert.doesNotMatch(face, /photoUri|ObservationPhoto|resolveMediaUrl|\.photo\.url/);
   assert.match(face, /本人真实左右/);
   assert.match(overview, /router\.push\(`\/region-event\/\$\{entry\.eventId\}`\)/);
   assert.match(overview, /event_picker/);

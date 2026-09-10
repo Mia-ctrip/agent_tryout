@@ -5,10 +5,13 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import { AppButton } from '@/components/app-button';
 import { AppScreen } from '@/components/app-screen';
-import { CameraStartPanel } from '@/components/camera-start-panel';
+import { EditorialCollage } from '@/components/editorial-collage';
+import { EditorialHeader } from '@/components/editorial-header';
+import { EditorialText } from '@/components/editorial-text';
 import { InlineNotice } from '@/components/inline-notice';
 import { ObservationListItem } from '@/components/observation-list-item';
 import { RegionEventCard } from '@/components/region-event-card';
+import { SectionHeader } from '@/components/section-header';
 import { colors, spacing } from '@/constants/theme';
 import { listObservations } from '@/lib/observation-api';
 import type { Observation } from '@/lib/observation-api';
@@ -50,28 +53,39 @@ export default function ObserveScreen() {
   );
 
   return (
-    <AppScreen>
-      <View style={styles.header}>
-        <Text style={styles.title}>观察</Text>
-        <Text style={styles.description}>留下一张照片，记录此刻真实可见的变化。</Text>
+    <AppScreen contentStyle={styles.screen}>
+      <View style={styles.masthead}>
+        <EditorialText role="sectionTitle" style={styles.brandTitle}>肌肤档案</EditorialText>
+        <Text style={styles.brandMeta}>PRIVATE JOURNAL</Text>
       </View>
-      <CameraStartPanel
-        compact
-        embedded
-        onChoosePhoto={() => router.push(observationCaptureHref('library') as Href)}
-        onOpenCamera={() => router.push(observationCaptureHref('camera') as Href)}
+      <EditorialHeader
+        title={'今天，也留下一次\n真实观察'}
+        description="让皮肤的变化，被温和而诚实地保存。"
       />
-      <View style={styles.productUseAction}>
+      <EditorialCollage
+        imageDose="hero"
+        assetsRegistered
+        primarySource={require('../../../assets/brand/natural-light-v1.png')}
+        secondarySource={require('../../../assets/brand/leaf-water-v1.png')}
+        primaryAlt="自然光下的亚麻与绿枝，品牌影像"
+        secondaryAlt="水面与叶影的细节，品牌影像"
+      />
+      <View style={styles.primaryActions}>
         <AppButton
-          label="记录产品使用"
-          onPress={() => router.push('/product-use/new')}
+          label="开始今天的观察"
+          onPress={() => router.push(observationCaptureHref('camera') as Href)}
+          variant="primary"
+        />
+        <AppButton
+          label="从相册选择原图"
+          onPress={() => router.push(observationCaptureHref('library') as Href)}
           variant="text"
         />
       </View>
       {error ? <InlineNotice tone="error" message={error} /> : null}
       {events.length > 0 ? (
-        <View style={styles.latestSection}>
-          <Text style={styles.latestTitle}>正在记录的区域</Text>
+        <View style={styles.archiveSection}>
+          <SectionHeader eyebrow="CURRENT ARCHIVE" title="正在记录的区域" />
           <View style={styles.latestList}>
             {events.map((event) => (
               <RegionEventCard
@@ -86,8 +100,8 @@ export default function ObserveScreen() {
         </View>
       ) : null}
       {latest.length > 0 ? (
-        <View style={styles.latestSection}>
-          <Text style={styles.latestTitle}>最近记录</Text>
+        <View style={styles.archiveSection}>
+          <SectionHeader eyebrow="RECENT" title="最近记录" />
           <View style={styles.latestList}>
             {latest.map((observation) => (
               <ObservationListItem
@@ -99,16 +113,32 @@ export default function ObserveScreen() {
           </View>
         </View>
       ) : null}
+      <View style={styles.productUseAction}>
+        <Text style={styles.contextCopy}>也可以只记录一次真实发生的产品使用。</Text>
+        <AppButton
+          label="记录产品使用"
+          onPress={() => router.push('/product-use/new')}
+          variant="text"
+        />
+      </View>
     </AppScreen>
   );
 }
 
 const styles = StyleSheet.create({
-  header: { gap: spacing.sm, marginBottom: spacing.xxl },
-  title: { color: colors.text, fontSize: 32, lineHeight: 40, fontWeight: '800' },
-  description: { color: colors.textMuted, fontSize: 16, lineHeight: 24 },
-  productUseAction: { marginTop: spacing.xs },
-  latestSection: { gap: spacing.md, marginTop: spacing.xxl },
-  latestTitle: { color: colors.text, fontSize: 20, fontWeight: '700' },
+  screen: { gap: spacing.xl, paddingTop: spacing.md, paddingHorizontal: spacing.xl },
+  masthead: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: spacing.sm },
+  brandTitle: { color: colors.earth, fontSize: 19, lineHeight: 28 },
+  brandMeta: { color: colors.textMuted, fontSize: 9, letterSpacing: 1.4 },
+  primaryActions: { gap: spacing.xs },
+  productUseAction: {
+    alignItems: 'center',
+    gap: spacing.xs,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: colors.hairline,
+    paddingTop: spacing.xl,
+  },
+  contextCopy: { color: colors.textMuted, fontSize: 13, lineHeight: 20, textAlign: 'center' },
+  archiveSection: { gap: spacing.md },
   latestList: { gap: spacing.md },
 });

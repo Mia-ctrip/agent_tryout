@@ -5,6 +5,8 @@ import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-nati
 
 import { AppScreen } from '@/components/app-screen';
 import { InlineNotice } from '@/components/inline-notice';
+import { EditorialText } from '@/components/editorial-text';
+import { MedicineArchiveHeader } from '@/components/medicine-archive-header';
 import { PersonalProductCard } from '@/components/personal-product-card';
 import { SwipeableProductRow } from '@/components/swipeable-product-row';
 import { productColors } from '@/constants/product-theme';
@@ -45,9 +47,7 @@ export default function ProductsScreen() {
     <AppScreen backgroundColor={productColors.background} contentStyle={styles.screenContent}>
       <View style={styles.header}>
         <View style={styles.headerCopy}>
-          <Text style={styles.eyebrow}>MY VANITY</Text>
-          <Text style={styles.title}>我的产品</Text>
-          <Text style={styles.summary}>{productCabinetSummary(products)}</Text>
+          <EditorialText role="sectionTitle" style={styles.title}>产品档案</EditorialText>
         </View>
         <Pressable
           accessibilityLabel="新增产品"
@@ -58,7 +58,8 @@ export default function ProductsScreen() {
           <Text style={styles.addLabel}>新增</Text>
         </Pressable>
       </View>
-
+      <MedicineArchiveHeader />
+      <Text style={styles.summary}>{productCabinetSummary(products)}</Text>
       <View style={styles.listHeading}>
         <Text style={styles.sortLabel}>按使用频次排列</Text>
         <Text style={styles.totalLabel}>共 {products.length} 件</Text>
@@ -106,18 +107,18 @@ export default function ProductsScreen() {
 
 const styles = StyleSheet.create({
   screenContent: { paddingHorizontal: 20, paddingTop: 12, paddingBottom: 96 },
-  header: { minHeight: 124, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: spacing.lg },
+  header: { minHeight: 48, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: spacing.lg },
   headerCopy: { flex: 1, gap: 4 },
   eyebrow: { color: productColors.textSecondary, fontSize: 10, lineHeight: 16, fontWeight: '700', letterSpacing: 2.1 },
-  title: { color: productColors.textPrimary, fontSize: 29, lineHeight: 37, fontWeight: '700' },
-  summary: { color: productColors.textSecondary, fontSize: 13, lineHeight: 20 },
-  addButton: { minHeight: 40, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 2, borderRadius: radii.pill, backgroundColor: productColors.actionPrimary, paddingHorizontal: 15 },
-  addSymbol: { color: productColors.surface, fontSize: 18, lineHeight: 20, fontWeight: '600' },
-  addLabel: { color: productColors.surface, fontSize: 13, fontWeight: '700' },
-  listHeading: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 },
+  title: { color: productColors.textPrimary, fontSize: 20, lineHeight: 28 },
+  summary: { color: productColors.textSecondary, fontSize: 13, lineHeight: 20, paddingBottom: spacing.lg, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: productColors.border },
+  addButton: { minHeight: 44, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing.xs, borderRadius: radii.pill, borderWidth: 1, borderColor: productColors.border, paddingHorizontal: spacing.md },
+  addSymbol: { color: productColors.actionPrimary, fontSize: 22, lineHeight: 26, fontWeight: '400' },
+  addLabel: { color: productColors.actionPrimary, fontSize: 12, fontWeight: '500' },
+  listHeading: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingTop: spacing.xl, paddingBottom: spacing.md },
   sortLabel: { color: productColors.textSecondary, fontSize: 12, fontWeight: '600' },
   totalLabel: { color: productColors.textSecondary, fontSize: 11 },
-  list: { gap: 12 },
+  list: { gap: 0 },
   loading: { alignItems: 'center', gap: spacing.md, paddingVertical: 64 },
   muted: { color: productColors.textSecondary, fontSize: 13 },
   emptyState: { gap: spacing.sm, borderRadius: 20, backgroundColor: productColors.surface, padding: spacing.xl },

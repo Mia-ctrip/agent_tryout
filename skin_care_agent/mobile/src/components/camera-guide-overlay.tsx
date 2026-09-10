@@ -4,7 +4,6 @@ import { LayoutChangeEvent, StyleSheet, Text, View } from 'react-native';
 
 import {
   observationColors,
-  observationRadii,
   observationSpacing,
 } from '@/constants/observation-theme';
 import { captureGuidanceCopy } from '@/lib/face-analysis-flow';
@@ -37,6 +36,10 @@ export function CameraGuideOverlay({ status }: CameraGuideOverlayProps) {
       <View
         style={[
           styles.oval,
+          {
+            top: size.height * 0.46 - Math.min(size.height * 0.7, size.width * 0.68 * 1.38) / 2,
+            height: Math.min(size.height * 0.7, size.width * 0.68 * 1.38),
+          },
           guidance.tone === 'adjust' && styles.ovalAdjust,
           guidance.tone === 'ready' && styles.ovalReady,
         ]}
@@ -71,14 +74,14 @@ const styles = StyleSheet.create({
   statusBar: {
     position: 'absolute',
     right: observationSpacing.lg,
-    bottom: observationSpacing.lg,
+    bottom: 112,
     left: observationSpacing.lg,
     minHeight: 48,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: observationSpacing.sm,
-    borderRadius: observationRadii.md,
+    borderRadius: 999,
     backgroundColor: observationColors.statusShade,
     paddingHorizontal: observationSpacing.lg,
   },

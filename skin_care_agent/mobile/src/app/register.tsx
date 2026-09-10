@@ -48,7 +48,7 @@ export default function RegisterScreen() {
   }
 
   return (
-    <AppScreen>
+    <AppScreen variant="form">
       <BrandHeader
         eyebrow="PRIVATE BETA"
         title="建立你的私密皮肤档案"

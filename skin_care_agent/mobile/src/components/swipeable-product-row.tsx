@@ -64,7 +64,7 @@ export function SwipeableProductRow({
 }
 
 const styles = StyleSheet.create({
-  clip: { position: 'relative', overflow: 'hidden', borderRadius: 20 },
+  clip: { position: 'relative', overflow: 'hidden' },
   foreground: { zIndex: 1, backgroundColor: productColors.background },
   archiveAction: {
     position: 'absolute',

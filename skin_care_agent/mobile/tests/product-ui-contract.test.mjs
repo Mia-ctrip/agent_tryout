@@ -39,7 +39,7 @@ test('standard detail shows original sourced material without recommendation lan
 
 test('products tab keeps one add entry, usage sorting, and no record-use action', () => {
   const products = source('../src/app/(tabs)/products.tsx');
-  assert.match(products, /我的产品/);
+  assert.match(products, /产品档案/);
   assert.match(products, /按使用频次排列/);
   assert.match(products, /productCabinetSummary/);
   assert.match(products, /\/product\/new/);

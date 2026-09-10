@@ -27,7 +27,7 @@ export function ProductImage({
 }
 
 const styles = StyleSheet.create({
-  image: { backgroundColor: colors.surfaceMuted },
+  image: { backgroundColor: colors.paperElevated },
   placeholder: {
     alignItems: 'center',
     justifyContent: 'center',
