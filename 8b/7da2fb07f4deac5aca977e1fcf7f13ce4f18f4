@@ -1,0 +1,220 @@
+skin_care_agent/mobile/src/components/personal-product-card.tsx
+  s_ae82f90d233fc7::t_0455925eca04f1 22,31,33-37,46-47,62
+  s_ae82f90d233fc7::t_44065b6e894a1a 5-6,8,17,26-27,29-30,65
+  s_ae82f90d233fc7::t_d52e1c856bc614 38,40-43,45
+skin_care_agent/docs/current_status.md
+  s_ae82f90d233fc7::t_d52e1c856bc614 38-39,43-44,46-48
+  s_062e415bea38d1::t_a9c86aa6f653f9 29-37,109
+  s_ae82f90d233fc7::t_ffb14bb36cb5f4 40
+  s_ae82f90d233fc7::t_775d32d96bfe09 41-42,45
+  s_062e415bea38d1::t_3b6af5135bfd43 21-28
+  s_acd465de7b9f6c::t_4c71849012de2b 13-20,117
+skin_care_agent/mobile/src/components/medicine-archive-header.tsx
+  s_ae82f90d233fc7::t_68c51c57189694 2,5,8,11-13,15,46
+  s_ae82f90d233fc7::t_c21ae9d7218e25 20-31,37,39-43
+  s_ae82f90d233fc7::t_efaf0da143fa85 38
+  s_ae82f90d233fc7::t_0a1c433d46cf8f 14
+  s_062e415bea38d1::t_7a4641576504ec 44,47
+skin_care_agent/mobile/src/components/swipeable-product-row.tsx
+  s_ae82f90d233fc7::t_efaf0da143fa85 46-49
+  s_ae82f90d233fc7::t_775d32d96bfe09 50-63
+  s_ae82f90d233fc7::t_c21ae9d7218e25 43-45,64,76-77,83-85
+skin_care_agent/mobile/tests/observation-result-cards.test.mjs
+  s_062e415bea38d1::t_9be41b18db21bc 1-20
+skin_care_agent/mobile/src/components/product-use-card.tsx
+  s_ae82f90d233fc7::t_44065b6e894a1a 5,7,10,26-33
+skin_care_agent/mobile/src/app/(tabs)/products.tsx
+  s_ae82f90d233fc7::t_c21ae9d7218e25 9,48
+  s_062e415bea38d1::t_819bda8f94359d 13,47
+skin_care_agent/artifacts/color-refresh-review/contrast-check.json
+  s_062e415bea38d1::t_480848881f3601 1-32
+skin_care_agent/mobile/tests/history-ui-contract.test.mjs
+  s_acd465de7b9f6c::t_2ef448f0900e6e 25,31-34
+skin_care_agent/docs/prompts/prompt.md
+  h_e5cd53142b29a8 1-58
+skin_care_agent/artifacts/product-refresh-review/review-results.json
+  s_ae82f90d233fc7::t_6fde03ceb26ae0 3,52-107,110
+  s_ae82f90d233fc7::t_bbabd85ba7e792 4-37,39-45,47-51,108
+  s_ae82f90d233fc7::t_a54da1b4e62def 38,46
+skin_care_agent/mobile/src/components/analysis-scanner.tsx
+  s_062e415bea38d1::t_b6eee0358f6d14 61
+skin_care_agent/mobile/src/lib/observation-flow.ts
+  s_062e415bea38d1::t_b6eee0358f6d14 316-324,420-435,437
+start-all.Tests.ps1
+  s_9203ee6e40eb1a::t_9266079b0b74b8 116-128
+  s_9203ee6e40eb1a::t_8237045d965343 130-140
+  s_9203ee6e40eb1a::t_dbc849a1d58bde 17
+  s_9203ee6e40eb1a::t_a847cc1f6d6477 83-86
+  s_9203ee6e40eb1a::t_de62968bd8651a 109-115,129
+  s_ae82f90d233fc7::t_836b6dac91ffea 1-16,18-82,87-108,141
+skin_care_agent/artifacts/color-refresh-review/result-review.json
+  s_062e415bea38d1::t_408f381ef1563f 1-128
+skin_care_agent/mobile/src/components/region-timechain.tsx
+  s_acd465de7b9f6c::t_07bb7417280a28 65,75,96-99,121,123,125-126,142-146,148-150,152-156
+skin_care_agent/mobile/src/app/region-event/[eventId].tsx
+  s_acd465de7b9f6c::t_2ef448f0900e6e 172,260-261,278,299,305,319,330,340,342
+skin_care_agent/mobile/src/constants/product-theme.ts
+  s_062e415bea38d1::t_7a4641576504ec 12-13
+skin_care_agent/mobile/tests/product-image-loading.test.mjs
+  s_ae82f90d233fc7::t_6f7dd85fe26c64 1-80
+  s_ae82f90d233fc7::t_5155382cc2967f 81-90
+skin_care_agent/mobile/src/app/product-catalog/[standardProductId].tsx
+  s_ae82f90d233fc7::t_44065b6e894a1a 47-54
+skin_care_agent/mobile/assets/brand/ASSET_RIGHTS.md
+  s_ae82f90d233fc7::t_201a88d693c26c 28,31-33,35-38
+  s_ae82f90d233fc7::t_775d32d96bfe09 11,34
+  s_ae82f90d233fc7::t_41a995927141dd 23-27,29-30
+  s_ae82f90d233fc7::t_f6bdf857311ecd 10
+skin_care_agent/mobile/src/lib/face-analysis-visual.ts
+  s_ae82f90d233fc7::t_e1d47d300003ec 10,161,170,174-175,177-178,182,189,198,231
+  s_062e415bea38d1::t_b6eee0358f6d14 162,171,176,179,229
+skin_care_agent/mobile/src/app/product/[productId].tsx
+  s_ae82f90d233fc7::t_44065b6e894a1a 90-91,93-94
+skin_care_agent/mobile/src/app/observation/new.tsx
+  s_ae82f90d233fc7::t_e1d47d300003ec 629
+skin_care_agent/mobile/scripts/ui-visual-review.mjs
+  s_acd465de7b9f6c::t_5f7e733aa8ea0c 226
+  s_acd465de7b9f6c::t_cbaeaa87f17f8c 211
+  s_062e415bea38d1::t_330234c7e9a550 243-245,270-271
+  s_062e415bea38d1::t_8c26efd923895f 254,257
+  s_ae82f90d233fc7::t_da9cffd0b5cd7d 320-325
+  s_ae82f90d233fc7::t_d2398bf59d58ca 13,23-27,29,59-74,91-97,144-148,187-189,273-284,296,327-337,339,341-355,403
+  s_062e415bea38d1::t_928373e5cc3a73 259,263
+  s_062e415bea38d1::t_f3c14ef8ee0311 262
+  s_ae82f90d233fc7::t_6705f5caa75e54 338
+  s_062e415bea38d1::t_eff25465b45b43 14,43-54,179,246-251,253,255,258,261,264-269,272
+  s_062e415bea38d1::t_b00520a6083c83 28,143,340
+  s_062e415bea38d1::t_f3cabe7ee494a9 260
+  s_acd465de7b9f6c::t_66808eeb61cf17 212-220,225,232
+  s_062e415bea38d1::t_c9540389158396 252,256
+  s_acd465de7b9f6c::t_b37e2888d81423 15,17,34-42,83-90,137,167,186,192-210,221-224,227-231,233-241,410
+  s_ae82f90d233fc7::t_1184bda54a2127 297-319,326
+  s_062e415bea38d1::t_a15eeca10fcf03 16,242
+  s_ae82f90d233fc7::t_196d8837c65b10 285-295
+  s_062e415bea38d1::t_7a4641576504ec 409
+skin_care_agent/artifacts/product-refresh-review/image-storage-verification.json
+  s_ae82f90d233fc7::t_d52e1c856bc614 1-20
+skin_care_agent/mobile/tests/region-photo-crop.test.mjs
+  s_acd465de7b9f6c::t_2ef448f0900e6e 1-41
+skin_care_agent/mobile/tests/face-analysis-components.test.mjs
+  s_ae82f90d233fc7::t_4516516958d330 155-172,175-190
+  s_062e415bea38d1::t_8b7fdd1ebfebf8 173-174
+  s_062e415bea38d1::t_8d4b6a96104247 191-209
+skin_care_agent/mobile/src/app/(tabs)/observe.tsx
+  s_062e415bea38d1::t_7a4641576504ec 56
+  s_062e415bea38d1::t_819bda8f94359d 15,59,61,86,134-136
+skin_care_agent/mobile/tests/observation-result-visual-contract.test.mjs
+  s_062e415bea38d1::t_8b7fdd1ebfebf8 11,15,34-36
+skin_care_agent/mobile/src/lib/product-image-loading.ts
+  s_ae82f90d233fc7::t_e510062e0c52c8 1-81
+skin_care_agent/mobile/src/app/observation/[observationId].tsx
+  s_062e415bea38d1::t_819bda8f94359d 48,202,221-222
+  s_062e415bea38d1::t_a15eeca10fcf03 382
+skin_care_agent/artifacts/result-refresh-review/review-results.json
+  s_062e415bea38d1::t_cf3e5663503974 1-2,4-19,92-96
+  s_062e415bea38d1::t_accb7950a66ebd 60-67
+  s_062e415bea38d1::t_ec5cffb93f4ed4 20-59
+skin_care_agent/mobile/src/components/observation-action-bar.tsx
+  s_062e415bea38d1::t_b00520a6083c83 75
+skin_care_agent/mobile/src/components/privacy-photo-thumbnail.tsx
+  s_acd465de7b9f6c::t_07bb7417280a28 8-9,25,34,46,100-101,117-121,133,142-145,147,154-156,161-163,165
+  s_acd465de7b9f6c::t_cbaeaa87f17f8c 91,102-116,122-132
+skin_care_agent/docs/wrapup_assessment_2026-09-14.md
+  s_cb216ae11663c0::t_1ef13810359095 60,133-135,141
+  s_cb216ae11663c0::t_a4cfd27d40a64f 1-59,61-132,136-140,142-159
+skin_care_agent/mobile/src/components/timepoint-evidence-card.tsx
+  s_acd465de7b9f6c::t_f00d2c0047f878 1-2,6,15-26,37-39,42,45,47-49,52-55,57-59,61-64,66-70,77,82,86-96
+start-all.ps1
+  s_9203ee6e40eb1a::t_1b3746bdb370d5 233-236,238-248,250
+  s_9203ee6e40eb1a::t_ec4cb073e59617 113-128,196
+  s_9203ee6e40eb1a::t_2cf00b51065f64 48-53
+  s_9203ee6e40eb1a::t_fbea59b39cae69 131-132
+  s_9203ee6e40eb1a::t_8e05b821aeb5e5 129-130,133-145,147-154,156,163-164,166-176,183-184,187-195,197-198,200,202-204
+  s_9203ee6e40eb1a::t_a4f478392e9d68 289
+  s_9203ee6e40eb1a::t_6d6c63a9006401 1-4,14-47,54-112,159-161,177-182,185-186,199,201,205-232,237,249,251-252,255-260,263-288,290-298,300-350,353-355
+skin_care_agent/artifacts/color-refresh-review/product-review.json
+  s_062e415bea38d1::t_408f381ef1563f 1-2,4-112
+skin_care_agent/mobile/src/components/observation-result.tsx
+  s_062e415bea38d1::t_819bda8f94359d 7,142,146,160,163
+  s_062e415bea38d1::t_dc546388c484d3 1
+  s_062e415bea38d1::t_3fc79c6879bb64 2,6,11-12,14-20,22-25,27-28,33-37,40-42,46-48,50-53,55-62,69-70,75-93,95-114,116-121,123,127-128,130-131,134,140-141,143-145,147-151,154-159,161-162,164-173
+  s_062e415bea38d1::t_f86ea52f632be4 21,43,63-68
+  s_062e415bea38d1::t_678844d8c3570e 54,115
+  s_062e415bea38d1::t_196bb41bf279cd 39
+  s_062e415bea38d1::t_97dc8db9561678 71
+  s_062e415bea38d1::t_e32442929439a1 38
+skin_care_agent/artifacts/color-refresh-review/index.html
+  s_062e415bea38d1::t_5fbbf0f7eaa26a 1-30
+skin_care_agent/mobile/src/lib/selection-region-contours.ts
+  s_062e415bea38d1::t_b6eee0358f6d14 61,67-78
+  s_ae82f90d233fc7::t_e1d47d300003ec 1-60,62-66,79-90
+skin_care_agent/mobile/src/components/face-region-map.tsx
+  s_062e415bea38d1::t_b6eee0358f6d14 35,50,69,72,92
+  s_ae82f90d233fc7::t_e1d47d300003ec 34,49,68,112
+skin_care_agent/mobile/src/lib/region-photo-crop.ts
+  s_acd465de7b9f6c::t_07bb7417280a28 1-22,25-29
+  s_acd465de7b9f6c::t_cbaeaa87f17f8c 23-24
+skin_care_agent/mobile/src/components/product-image.tsx
+  s_ae82f90d233fc7::t_0455925eca04f1 12,24,56-58,60-68,80,83,93
+  s_ae82f90d233fc7::t_e510062e0c52c8 1-2,4-6,8,10-11,17-23,25-36,38-54,59,69-79,81-82,84-92,94,99-102
+  s_ae82f90d233fc7::t_68c51c57189694 55,98
+skin_care_agent/artifacts/history-refresh-review/review-results.json
+  s_acd465de7b9f6c::t_ea4be9c1772b8a 1-2,4-43,116-117,119-120
+  s_acd465de7b9f6c::t_12a6e8d66aac95 3,44-115,118
+skin_care_agent/mobile/src/components/product-search-result-row.tsx
+  s_ae82f90d233fc7::t_d52e1c856bc614 33-43
+  s_ae82f90d233fc7::t_44065b6e894a1a 5-6,21
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.44-trip",
+  "base_commit_sha": "8b7da2fb07f4deac5aca977e1fcf7f13ce4f18f4",
+  "prompts": {},
+  "humans": {
+    "h_e5cd53142b29a8": {
+      "author": "yumeifeng <yumeifeng@trip.com>"
+    }
+  },
+  "sessions": {
+    "s_062e415bea38d1": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a09de5-c8d2-7743-805a-d01a81926188",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "yumeifeng <yumeifeng@trip.com>"
+    },
+    "s_9203ee6e40eb1a": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a08b4f-3348-7c93-bc01-d8af528183d6",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "yumeifeng <yumeifeng@trip.com>"
+    },
+    "s_acd465de7b9f6c": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a09ffc-f1cd-7800-9761-c88ff963d6b7",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "yumeifeng <yumeifeng@trip.com>"
+    },
+    "s_ae82f90d233fc7": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a08b60-70b7-7243-bc19-9a9158e092b3",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "yumeifeng <yumeifeng@trip.com>"
+    },
+    "s_cb216ae11663c0": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a09e0b-fb9b-75f1-be25-5b875e171564",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "yumeifeng <yumeifeng@trip.com>"
+    }
+  }
+}
