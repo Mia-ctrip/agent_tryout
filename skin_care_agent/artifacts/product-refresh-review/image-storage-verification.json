@@ -1,0 +1,20 @@
+{
+  "verified_on": "2026-09-11",
+  "scope": "Existing local database image assets and running backend /files responses; not account/native-device acceptance",
+  "database_mutated": false,
+  "originals_modified": false,
+  "method": "Read-only PostgreSQL inventory, SHA-256 match against project originals, copy absent files to their recorded storage keys, signed HTTP GET and SHA-256 of response bytes",
+  "active_asset_count": 8,
+  "missing_files_before": 8,
+  "missing_files_after": 0,
+  "verified_assets": [
+    { "asset_id": 590, "stored_hash_matches": true, "http_status": 200, "response_hash_matches": true },
+    { "asset_id": 591, "stored_hash_matches": true, "http_status": 200, "response_hash_matches": true },
+    { "asset_id": 592, "stored_hash_matches": true, "http_status": 200, "response_hash_matches": true },
+    { "asset_id": 593, "stored_hash_matches": true, "http_status": 200, "response_hash_matches": true },
+    { "asset_id": 594, "stored_hash_matches": true, "http_status": 200, "response_hash_matches": true },
+    { "asset_id": 595, "stored_hash_matches": true, "http_status": 200, "response_hash_matches": true },
+    { "asset_id": 596, "stored_hash_matches": true, "http_status": 200, "response_hash_matches": true },
+    { "asset_id": 597, "stored_hash_matches": true, "http_status": 200, "response_hash_matches": true }
+  ]
+}

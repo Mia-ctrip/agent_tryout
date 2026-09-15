@@ -40,20 +40,28 @@ export function SwipeableProductRow({
 
   return (
     <View style={styles.clip}>
-      <Pressable
-        accessibilityLabel="归档产品"
-        accessibilityRole="button"
-        onPress={() => {
-          onArchive();
-          settle(0);
-        }}
-        style={styles.archiveAction}>
-        <View accessibilityElementsHidden style={styles.archiveIcon}>
-          <View style={styles.archiveLid} />
-          <View style={styles.archiveBox} />
-        </View>
-        <Text style={styles.archiveLabel}>归档</Text>
-      </Pressable>
+      <Animated.View
+        accessibilityElementsHidden={restingOffset === 0}
+        importantForAccessibility={restingOffset === 0 ? 'no-hide-descendants' : 'auto'}
+        style={[styles.archiveReveal, {
+          opacity: offset.interpolate({ inputRange: [-ARCHIVE_REVEAL_WIDTH, 0], outputRange: [1, 0], extrapolate: 'clamp' }),
+          transform: [{ translateX: Animated.add(offset, ARCHIVE_REVEAL_WIDTH) }],
+        }]}>
+        <Pressable
+          accessibilityLabel="归档产品"
+          accessibilityRole="button"
+          onPress={() => {
+            onArchive();
+            settle(0);
+          }}
+          style={styles.archiveAction}>
+          <View accessibilityElementsHidden style={styles.archiveIcon}>
+            <View style={styles.archiveLid} />
+            <View style={styles.archiveBox} />
+          </View>
+          <Text style={styles.archiveLabel}>归档</Text>
+        </Pressable>
+      </Animated.View>
       <Animated.View
         {...panResponder.panHandlers}
         style={[styles.foreground, { transform: [{ translateX: offset }] }]}>
@@ -65,13 +73,16 @@ export function SwipeableProductRow({
 
 const styles = StyleSheet.create({
   clip: { position: 'relative', overflow: 'hidden' },
-  foreground: { zIndex: 1, backgroundColor: productColors.background },
-  archiveAction: {
+  foreground: { zIndex: 1 },
+  archiveReveal: {
     position: 'absolute',
     top: 0,
     right: 0,
     bottom: 0,
     width: ARCHIVE_REVEAL_WIDTH,
+  },
+  archiveAction: {
+    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
     gap: 4,

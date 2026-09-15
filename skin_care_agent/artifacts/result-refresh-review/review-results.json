@@ -1,0 +1,96 @@
+{
+  "kind": "VISUAL FIXTURES ONLY — not backend or native-device verification",
+  "status": "passed-web-native-review-pending",
+  "results": [
+    {
+      "name": "login",
+      "width": 390,
+      "scrollWidth": 390,
+      "path": "/login",
+      "text": "SKIN CARE AGENT\n继续记录你的变化\n用一张照片或一段文字，留下此刻真实可见的状态。\n邮箱\n密码\n登录\n还没有账号？\n创建内测账号",
+      "overflow": false
+    },
+    {
+      "name": "form-error",
+      "width": 320,
+      "scrollWidth": 320,
+      "path": "/login",
+      "text": "SKIN CARE AGENT\n继续记录你的变化\n用一张照片或一段文字，留下此刻真实可见的状态。\n!\n请输入邮箱和密码。\n邮箱\n密码\n登录\n还没有账号？\n创建内测账号",
+      "overflow": false
+    },
+    {
+      "name": "result",
+      "width": 320,
+      "scrollWidth": 320,
+      "path": "/observation/1",
+      "text": "分析结果\n2026年9月1日 16:00\n本次观察结论\n✓ 已自动保存 · 6 个区域\n左脸颊\n鼻周\n额头\n右脸颊\n口周\n下巴\n区域 1 的排版测试小结：局部泛红可见。这是用于检查长文字换行的隔离测试",
+      "overflow": false
+    },
+    {
+      "name": "result",
+      "width": 375,
+      "scrollWidth": 375,
+      "path": "/observation/1",
+      "text": "分析结果\n2026年9月1日 16:00\n本次观察结论\n✓ 已自动保存 · 6 个区域\n左脸颊\n鼻周\n额头\n右脸颊\n口周\n下巴\n区域 1 的排版测试小结：局部泛红可见。这是用于检查长文字换行的隔离测试",
+      "overflow": false
+    },
+    {
+      "name": "result",
+      "width": 390,
+      "scrollWidth": 390,
+      "path": "/observation/1",
+      "text": "分析结果\n2026年9月1日 16:00\n本次观察结论\n✓ 已自动保存 · 6 个区域\n左脸颊\n鼻周\n额头\n右脸颊\n口周\n下巴\n区域 1 的排版测试小结：局部泛红可见。这是用于检查长文字换行的隔离测试",
+      "overflow": false
+    },
+    {
+      "name": "result",
+      "width": 430,
+      "scrollWidth": 430,
+      "path": "/observation/1",
+      "text": "分析结果\n2026年9月1日 16:00\n本次观察结论\n✓ 已自动保存 · 6 个区域\n左脸颊\n鼻周\n额头\n右脸颊\n口周\n下巴\n区域 1 的排版测试小结：局部泛红可见。这是用于检查长文字换行的隔离测试",
+      "overflow": false
+    },
+    {
+      "name": "result-nose",
+      "width": 390,
+      "scrollWidth": 390,
+      "path": "/observation/1",
+      "text": "分析结果\n2026年9月1日 16:00\n本次观察结论\n✓ 已自动保存 · 6 个区域\n左脸颊\n鼻周\n额头\n右脸颊\n口周\n下巴\n区域 1 的排版测试小结：局部泛红可见。这是用于检查长文字换行的隔离测试",
+      "overflow": false
+    },
+    {
+      "name": "result-expanded",
+      "width": 390,
+      "scrollWidth": 390,
+      "path": "/observation/1",
+      "text": "分析结果\n2026年9月1日 16:00\n本次观察结论\n✓ 已自动保存 · 6 个区域\n左脸颊\n鼻周\n额头\n右脸颊\n口周\n下巴\n区域 1 的排版测试小结：局部泛红可见。这是用于检查长文字换行的隔离测试",
+      "overflow": false
+    },
+    {
+      "name": "result-swiped",
+      "width": 390,
+      "scrollWidth": 390,
+      "path": "/observation/1",
+      "text": "分析结果\n2026年9月1日 16:00\n本次观察结论\n✓ 已自动保存 · 6 个区域\n左脸颊\n鼻周\n额头\n右脸颊\n口周\n下巴\n区域 1 的排版测试小结：局部泛红可见。这是用于检查长文字换行的隔离测试",
+      "overflow": false
+    },
+    {
+      "name": "result-last",
+      "width": 390,
+      "scrollWidth": 390,
+      "path": "/observation/1",
+      "text": "分析结果\n2026年9月1日 16:00\n本次观察结论\n✓ 已自动保存 · 6 个区域\n左脸颊\n鼻周\n额头\n右脸颊\n口周\n下巴\n区域 1 的排版测试小结：局部泛红可见。这是用于检查长文字换行的隔离测试",
+      "overflow": false
+    },
+    {
+      "name": "scanner",
+      "width": 390,
+      "scrollWidth": 390,
+      "path": "/observation/1",
+      "text": "AI 分析中\n2026年9月1日 16:00\n正在分析今天的照片\n扫描阶段来自各检测区域的真实任务状态，不显示虚假百分比。\n左脸颊\n鼻周\n额头\n右脸颊\n口周\n下巴\n正在读取左脸颊的皮肤表现\n今日记录已",
+      "overflow": false
+    }
+  ],
+  "errors": [],
+  "skipped": []
+}

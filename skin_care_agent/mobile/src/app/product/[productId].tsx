@@ -87,9 +87,11 @@ export default function ProductDetailScreen() {
             <ProductImage
               accessibilityLabel={`${product.name} 当前产品图片`}
               category={standard?.product_category ?? null}
-              radius={22}
-              size={104}
+              radius={radii.sm}
+              size={120}
               uri={product.image_url}
+              expiresAt={product.image_expires_at}
+              onRefresh={() => getPersonalProduct(request, product.product_id)}
             />
             <View style={styles.heroCopy}>
               <Text style={styles.eyebrow}>{product.source_type === 'standard' ? 'STANDARD PRODUCT' : 'MY PRODUCT'}</Text>

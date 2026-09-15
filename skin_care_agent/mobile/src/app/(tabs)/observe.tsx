@@ -12,7 +12,7 @@ import { InlineNotice } from '@/components/inline-notice';
 import { ObservationListItem } from '@/components/observation-list-item';
 import { RegionEventCard } from '@/components/region-event-card';
 import { SectionHeader } from '@/components/section-header';
-import { colors, spacing } from '@/constants/theme';
+import { colors, radii, spacing } from '@/constants/theme';
 import { listObservations } from '@/lib/observation-api';
 import type { Observation } from '@/lib/observation-api';
 import { createObservationGenerationGuard } from '@/lib/observation-flow';
@@ -53,11 +53,12 @@ export default function ObserveScreen() {
   );
 
   return (
-    <AppScreen contentStyle={styles.screen}>
+    <AppScreen backgroundColor={colors.paper} contentStyle={styles.screen}>
       <View style={styles.masthead}>
         <EditorialText role="sectionTitle" style={styles.brandTitle}>肌肤档案</EditorialText>
-        <Text style={styles.brandMeta}>PRIVATE JOURNAL</Text>
+        <View style={styles.todayTag}><Text style={styles.brandMeta}>TODAY · 今天</Text></View>
       </View>
+      <View style={styles.todaySection}>
       <EditorialHeader
         title={'今天，也留下一次\n真实观察'}
         description="让皮肤的变化，被温和而诚实地保存。"
@@ -81,6 +82,7 @@ export default function ObserveScreen() {
           onPress={() => router.push(observationCaptureHref('library') as Href)}
           variant="text"
         />
+      </View>
       </View>
       {error ? <InlineNotice tone="error" message={error} /> : null}
       {events.length > 0 ? (
@@ -129,7 +131,9 @@ const styles = StyleSheet.create({
   screen: { gap: spacing.xl, paddingTop: spacing.md, paddingHorizontal: spacing.xl },
   masthead: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: spacing.sm },
   brandTitle: { color: colors.earth, fontSize: 19, lineHeight: 28 },
-  brandMeta: { color: colors.textMuted, fontSize: 9, letterSpacing: 1.4 },
+  todayTag: { backgroundColor: colors.amber, borderRadius: radii.pill, paddingHorizontal: spacing.md, paddingVertical: spacing.xs },
+  brandMeta: { color: colors.earth, fontSize: 10, lineHeight: 16, letterSpacing: 1 },
+  todaySection: { backgroundColor: colors.paperElevated, marginHorizontal: -spacing.xl, paddingHorizontal: spacing.xl, paddingVertical: spacing.xl, gap: spacing.xl },
   primaryActions: { gap: spacing.xs },
   productUseAction: {
     alignItems: 'center',

@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
     gap: observationSpacing.xs,
     borderTopWidth: StyleSheet.hairlineWidth,
     borderTopColor: observationColors.border,
-    backgroundColor: observationColors.background,
+    backgroundColor: 'transparent',
     paddingTop: observationSpacing.md,
     paddingHorizontal: observationSpacing.lg,
   },

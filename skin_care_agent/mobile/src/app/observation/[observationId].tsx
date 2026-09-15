@@ -45,6 +45,7 @@ import {
   shouldPollObservationTargets,
 } from '@/lib/observation-flow';
 import { observationDetailBackTarget } from '@/lib/observation-navigation';
+import { colors } from '@/constants/theme';
 import { regionById } from '@/lib/region-catalog';
 import { useSession } from '@/providers/session-provider';
 
@@ -198,7 +199,7 @@ export default function ObservationDetailScreen() {
 
   return (
     <AppScreen
-      backgroundColor={observationColors.background}
+      backgroundColor={showResultActions ? colors.paperElevated : observationColors.background}
       footer={
         showResultActions ? (
           <ObservationActionBar
@@ -217,7 +218,8 @@ export default function ObservationDetailScreen() {
           headerBackButtonDisplayMode: 'minimal',
           headerShadowVisible: false,
           headerShown: true,
-          headerStyle: { backgroundColor: observationColors.background },
+          headerStyle: { backgroundColor: showResultActions ? colors.paperElevated : observationColors.background },
+          headerTitleStyle: { color: colors.earth },
           headerTintColor: observationColors.action,
           title: analyzing ? 'AI 分析中' : '分析结果',
           ...(backTarget === 'native'
@@ -377,7 +379,7 @@ const styles = StyleSheet.create({
   fallbackBack: { minWidth: 44, minHeight: 44, alignItems: 'center', justifyContent: 'center' },
   loading: { alignItems: 'center', gap: observationSpacing.md, paddingVertical: 32 },
   muted: { color: observationColors.textMuted, fontSize: 14 },
-  time: { color: observationColors.textMuted, fontSize: 12, marginBottom: observationSpacing.lg },
+  time: { color: colors.earth, fontSize: 12, lineHeight: 18, borderLeftWidth: 3, borderLeftColor: colors.amber, paddingLeft: observationSpacing.sm, marginBottom: observationSpacing.lg },
   headerCopy: { gap: observationSpacing.sm, marginBottom: observationSpacing.xl },
   title: {
     color: observationColors.text,

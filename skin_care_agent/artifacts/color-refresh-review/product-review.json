@@ -1,0 +1,112 @@
+{
+  "kind": "VISUAL FIXTURES ONLY — not backend or native-device verification",
+  "status": "passed-web-native-review-pending",
+  "results": [
+    {
+      "name": "products",
+      "width": 320,
+      "scrollWidth": 320,
+      "path": "/products",
+      "text": "肌肤档案\nTODAY · 今天\n今天，也留下一次\n真实观察\n让皮肤的变化，被温和而诚实地保存。\nNATURAL LIGHT\nSLOW OBSERVATIONS\n开始今天的观察\n从相册选择原图\nCURR",
+      "overflow": false
+    },
+    {
+      "name": "products",
+      "width": 375,
+      "scrollWidth": 375,
+      "path": "/products",
+      "text": "肌肤档案\nTODAY · 今天\n今天，也留下一次\n真实观察\n让皮肤的变化，被温和而诚实地保存。\nNATURAL LIGHT\nSLOW OBSERVATIONS\n开始今天的观察\n从相册选择原图\nCURR",
+      "overflow": false
+    },
+    {
+      "name": "products",
+      "width": 390,
+      "scrollWidth": 390,
+      "path": "/products",
+      "text": "肌肤档案\nTODAY · 今天\n今天，也留下一次\n真实观察\n让皮肤的变化，被温和而诚实地保存。\nNATURAL LIGHT\nSLOW OBSERVATIONS\n开始今天的观察\n从相册选择原图\nCURR",
+      "overflow": false
+    },
+    {
+      "name": "products",
+      "width": 430,
+      "scrollWidth": 430,
+      "path": "/products",
+      "text": "肌肤档案\nTODAY · 今天\n今天，也留下一次\n真实观察\n让皮肤的变化，被温和而诚实地保存。\nNATURAL LIGHT\nSLOW OBSERVATIONS\n开始今天的观察\n从相册选择原图\nCURR",
+      "overflow": false
+    },
+    {
+      "name": "products-scrolled",
+      "width": 390,
+      "scrollWidth": 390,
+      "path": "/products",
+      "text": "肌肤档案\nTODAY · 今天\n今天，也留下一次\n真实观察\n让皮肤的变化，被温和而诚实地保存。\nNATURAL LIGHT\nSLOW OBSERVATIONS\n开始今天的观察\n从相册选择原图\nCURR",
+      "overflow": false
+    },
+    {
+      "name": "products-swipe",
+      "width": 390,
+      "scrollWidth": 390,
+      "path": "/products",
+      "text": "肌肤档案\nTODAY · 今天\n今天，也留下一次\n真实观察\n让皮肤的变化，被温和而诚实地保存。\nNATURAL LIGHT\nSLOW OBSERVATIONS\n开始今天的观察\n从相册选择原图\nCURR",
+      "overflow": false
+    },
+    {
+      "name": "product-detail",
+      "width": 390,
+      "scrollWidth": 390,
+      "path": "/product/1",
+      "text": "产品详情\nMY PRODUCT\n过氧苯甲酰凝胶 5%\n用户自建产品\n累计使用\n3 次\n最近使用\n9 月 1 日\n官方说明书\n这是用户自建产品，暂无可追溯的官方说明书。\n最近使用记录\n全部 3 次\n9 ",
+      "overflow": false
+    },
+    {
+      "name": "product-detail",
+      "width": 320,
+      "scrollWidth": 320,
+      "path": "/product/1",
+      "text": "产品详情\nMY PRODUCT\n过氧苯甲酰凝胶 5%\n用户自建产品\n累计使用\n3 次\n最近使用\n9 月 1 日\n官方说明书\n这是用户自建产品，暂无可追溯的官方说明书。\n最近使用记录\n全部 3 次\n9 ",
+      "overflow": false
+    },
+    {
+      "name": "products-long-name",
+      "width": 320,
+      "scrollWidth": 320,
+      "path": "/products",
+      "text": "肌肤档案\nTODAY · 今天\n今天，也留下一次\n真实观察\n让皮肤的变化，被温和而诚实地保存。\nNATURAL LIGHT\nSLOW OBSERVATIONS\n开始今天的观察\n从相册选择原图\nCURR",
+      "overflow": false
+    },
+    {
+      "name": "products-image-error",
+      "width": 390,
+      "scrollWidth": 390,
+      "path": "/products",
+      "text": "肌肤档案\nTODAY · 今天\n今天，也留下一次\n真实观察\n让皮肤的变化，被温和而诚实地保存。\nNATURAL LIGHT\nSLOW OBSERVATIONS\n开始今天的观察\n从相册选择原图\nCURR",
+      "overflow": false
+    },
+    {
+      "name": "products-image-recovered",
+      "width": 390,
+      "scrollWidth": 390,
+      "path": "/products",
+      "text": "肌肤档案\nTODAY · 今天\n今天，也留下一次\n真实观察\n让皮肤的变化，被温和而诚实地保存。\nNATURAL LIGHT\nSLOW OBSERVATIONS\n开始今天的观察\n从相册选择原图\nCURR",
+      "overflow": false
+    },
+    {
+      "name": "products-signature-refreshed",
+      "width": 390,
+      "scrollWidth": 390,
+      "path": "/products",
+      "text": "肌肤档案\nTODAY · 今天\n今天，也留下一次\n真实观察\n让皮肤的变化，被温和而诚实地保存。\nNATURAL LIGHT\nSLOW OBSERVATIONS\n开始今天的观察\n从相册选择原图\nCURR",
+      "overflow": false
+    },
+    {
+      "name": "product-add",
+      "width": 390,
+      "scrollWidth": 390,
+      "path": "/product/new",
+      "text": "添加产品\n添加产品\n输入得越完整，匹配结果越准确\n搜索产品\n实时匹配\n⌕\n同时匹配产品名称、品牌、简称和受控别名\n搜索结果只帮助识别产品\n搜索结果仅用于记录，不代表推荐、疗效或适用程度。",
+      "overflow": false
+    }
+  ],
+  "errors": [],
+  "skipped": []
+}

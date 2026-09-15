@@ -1,0 +1,120 @@
+{
+  "kind": "VISUAL FIXTURES ONLY — not backend or native-device verification",
+  "status": "passed-web-native-review-pending",
+  "results": [
+    {
+      "name": "region-event-left",
+      "width": 320,
+      "scrollWidth": 320,
+      "path": "/region-event/1",
+      "text": "左脸颊\n左脸颊 · 这一段记录\n8月12日—9月1日 · 5 个时间点\n8月12日\n8月16日\n8月21日\n8月26日\n9月1日\n产品使用 · 过氧苯甲酰凝胶 5%\n9 月 1 日 · 16:00\n生",
+      "overflow": false
+    },
+    {
+      "name": "region-event-left",
+      "width": 375,
+      "scrollWidth": 375,
+      "path": "/region-event/1",
+      "text": "左脸颊\n左脸颊 · 这一段记录\n8月12日—9月1日 · 5 个时间点\n8月12日\n8月16日\n8月21日\n8月26日\n9月1日\n产品使用 · 过氧苯甲酰凝胶 5%\n9 月 1 日 · 16:00\n生",
+      "overflow": false
+    },
+    {
+      "name": "region-event-left",
+      "width": 390,
+      "scrollWidth": 390,
+      "path": "/region-event/1",
+      "text": "左脸颊\n左脸颊 · 这一段记录\n8月12日—9月1日 · 5 个时间点\n8月12日\n8月16日\n8月21日\n8月26日\n9月1日\n产品使用 · 过氧苯甲酰凝胶 5%\n9 月 1 日 · 16:00\n生",
+      "overflow": false
+    },
+    {
+      "name": "region-event-left",
+      "width": 430,
+      "scrollWidth": 430,
+      "path": "/region-event/1",
+      "text": "左脸颊\n左脸颊 · 这一段记录\n8月12日—9月1日 · 5 个时间点\n8月12日\n8月16日\n8月21日\n8月26日\n9月1日\n产品使用 · 过氧苯甲酰凝胶 5%\n9 月 1 日 · 16:00\n生",
+      "overflow": false
+    },
+    {
+      "name": "timepoint-first",
+      "width": 390,
+      "scrollWidth": 390,
+      "path": "/region-event/1",
+      "text": "左脸颊\n左脸颊 · 这一段记录\n8月12日—9月1日 · 5 个时间点\n8月12日\n8月16日\n8月21日\n8月26日\n9月1日\n产品使用 · 过氧苯甲酰凝胶 5%\n9 月 1 日 · 16:00\n生",
+      "overflow": false
+    },
+    {
+      "name": "region-left_face",
+      "width": 390,
+      "scrollWidth": 390,
+      "path": "/region-event/1",
+      "text": "左脸颊\n左脸颊 · 这一段记录\n8月12日—9月1日 · 5 个时间点\n8月12日\n8月16日\n8月21日\n8月26日\n9月1日\n产品使用 · 过氧苯甲酰凝胶 5%\n9 月 1 日 · 16:00\n生",
+      "overflow": false
+    },
+    {
+      "name": "region-nose_area",
+      "width": 390,
+      "scrollWidth": 390,
+      "path": "/region-event/1",
+      "text": "鼻周\n鼻周 · 这一段记录\n8月12日—9月1日 · 5 个时间点\n8月12日\n8月16日\n8月21日\n8月26日\n9月1日\n产品使用 · 过氧苯甲酰凝胶 5%\n9 月 1 日 · 16:00\n生活背",
+      "overflow": false
+    },
+    {
+      "name": "region-right_face",
+      "width": 390,
+      "scrollWidth": 390,
+      "path": "/region-event/1",
+      "text": "右脸颊\n右脸颊 · 这一段记录\n8月12日—9月1日 · 5 个时间点\n8月12日\n8月16日\n8月21日\n8月26日\n9月1日\n产品使用 · 过氧苯甲酰凝胶 5%\n9 月 1 日 · 16:00\n生",
+      "overflow": false
+    },
+    {
+      "name": "region-forehead",
+      "width": 390,
+      "scrollWidth": 390,
+      "path": "/region-event/1",
+      "text": "额头\n额头 · 这一段记录\n8月12日—9月1日 · 5 个时间点\n8月12日\n8月16日\n8月21日\n8月26日\n9月1日\n产品使用 · 过氧苯甲酰凝胶 5%\n9 月 1 日 · 16:00\n生活背",
+      "overflow": false
+    },
+    {
+      "name": "region-mouth_area",
+      "width": 390,
+      "scrollWidth": 390,
+      "path": "/region-event/1",
+      "text": "口周\n口周 · 这一段记录\n8月12日—9月1日 · 5 个时间点\n8月12日\n8月16日\n8月21日\n8月26日\n9月1日\n产品使用 · 过氧苯甲酰凝胶 5%\n9 月 1 日 · 16:00\n生活背",
+      "overflow": false
+    },
+    {
+      "name": "region-chin",
+      "width": 390,
+      "scrollWidth": 390,
+      "path": "/region-event/1",
+      "text": "下巴\n下巴 · 这一段记录\n8月12日—9月1日 · 5 个时间点\n8月12日\n8月16日\n8月21日\n8月26日\n9月1日\n产品使用 · 过氧苯甲酰凝胶 5%\n9 月 1 日 · 16:00\n生活背",
+      "overflow": false
+    },
+    {
+      "name": "region-legacy",
+      "width": 320,
+      "scrollWidth": 320,
+      "path": "/region-event/1",
+      "text": "下巴\n下巴 · 这一段记录\n8月12日—9月1日 · 5 个时间点\n原图预览\n8月12日\n原图预览\n8月16日\n原图预览\n8月21日\n原图预览\n8月26日\n原图预览\n9月1日\n产品使用 · 过氧苯甲酰",
+      "overflow": false
+    },
+    {
+      "name": "region-text",
+      "width": 320,
+      "scrollWidth": 320,
+      "path": "/region-event/1",
+      "text": "下巴\n下巴 · 这一段记录\n8月12日—9月1日 · 5 个时间点\n文字记录\n昨晚睡得较晚，今天没有刺痛。\n8月12日\n文字记录\n昨晚睡得较晚，今天没有刺痛。\n8月16日\n文字记录\n昨晚睡得较晚，今天",
+      "overflow": false
+    },
+    {
+      "name": "region-long",
+      "width": 320,
+      "scrollWidth": 320,
+      "path": "/region-event/1",
+      "text": "下巴\n下巴 · 这一段记录\n8月12日—9月1日 · 5 个时间点\n8月12日\n8月16日\n8月21日\n8月26日\n9月1日\n产品使用 · 过氧苯甲酰凝胶 5%\n9 月 1 日 · 16:00\n生活背",
+      "overflow": false
+    }
+  ],
+  "errors": [],
+  "skipped": []
+}

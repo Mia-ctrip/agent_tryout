@@ -58,6 +58,7 @@ export function AnalysisScanner({ photo, targets }: AnalysisScannerProps) {
             sourceSize,
             viewportSize: viewport,
             calloutMode: 'none',
+            contourMode: 'selection',
           })
         : null,
     [photo.quality_meta, selectedRegions, sourceSize, stage.activeRegion, viewport],

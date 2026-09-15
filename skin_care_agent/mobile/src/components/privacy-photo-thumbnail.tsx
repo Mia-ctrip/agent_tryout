@@ -5,6 +5,8 @@ import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-nati
 import { colors, radii, spacing } from '@/constants/theme';
 import { API_BASE_URL } from '@/lib/api';
 import { resolveMediaUrl } from '@/lib/media-url';
+import { regionPhotoCrop } from '@/lib/region-photo-crop';
+import type { RegionId } from '@/lib/region-catalog';
 import {
   refreshObservationPhotoUrl,
   type AuthenticatedRequest,
@@ -20,6 +22,7 @@ import {
 
 type PrivacyPhotoThumbnailProps = {
   photo: ObservationPhoto;
+  regionId: RegionId | null;
   request: AuthenticatedRequest;
   selected: boolean;
   accessibilityLabel: string;
@@ -28,6 +31,7 @@ type PrivacyPhotoThumbnailProps = {
 
 export function PrivacyPhotoThumbnail({
   photo,
+  regionId,
   request,
   selected,
   accessibilityLabel,
@@ -39,6 +43,7 @@ export function PrivacyPhotoThumbnail({
   const [phase, setPhase] = useState<'loading' | 'ready' | 'error'>('loading');
   const [refreshVersion, setRefreshVersion] = useState(0);
   const refreshingRef = useRef(false);
+  const crop = regionPhotoCrop(photo, regionId, 80);
 
   const resolvedUrl = useMemo(
     () => resolveMediaUrl(photoState.displayUrl, API_BASE_URL),
@@ -83,7 +88,7 @@ export function PrivacyPhotoThumbnail({
       accessibilityHint={
         phase === 'error' ? '选择此时间点并重新加载照片' : '选择此时间点'
       }
-      accessibilityLabel={accessibilityLabel}
+      accessibilityLabel={`${accessibilityLabel}，${crop ? '区域局部' : '原图预览，缺少区域定位'}`}
       accessibilityRole="button"
       accessibilityState={{ selected }}
       onPress={handlePress}
@@ -92,34 +97,40 @@ export function PrivacyPhotoThumbnail({
         selected && styles.selected,
         pressed && styles.pressed,
       ]}>
-      <Image
-        accessibilityElementsHidden
-        blurRadius={10}
-        cachePolicy="memory-disk"
-        contentFit="cover"
-        onError={handleImageError}
-        onLoad={() => {
-          setPhotoState((current) => markPrivacyPhotoLoaded(current));
-          setPhase('ready');
-        }}
-        onLoadStart={() => setPhase('loading')}
-        recyclingKey={`${photo.photo_id}-${refreshVersion}-${photoState.sourceUrl}`}
-        source={{ uri: resolvedUrl }}
-        style={styles.image}
-        transition={120}
-      />
-      <View pointerEvents="none" style={styles.mask} />
-      {phase === 'loading' ? (
-        <View pointerEvents="none" style={styles.centered}>
-          <ActivityIndicator color={colors.actionPrimary} size="small" />
-        </View>
-      ) : null}
-      {phase === 'error' ? (
-        <View pointerEvents="none" style={[styles.centered, styles.errorSurface]}>
-          <Text style={styles.errorText}>照片暂不可用</Text>
-          <Text style={styles.retryText}>点按重试</Text>
-        </View>
-      ) : null}
+      <View style={styles.viewport} testID={crop ? 'region-photo-crop' : 'region-photo-original'}>
+        <Image
+          accessibilityElementsHidden
+          blurRadius={crop ? 0 : 10}
+          cachePolicy="memory-disk"
+          contentFit={crop ? 'fill' : 'cover'}
+          onError={handleImageError}
+          onLoad={() => {
+            setPhotoState((current) => markPrivacyPhotoLoaded(current));
+            setPhase('ready');
+          }}
+          onLoadStart={() => setPhase('loading')}
+          recyclingKey={`${photo.photo_id}-${refreshVersion}-${photoState.sourceUrl}`}
+          source={{ uri: resolvedUrl }}
+          style={crop ? [styles.croppedImage, crop] : styles.image}
+          transition={0}
+        />
+        {!crop ? (
+          <View pointerEvents="none" style={styles.originalLabel}>
+            <Text style={styles.originalText}>原图预览</Text>
+          </View>
+        ) : null}
+        {phase === 'loading' ? (
+          <View pointerEvents="none" style={styles.centered}>
+            <ActivityIndicator color={colors.actionPrimary} size="small" />
+          </View>
+        ) : null}
+        {phase === 'error' ? (
+          <View pointerEvents="none" style={[styles.centered, styles.errorSurface]}>
+            <Text style={styles.errorText}>照片暂不可用</Text>
+            <Text style={styles.retryText}>点按重试</Text>
+          </View>
+        ) : null}
+      </View>
     </Pressable>
   );
 }
@@ -128,26 +139,30 @@ const styles = StyleSheet.create({
   frame: {
     width: 88,
     height: 88,
-    overflow: 'hidden',
-    borderWidth: 1,
-    borderColor: colors.border,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 2,
+    borderColor: colors.background,
     borderRadius: radii.md,
-    backgroundColor: colors.surfaceMuted,
+    backgroundColor: colors.background,
   },
   selected: {
-    borderWidth: 3,
     borderColor: colors.actionPrimary,
   },
   pressed: { opacity: 0.74 },
   image: { width: '100%', height: '100%' },
-  mask: {
+  viewport: { width: 80, height: 80, overflow: 'hidden', borderRadius: radii.sm, backgroundColor: colors.surfaceMuted },
+  croppedImage: { position: 'absolute' },
+  originalLabel: {
     position: 'absolute',
-    top: 0,
     right: 0,
     bottom: 0,
     left: 0,
-    backgroundColor: colors.brandOverlay,
+    alignItems: 'center',
+    paddingVertical: spacing.xs,
+    backgroundColor: colors.surface,
   },
+  originalText: { color: colors.textMuted, fontSize: 10 },
   centered: {
     position: 'absolute',
     top: 0,

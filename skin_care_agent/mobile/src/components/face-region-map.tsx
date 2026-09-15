@@ -31,6 +31,8 @@ type FaceRegionMapProps = {
   onToggle: (regionId: RegionId) => void;
   disabled?: boolean;
   calloutMode?: 'active' | 'all';
+  contourMode?: 'detected' | 'selection';
+  visibleRegions?: readonly RegionId[];
   aspectRatio?: number;
 };
 
@@ -44,6 +46,8 @@ export function FaceRegionMap({
   onToggle,
   disabled = false,
   calloutMode = 'active',
+  contourMode = 'detected',
+  visibleRegions,
   aspectRatio = 0.78,
 }: FaceRegionMapProps) {
   const [viewportSize, setViewportSize] = useState<Size>({ width: 0, height: 0 });
@@ -61,9 +65,11 @@ export function FaceRegionMap({
             sourceSize,
             viewportSize,
             calloutMode,
+            contourMode,
+            visibleRegions,
           })
         : null,
-    [activeRegion, calloutMode, geometry, selected, sourceSize, viewportSize],
+    [activeRegion, calloutMode, contourMode, geometry, selected, sourceSize, viewportSize, visibleRegions],
   );
   const onLayout = (event: LayoutChangeEvent) => {
     const { width, height } = event.nativeEvent.layout;
@@ -83,7 +89,7 @@ export function FaceRegionMap({
           style={StyleSheet.absoluteFill}
         />
       ) : null}
-      {overlay?.hitTargets.map((target) => {
+      {!disabled && overlay?.hitTargets.map((target) => {
         const locked = required.includes(target.regionId);
         return (
           <Pressable
@@ -103,7 +109,7 @@ export function FaceRegionMap({
                 height: target.bounds.height,
               },
             ]}>
-            {target.selected ? (
+            {target.selected && contourMode !== 'selection' ? (
               <View
                 style={[
                   styles.check,

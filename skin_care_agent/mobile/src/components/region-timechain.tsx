@@ -62,7 +62,7 @@ export function RegionTimechain({
         const targetId = timepoint.target.target_id;
         const selected = selectedTargetId === targetId;
         const label = `${regionLabel}，${formatHistoryShortDate(timepoint.recorded_local_date)}，${
-          timepoint.photo ? '隐私缩略图' : '文字记录'
+          timepoint.photo ? '照片预览' : '文字记录'
         }`;
         return (
           <View key={targetId} style={styles.node}>
@@ -72,6 +72,7 @@ export function RegionTimechain({
                 key={`${timepoint.photo.photo_id}-${timepoint.photo.url}`}
                 onPress={() => onSelect(targetId)}
                 photo={timepoint.photo}
+                regionId={timepoint.target.region_id}
                 request={request}
                 selected={selected}
               />
@@ -92,7 +93,10 @@ export function RegionTimechain({
                 </Text>
               </Pressable>
             )}
-            <View style={[styles.dot, selected && styles.dotSelected]} />
+            <View style={styles.stem} />
+            <View style={[styles.dotRing, selected && styles.dotRingSelected]}>
+              <View style={[styles.dot, selected && styles.dotSelected]} />
+            </View>
             <Text style={[styles.date, selected && styles.dateSelected]}>
               {formatHistoryShortDate(timepoint.recorded_local_date)}
             </Text>
@@ -114,11 +118,12 @@ const styles = StyleSheet.create({
   line: {
     position: 'absolute',
     left: spacing.xs + 48,
-    top: 107,
+    top: spacing.sm + 88 + 16 + 10,
     height: 1,
-    backgroundColor: colors.brand,
+    backgroundColor: colors.moss,
   },
-  node: { width: 96, alignItems: 'center', gap: spacing.sm },
+  node: { width: 96, alignItems: 'center' },
+  stem: { width: 1, height: 16, backgroundColor: colors.hairline },
   textNode: {
     width: 88,
     height: 88,
@@ -134,16 +139,20 @@ const styles = StyleSheet.create({
   textNodeSelected: { borderWidth: 3, borderColor: colors.actionPrimary },
   textNodeTitle: { color: colors.text, fontSize: 12, fontWeight: '700' },
   textNodeCopy: { color: colors.textMuted, fontSize: 10, lineHeight: 14, textAlign: 'center' },
-  dot: {
-    width: 9,
-    height: 9,
+  dotRing: {
+    width: 20,
+    height: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
     borderWidth: 2,
-    borderColor: colors.brand,
-    borderRadius: 5,
-    backgroundColor: colors.surface,
+    borderColor: colors.background,
+    borderRadius: radii.pill,
+    backgroundColor: colors.background,
   },
-  dotSelected: { width: 12, height: 12, borderRadius: 6, backgroundColor: colors.actionPrimary },
-  date: { color: colors.textMuted, fontSize: 12 },
-  dateSelected: { color: colors.actionPrimary, fontWeight: '800' },
+  dotRingSelected: { borderColor: colors.moss },
+  dot: { width: 10, height: 10, borderRadius: radii.pill, backgroundColor: colors.moss },
+  dotSelected: { backgroundColor: colors.actionPrimary },
+  date: { marginTop: spacing.sm, color: colors.text, fontSize: 12 },
+  dateSelected: { color: colors.actionPrimary, fontWeight: '600' },
   pressed: { opacity: 0.72 },
 });

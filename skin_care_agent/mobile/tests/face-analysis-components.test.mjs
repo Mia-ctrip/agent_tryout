@@ -152,3 +152,58 @@ test('generated SVG uses an Android-compatible base64 data URI', () => {
   assert.match(uri, /^data:image\/svg\+xml;base64,/);
   assert.equal(Buffer.from(uri.split(',')[1], 'base64').toString('utf8'), svg);
 });
+
+test('confirmation contours occupy the detected region without callouts or selection-dependent geometry', () => {
+  const options = { geometry: fullGeometry, activeRegion: 'forehead', sourceSize: { width: 100, height: 100 }, viewportSize: { width: 400, height: 400 }, contourMode: 'selection' };
+  const unselected = buildFaceRegionOverlaySvg({ ...options, selected: [] });
+  const selected = buildFaceRegionOverlaySvg({ ...options, selected: ['forehead', 'left_face'] });
+  assert.deepEqual(selected.callouts, []);
+  assert.doesNotMatch(selected.svg, /data-callout-region/);
+  const regionPath = (model, id) => model.svg.match(new RegExp(`<path data-region="${id}"[^>]+>`))[0];
+  for (const region of fullGeometry) {
+    const id = region.region_id;
+    const before = regionPath(unselected, id);
+    const after = regionPath(selected, id);
+    assert.match(after, /d="M[^\"]*C/);
+    assert.equal(after.replace(/ stroke-dasharray="5 4"/, ''), before.replace(/ stroke-dasharray="5 4"/, ''));
+    assert.equal(after.includes('stroke-dasharray'), !['forehead', 'left_face'].includes(id));
+    const box = selected.hitTargets.find(t => t.regionId === id).visualBounds;
+    const xs = region.points.map(p => p.x * 400), ys = region.points.map(p => p.y * 400);
+    assert.ok(box.width >= (Math.max(...xs) - Math.min(...xs)) * .9, id + ' is unnecessarily shrunk');
+    // Forehead control points are now intentionally inset to fit the oval.
+    assert.ok(box.height >= (Math.max(...ys) - Math.min(...ys)) * (id === 'forehead' ? .65 : .9), id + ' is unnecessarily shrunk vertically');
+  }
+  assert.ok(selected.hitTargets.find(t => t.regionId === 'left_face').bounds.x > selected.hitTargets.find(t => t.regionId === 'right_face').bounds.x);
+});
+
+test('confirmation contours follow photo roll and cover cropping without mutating detected geometry', () => {
+  const rotate = ({ x, y }) => ({ x: .5 + (x - .5) * Math.cos(.18) - (y - .5) * Math.sin(.18), y: .5 + (x - .5) * Math.sin(.18) + (y - .5) * Math.cos(.18) });
+  const tilted = fullGeometry.map(r => ({ ...r, points: r.points.map(rotate) }));
+  const original = JSON.stringify(tilted);
+  const model = buildFaceRegionOverlaySvg({ geometry: tilted, selected: [], activeRegion: null, sourceSize: { width: 400, height: 400 }, viewportSize: { width: 320, height: 440 }, contourMode: 'selection' });
+  assert.equal(JSON.stringify(tilted), original);
+  assert.equal(model.hitTargets.length, 6);
+  assert.doesNotMatch(model.svg, /NaN|Infinity/);
+  // The forehead's top edge rotates with the face instead of remaining horizontal.
+  const path = model.svg.match(/data-region="forehead" d="([^"]+)"/)[1];
+  assert.match(path, /C/);
+});
+
+test('wide forehead curve stays inside the full face oval including its control points', () => {
+  const wide = fullGeometry.map(r => r.region_id === 'forehead' ? { ...r, points: [{ x: .2, y: .16 }, { x: .8, y: .16 }, { x: .76, y: .34 }, { x: .24, y: .34 }] } : r);
+  const model = buildFaceRegionOverlaySvg({ geometry: wide, selected: [], activeRegion: null, sourceSize: { width: 400, height: 400 }, viewportSize: { width: 320, height: 400 }, contourMode: 'selection' });
+  const oval = model.svg.match(/data-role="face-outline" cx="([^"]+)" cy="([^"]+)" rx="([^"]+)" ry="([^"]+)"/).slice(1).map(Number);
+  const values = model.svg.match(/data-region="forehead" d="([^"]+)"/)[1].match(/-?\d+(?:\.\d+)?/g).map(Number);
+  for (let i = 0; i < values.length; i += 2) {
+    assert.ok(((values[i] - oval[0]) / oval[2]) ** 2 + ((values[i + 1] - oval[1]) / oval[3]) ** 2 < 1, 'forehead crosses face outline');
+  }
+});
+
+test('result can show one region while retaining the full photo geometry and face oval', () => {
+  const options = { geometry: fullGeometry, selected: ['left_face'], activeRegion: 'left_face', sourceSize: { width: 100, height: 100 }, viewportSize: { width: 200, height: 250 }, contourMode: 'selection' };
+  const confirmation = buildFaceRegionOverlaySvg(options);
+  const result = buildFaceRegionOverlaySvg({ ...options, visibleRegions: ['left_face'] });
+  assert.equal(result.svg.match(/data-region=/g).length, 1);
+  assert.equal(result.svg.match(/<ellipse data-role="face-outline"[^>]+>/)[0], confirmation.svg.match(/<ellipse data-role="face-outline"[^>]+>/)[0]);
+  assert.equal(result.svg.match(/data-region="left_face" d="([^"]+)"/)[1], confirmation.svg.match(/data-region="left_face" d="([^"]+)"/)[1]);
+});

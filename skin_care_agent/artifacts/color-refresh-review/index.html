@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="zh-CN">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>配色试版 · 三页对照</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#EFE8D6;color:#3E362B;font:15px/1.6 system-ui,sans-serif}
+main{max-width:1280px;margin:auto;padding:32px 24px}h1{font-size:28px;font-weight:500;margin:0 0 8px}p{margin:0 0 20px}
+nav{display:flex;gap:8px;margin-bottom:24px}button{font:inherit;min-height:44px;padding:8px 20px;border:1px solid #6D7A54;border-radius:24px;background:transparent;color:#3E362B;cursor:pointer}button[aria-pressed=true]{background:#4A5638;color:#FBF6E8}button:focus-visible{outline:3px solid #C89A45;outline-offset:3px}
+.screens{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px}figure{margin:0}h2{font-size:18px;margin:0 0 4px}figcaption{min-height:64px}img{display:block;width:100%;border:1px solid #D9D2BB;border-radius:16px;background:#FBF6E8}.note{font-size:13px;margin-top:24px}
+@media(max-width:750px){.screens{grid-template-columns:1fr}figure{max-width:390px;margin:auto}main{padding:24px 16px}}
+</style>
+<main>
+<h1>配色试版</h1>
+<p>观察首页的浅纸面、分析结果的墨土小结、产品柜的暖象牙底。</p>
+<nav aria-label="配色版本"><button aria-pressed="true" data-version="after">新版</button><button aria-pressed="false" data-version="before">调整前</button></nav>
+<div class="screens">
+<figure><figcaption><h2>观察首页</h2>琥珀标记今天，浅纸面承载主要操作。</figcaption><img data-page="observe" src="observe-390.png" alt="新版观察首页，390px 截图"></figure>
+<figure><figcaption><h2>分析结果</h2>浅底衬托墨土结论，绿色保留给选区与操作。</figcaption><img data-page="result" src="result-390.png" alt="新版分析结果，390px 截图"></figure>
+<figure><figcaption><h2>产品柜</h2>温暖底色与浅色包装展示区形成层次。</figcaption><img data-page="products" src="products-390.png" alt="新版产品柜，390px 截图"></figure>
+</div>
+<p class="note">截图来自隔离浏览器验收。结果页使用本地已有照片，分析文字、日期、产品记录均为测试数据；原生设备效果待验证。</p>
+</main>
+<script>
+document.querySelectorAll('button[data-version]').forEach(button=>button.addEventListener('click',()=>{
+  const before=button.dataset.version==='before';
+  document.querySelectorAll('button[data-version]').forEach(item=>item.setAttribute('aria-pressed',String(item===button)));
+  document.querySelectorAll('img[data-page]').forEach(img=>{img.src=img.dataset.page+(before?'-before':'')+'-390.png';img.alt=(before?'调整前':'新版')+img.dataset.page+'，390px 截图';});
+}));
+</script>
+</html>

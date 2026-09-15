@@ -626,7 +626,7 @@ export default function NewObservationScreen() {
           <FaceRegionMap
             activeRegion={flow.activeRegion}
             aspectRatio={1}
-            calloutMode="all"
+            contourMode="selection"
             geometry={flow.quality.regions}
             onToggle={toggleObservationRegion}
             photoUri={flow.photoUri}

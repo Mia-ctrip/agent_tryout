@@ -1,0 +1,32 @@
+[
+  {
+    "role": "today text",
+    "contrast": 4.62,
+    "passesAA": true
+  },
+  {
+    "role": "product title",
+    "contrast": 11.7,
+    "passesAA": true
+  },
+  {
+    "role": "product meta",
+    "contrast": 9.72,
+    "passesAA": true
+  },
+  {
+    "role": "result summary",
+    "contrast": 9.72,
+    "passesAA": true
+  },
+  {
+    "role": "result meta",
+    "contrast": 5.04,
+    "passesAA": true
+  },
+  {
+    "role": "observe meta",
+    "contrast": 4.83,
+    "passesAA": true
+  }
+]

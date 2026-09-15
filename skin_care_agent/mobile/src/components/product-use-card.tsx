@@ -2,10 +2,12 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import { colors, radii, spacing } from '@/constants/theme';
 import { ProductImage } from '@/components/product-image';
-import type { ProductUse } from '@/lib/product-api';
+import { getProductUse, type ProductUse } from '@/lib/product-api';
 import { formatUsedAt } from '@/lib/product-use-flow';
+import { useSession } from '@/providers/session-provider';
 
 export function ProductUseCard({ productUse }: { productUse: ProductUse }) {
+  const { request } = useSession();
   const productLabel = productUse.products.length
     ? productUse.products.map((product) => product.name).join('、')
     : '未注明产品';
@@ -21,6 +23,14 @@ export function ProductUseCard({ productUse }: { productUse: ProductUse }) {
             accessibilityLabel={`${product.name} 使用时产品图片`}
             category={null}
             uri={product.image_url}
+            expiresAt={product.image_expires_at}
+            onRefresh={async () => {
+              // Re-sign the historical snapshot, never substitute the current catalog image.
+              const use = await getProductUse(request, productUse.product_use_id);
+              const snapshot = use.products.find(value => value.product_id === product.product_id && value.image_asset_id === product.image_asset_id);
+              if (!snapshot) throw new Error('Product image snapshot unavailable');
+              return snapshot;
+            }}
           />
           <View style={styles.snapshotCopy}>
             <Text style={styles.snapshotName}>{product.name}</Text>

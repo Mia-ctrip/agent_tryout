@@ -6,11 +6,11 @@ import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-nati
 import { AppScreen } from '@/components/app-screen';
 import { InlineNotice } from '@/components/inline-notice';
 import { EditorialText } from '@/components/editorial-text';
-import { MedicineArchiveHeader } from '@/components/medicine-archive-header';
+import { MedicineArchiveHeader, ProductArchiveBackdrop } from '@/components/medicine-archive-header';
 import { PersonalProductCard } from '@/components/personal-product-card';
 import { SwipeableProductRow } from '@/components/swipeable-product-row';
 import { productColors } from '@/constants/product-theme';
-import { radii, spacing } from '@/constants/theme';
+import { colors, radii, spacing } from '@/constants/theme';
 import { userFacingError } from '@/lib/errors';
 import { listPersonalProducts } from '@/lib/product-api';
 import type { PersonalProduct } from '@/lib/product-api';
@@ -44,7 +44,8 @@ export default function ProductsScreen() {
   );
 
   return (
-    <AppScreen backgroundColor={productColors.background} contentStyle={styles.screenContent}>
+    <AppScreen backgroundColor={colors.ground} contentStyle={styles.screenContent}>
+      <ProductArchiveBackdrop showEchoes={orderedProducts.length > 0} />
       <View style={styles.header}>
         <View style={styles.headerCopy}>
           <EditorialText role="sectionTitle" style={styles.title}>产品档案</EditorialText>

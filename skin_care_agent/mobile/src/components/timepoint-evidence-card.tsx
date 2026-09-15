@@ -1,10 +1,9 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { Image } from 'expo-image';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { AppButton } from '@/components/app-button';
 import { EditorialText } from '@/components/editorial-text';
-import { InlineNotice } from '@/components/inline-notice';
 import { colors, radii, spacing } from '@/constants/theme';
-import { formatHistoryDateTime, timepointSourceLabel } from '@/lib/history-flow';
+import { formatHistoryDateTime, formatHistoryShortDate, timepointSourceLabel } from '@/lib/history-flow';
 import type { RegionEventTimepoint } from '@/lib/region-event-api';
 
 type TimepointEvidenceCardProps = {
@@ -13,11 +12,18 @@ type TimepointEvidenceCardProps = {
   onOpenObservation: () => void;
 };
 
-function statusCopy(status: RegionEventTimepoint['target']['status']): string | null {
-  if (status === 'queued') return '这次记录正在排队，暂不生成可见事实。';
-  if (status === 'processing') return '这次记录正在整理，暂不生成可见事实。';
-  if (status === 'needs_input') return '照片信息不足，需要补充文字后才能继续整理。';
-  return null;
+const iconPaths = {
+  camera: '<path d="M8 6l1.5-2h5L16 6h3a2 2 0 0 1 2 2v11H3V8a2 2 0 0 1 2-2z"/><circle cx="12" cy="12.5" r="4"/><path d="M17.5 9h.5"/>',
+  note: '<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 2v4m6-4v4M8 10h8m-8 4h8m-8 4h5"/>',
+  source: '<path d="M6 2h8l4 4v16H6zM14 2v5h4M9 12h6m-6 4h6"/>',
+};
+
+function EvidenceIcon({ kind }: { kind: keyof typeof iconPaths }) {
+  return (
+    <View accessibilityElementsHidden importantForAccessibility="no-hide-descendants" style={[styles.icon, kind !== 'source' && styles.iconDisc]}>
+      <Image source={{ uri: `data:image/svg+xml;utf8,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="${colors.moss}" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">${iconPaths[kind]}</svg>`)}` }} style={styles.iconDrawing} />
+    </View>
+  );
 }
 
 export function TimepointEvidenceCard({
@@ -28,77 +34,64 @@ export function TimepointEvidenceCard({
   const { target } = timepoint;
   const note = target.user_note?.trim();
   const summary = target.facts?.summary.trim();
-  const stateCopy = statusCopy(target.status);
-  const hasEvidence = Boolean(note || summary);
+  const photoCopy = summary || (target.status === 'queued' || target.status === 'processing'
+    ? '正在整理照片。'
+    : timepoint.photo ? '照片信息不足，暂无法判断。' : '这次没有照片。');
 
   return (
-    <View accessibilityLiveRegion="polite" style={styles.card}>
+    <View accessibilityLiveRegion="polite" style={styles.card} testID="timepoint-evidence-card">
       <View style={styles.heading}>
-        <Text style={styles.eyebrow}>当天观察记录</Text>
         <EditorialText role="sectionTitle" style={styles.date}>
-          {formatHistoryDateTime(
-            timepoint.recorded_at,
-            timepoint.recorded_timezone_offset_minutes,
-          )}
+          {formatHistoryShortDate(timepoint.recorded_local_date)}的记录
         </EditorialText>
+        <Text style={styles.time} accessibilityLabel={`${regionLabel}，${formatHistoryDateTime(timepoint.recorded_at, timepoint.recorded_timezone_offset_minutes)}`}>
+          {formatHistoryDateTime(timepoint.recorded_at, timepoint.recorded_timezone_offset_minutes)}
+        </Text>
       </View>
 
-      {note ? (
-        <View style={styles.section}>
-          <Text style={styles.label}>你的记录</Text>
-          <Text style={styles.body}>{note}</Text>
+      <View style={styles.rows}>
+        <View style={styles.row}>
+          <EvidenceIcon kind="camera" />
+          <Text style={styles.body} numberOfLines={3}>照片中可见：{photoCopy}</Text>
         </View>
-      ) : null}
-
-      {summary ? (
-        <View style={styles.section}>
-          <Text style={styles.label}>照片中可见</Text>
-          <Text style={styles.body}>{summary}</Text>
+        <View style={styles.row}>
+          <EvidenceIcon kind="note" />
+          <Text style={styles.body} numberOfLines={3}>你的记录：{note || '这次没有补充文字。'}</Text>
         </View>
-      ) : null}
-
-      {stateCopy ? <InlineNotice message={stateCopy} /> : null}
-      {!hasEvidence && !stateCopy ? (
-        <InlineNotice message="信息不足，暂无法整理更多可见状态。" />
-      ) : null}
-
-      {target.facts?.unknowns.length ? (
-        <View style={styles.unknowns}>
-          <Text style={styles.label}>暂无法判断</Text>
-          <Text style={styles.muted}>{target.facts.unknowns.join('；')}</Text>
-        </View>
-      ) : null}
-
-      <Text style={styles.source}>来源：{timepointSourceLabel(target)}</Text>
-      <Text style={styles.boundary}>
-        这里只整理{regionLabel}在当天留下的照片与原文，不推断变化、原因或疗效。
-      </Text>
-      <AppButton
-        label={timepoint.photo ? '查看原图与完整记录' : '查看完整记录'}
+      </View>
+      <Pressable
+        accessibilityLabel={timepoint.photo ? '查看原图与完整记录' : '查看完整记录'}
+        accessibilityRole="button"
         onPress={onOpenObservation}
-        variant="secondary"
-      />
+        style={({ pressed }) => [styles.footer, pressed && styles.pressed]}>
+        <EvidenceIcon kind="source" />
+        <Text style={styles.source}>来源：{timepointSourceLabel(target)}</Text>
+        <Text style={styles.link}>查看详情 ›</Text>
+      </Pressable>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   card: {
-    gap: spacing.lg,
+    gap: spacing.xl,
     borderWidth: 1,
     borderColor: colors.border,
     borderRadius: radii.lg,
     backgroundColor: colors.surface,
-    padding: spacing.xl,
+    padding: spacing.lg,
   },
   heading: { gap: spacing.xs },
-  eyebrow: { color: colors.textMuted, fontSize: 11, letterSpacing: 1 },
   date: { color: colors.ink, fontSize: 23, lineHeight: 32 },
-  section: { gap: spacing.xs },
-  label: { color: colors.textMuted, fontSize: 12, fontWeight: '700' },
-  body: { color: colors.text, fontSize: 15, lineHeight: 23 },
-  unknowns: { gap: spacing.xs, borderTopWidth: StyleSheet.hairlineWidth, borderColor: colors.border, paddingTop: spacing.md },
-  muted: { color: colors.textMuted, fontSize: 13, lineHeight: 20 },
-  source: { color: colors.actionPrimary, fontSize: 13, fontWeight: '700' },
-  boundary: { color: colors.textMuted, fontSize: 12, lineHeight: 19 },
+  time: { color: colors.textMuted, fontSize: 12, lineHeight: 18 },
+  rows: { gap: spacing.md },
+  row: { flexDirection: 'row', alignItems: 'flex-start', gap: spacing.sm },
+  icon: { width: 28, height: 28, alignItems: 'center', justifyContent: 'center' },
+  iconDisc: { borderRadius: radii.pill, backgroundColor: colors.brandOverlay },
+  iconDrawing: { width: 20, height: 20 },
+  body: { flex: 1, color: colors.earth, fontSize: 15, lineHeight: 25 },
+  footer: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, minHeight: 44, borderTopWidth: StyleSheet.hairlineWidth, borderColor: colors.border, paddingTop: spacing.md },
+  source: { flex: 1, color: colors.textMuted, fontSize: 12, lineHeight: 19 },
+  link: { color: colors.actionPrimary, fontSize: 12, lineHeight: 19 },
+  pressed: { opacity: 0.72 },
 });

@@ -1,37 +1,48 @@
 import { Image } from 'expo-image';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 
 import { EditorialText } from '@/components/editorial-text';
-import { colors, overlayOpacity, radii, spacing } from '@/constants/theme';
-import { svgDataUri } from '@/lib/face-analysis-visual';
-
-// Original, code-drawn still life. Decorative only; never contains product data.
-const lightbox = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 250"><defs><radialGradient id="light"><stop stop-color="${colors.paperElevated}"/><stop offset="1" stop-color="${colors.amber}" stop-opacity=".1"/></radialGradient><linearGradient id="glass" x2="1" y2="1"><stop stop-color="${colors.paperElevated}" stop-opacity=".8"/><stop offset="1" stop-color="${colors.sage}" stop-opacity=".2"/></linearGradient><filter id="soft"><feGaussianBlur stdDeviation="4"/></filter></defs><rect width="360" height="250" fill="url(#light)"/><g transform="rotate(-13 262 105)" fill="url(#glass)" stroke="${colors.moss}" stroke-width=".6"><rect x="237" y="29" width="65" height="146" rx="15"/><rect x="257" y="13" width="25" height="20" rx="5"/><path d="M239 95h60M240 105h58"/></g><path d="M180 178l101-10 7 74-110 4z" fill="${colors.paperElevated}"/><g filter="url(#soft)" fill="${colors.moss}"><ellipse cx="331" cy="71" rx="17" ry="43" transform="rotate(24 331 71)"/><ellipse cx="344" cy="157" rx="18" ry="42" transform="rotate(-28 344 157)"/></g><path d="M348 12q-32 118-13 216" stroke="${colors.moss}" fill="none"/></svg>`;
+import { colors, overlayOpacity, spacing } from '@/constants/theme';
 
 export function MedicineArchiveHeader() {
+  const compact = useWindowDimensions().width < 375;
   return (
     <View style={styles.hero}>
-      <Image
-        accessibilityElementsHidden
-        importantForAccessibility="no-hide-descendants"
-        pointerEvents="none"
-        contentFit="fill"
-        source={{ uri: svgDataUri(lightbox) }}
-        style={styles.atmosphere}
-      />
-      <Text style={styles.eyebrow}>MY PRODUCTS · 我的记录</Text>
-      <EditorialText role="pageTitle" style={styles.title}>我的产品档案</EditorialText>
-      <Text style={styles.subtitle}>Kept in time, not judged.</Text>
-      <Text style={styles.caption}>保存使用，也保留每一次真实记录。</Text>
+      <View style={styles.copy}>
+        <Text style={styles.eyebrow}>MY PRODUCTS · 我的记录</Text>
+        <EditorialText role="pageTitle" style={[styles.title, compact && styles.compactTitle]}>我的产品档案</EditorialText>
+        <Text style={styles.caption}>{'保存使用，\n也保留每一次真实记录。'}</Text>
+      </View>
+    </View>
+  );
+}
+
+// One continuous, transparent canvas: cropping happens only at the page edges,
+// never at a product-row boundary. It scrolls with the content and cannot take taps.
+export function ProductArchiveBackdrop({ showEchoes }: { showEchoes: boolean }) {
+  const source = require('../../assets/brand/product-still-life-illustration-v2.png');
+  return (
+    <View testID="product-archive-backdrop" pointerEvents="none" accessible={false}
+      accessibilityElementsHidden importantForAccessibility="no-hide-descendants" style={styles.backdrop}>
+      <Image testID="product-backdrop-main" source={source} contentFit="contain" style={styles.mainMotif} />
+      {showEchoes ? <>
+        <Image testID="product-backdrop-echo" source={source} contentFit="contain" style={styles.leftEcho} />
+        <Image testID="product-backdrop-echo" source={source} contentFit="contain" style={styles.rightEcho} />
+      </> : null}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  hero: { minHeight: 224, justifyContent: 'center', gap: spacing.sm, borderRadius: radii.lg, overflow: 'hidden', padding: spacing.lg, marginVertical: spacing.lg },
-  atmosphere: { position: 'absolute', inset: 0, opacity: overlayOpacity.soft },
-  eyebrow: { color: colors.textMuted, fontSize: 10, lineHeight: 16, letterSpacing: 1.3 },
+  hero: { minHeight: 184, justifyContent: 'center', marginVertical: spacing.lg },
+  copy: { minWidth: 0, gap: spacing.sm },
+  backdrop: { position: 'absolute', top: 0, bottom: 0, left: -20, right: -20, overflow: 'hidden' },
+  // User-approved lightbox treatment: 22% main, 8% scattered echoes.
+  mainMotif: { position: 'absolute', width: 320, height: 320, right: -88, top: 32, opacity: 0.22 },
+  leftEcho: { position: 'absolute', width: 360, height: 360, left: -196, top: 320, opacity: overlayOpacity.whisper, transform: [{ rotate: '18deg' }] },
+  rightEcho: { position: 'absolute', width: 400, height: 400, right: -224, bottom: -80, opacity: overlayOpacity.whisper, transform: [{ rotate: '-24deg' }] },
+  eyebrow: { color: colors.earth, fontSize: 10, lineHeight: 16, letterSpacing: 1.3 },
   title: { color: colors.ink },
-  subtitle: { color: colors.mossDeep, fontFamily: 'serif', fontStyle: 'italic', fontSize: 15, lineHeight: 24 },
-  caption: { color: colors.textMuted, fontSize: 12, lineHeight: 20, marginTop: spacing.sm },
+  compactTitle: { fontSize: 24, lineHeight: 34 },
+  caption: { color: colors.earth, fontSize: 12, lineHeight: 20, marginTop: spacing.sm, maxWidth: 224 },
 });

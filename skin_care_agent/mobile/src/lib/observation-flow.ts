@@ -313,6 +313,15 @@ export type ObservationResultEvidence = {
 };
 
 export type ObservationResultModel = {
+  regionCards: {
+    targetId: number;
+    regionId: RegionId | null;
+    regionLabel: string;
+    summary: string;
+    highlights: { label: string; value: string }[];
+    limitations: string[];
+    sections: { label: string; value: string }[];
+  }[];
   regionLabel: string;
   summary: string;
   findings: ObservationResultFinding[];
@@ -408,7 +417,24 @@ export function buildObservationResultModel(
       },
     ];
   });
+  const useful = (value: string) => Boolean(value.trim()) && !/^(无法判断|不明确|未知|少量|散在|局部可见)[。\s]*$/.test(value.trim());
+  const regionCards = completed.map((target, index) => {
+    const facts = target.facts!;
+    return {
+      targetId: target.target_id,
+      regionId: target.region_id,
+      regionLabel: regionLabels[index],
+      summary: facts.summary.trim() || '本次未形成区域小结，可查看下方事实。',
+      highlights: [
+        { label: '可见外观', value: facts.daily_appearance.filter(useful).join('；') },
+        { label: '主要位置', value: facts.main_locations.filter(useful).join('、') },
+      ].filter(item => item.value),
+      limitations: facts.unknowns.filter(useful),
+      sections: details[index].sections,
+    };
+  });
   return {
+    regionCards,
     regionLabel: regionLabels.join('、') || '本次检测区域',
     summary:
       summaries.length > 0

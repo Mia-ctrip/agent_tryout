@@ -7,6 +7,7 @@ import type { LayoutBounds, LayoutPoint, Size } from './face-region-layout.ts';
 import type { ObservationRegionGeometry } from './observation-quality-api.ts';
 import { REGIONS } from './region-catalog.ts';
 import type { RegionId } from './region-catalog.ts';
+import { buildSelectionContour, selectionFaceAxes } from './selection-region-contours.ts';
 
 export type RegionChoiceItem = {
   id: RegionId;
@@ -157,6 +158,8 @@ export function buildFaceRegionOverlaySvg({
   sourceSize,
   viewportSize,
   calloutMode = 'active',
+  contourMode = 'detected',
+  visibleRegions,
 }: {
   geometry: readonly ObservationRegionGeometry[];
   selected: readonly RegionId[];
@@ -164,23 +167,26 @@ export function buildFaceRegionOverlaySvg({
   sourceSize: Size;
   viewportSize: Size;
   calloutMode?: 'active' | 'all' | 'none';
+  contourMode?: 'detected' | 'selection';
+  visibleRegions?: readonly RegionId[];
 }): FaceRegionOverlayModel {
   const selectedSet = new Set(selected);
-  const mapped = geometry.map((region) => {
-    const hitPoints = mapNormalizedPolygonToCoverLayout(
-      region.points,
-      sourceSize,
-      viewportSize,
-    );
+  const photoRegions = geometry.map(region => ({ ...region, points: mapNormalizedPolygonToCoverLayout(region.points, sourceSize, viewportSize) }));
+  const axes = selectionFaceAxes(photoRegions);
+  const faceBounds = polygonHitBounds(photoRegions.flatMap(region => region.points), 0);
+  const mapped = photoRegions.map((region) => {
+    const hitPoints = region.points;
+    const contour = contourMode === 'selection' ? buildSelectionContour(region, axes, faceBounds) : null;
     const points = scalePolygon(hitPoints, region.region_id);
     const bounds = polygonHitBounds(hitPoints);
-    const visualBounds = polygonHitBounds(points, 0);
+    const visualBounds = contour?.bounds ?? polygonHitBounds(points, 0);
     return {
       ...region,
       hitPoints,
       points,
       bounds,
       visualBounds,
+      contour,
       selected: selectedSet.has(region.region_id),
     };
   });
@@ -189,6 +195,7 @@ export function buildFaceRegionOverlaySvg({
       (candidate) =>
         candidate.region_id === regionId &&
         candidate.selected &&
+        contourMode !== 'selection' &&
         calloutMode !== 'none' &&
         (calloutMode === 'all' || candidate.region_id === activeRegion),
     );
@@ -219,7 +226,9 @@ export function buildFaceRegionOverlaySvg({
     ];
   });
   const polygons = mapped
+    .filter(region => !visibleRegions || visibleRegions.includes(region.region_id))
     .map((region) => {
+      if (region.contour) return `<path data-region="${region.region_id}" d="${region.contour.path}" stroke="${observationColors.warmLine}" stroke-width="1.5" fill="none"${region.selected ? '' : ' stroke-dasharray="5 4"'} stroke-linejoin="round"/>`;
       const selectedStyle = region.selected
         ? `stroke="${observationColors.sage}" stroke-width="2" fill="none"`
         : `stroke="${observationColors.warmLine}" stroke-width="1.5" stroke-dasharray="5 4" fill="none"`;

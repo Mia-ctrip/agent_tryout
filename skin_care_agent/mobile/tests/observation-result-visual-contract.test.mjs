@@ -8,12 +8,12 @@ const result = readFileSync(
   'utf8',
 );
 
-test('result reads as conclusion, evidence, user words, next step, then boundaries', () => {
+test('result reads as regional conclusion, evidence, full facts, user words, then boundaries', () => {
   const markers = [
     '本次观察结论',
     '原始照片 · 未修饰',
+    '完整小结',
     '你的记录',
-    '接下来',
     '不是医学诊断',
   ];
   const positions = markers.map((marker) => result.indexOf(marker));
@@ -31,5 +31,7 @@ test('result keeps decoration out of evidence and removes the disabled trend car
 
   assert.doesNotMatch(evidence, /BotanicalTrace|EditorialCollage/);
   assert.doesNotMatch(result, /趋势对比|model\.comparison/);
-  assert.match(result, /model\.findings\.slice\(0, 2\)/);
+  assert.match(result, /card\.highlights\.map/);
+  assert.match(result, /pagingEnabled/);
+  assert.match(result, /accessibilityState=\{\{ expanded \}\}/);
 });

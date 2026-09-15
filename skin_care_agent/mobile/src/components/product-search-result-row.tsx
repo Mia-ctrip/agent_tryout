@@ -2,7 +2,8 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { ProductImage } from '@/components/product-image';
 import { productColors } from '@/constants/product-theme';
-import type { ProductSearchItem } from '@/lib/product-api';
+import { getPersonalProduct, getStandardProduct, type ProductSearchItem } from '@/lib/product-api';
+import { useSession } from '@/providers/session-provider';
 
 export function ProductSearchResultRow({
   item,
@@ -17,6 +18,7 @@ export function ProductSearchResultRow({
   onOpenStandard?: () => void;
   selected?: boolean;
 }) {
+  const { request } = useSession();
   const actionLabel = selected
     ? '已选中'
     : item.source_type === 'personal' || item.in_cabinet
@@ -28,12 +30,22 @@ export function ProductSearchResultRow({
 
   return (
     <View style={styles.row}>
+      <ProductImage
+        accessibilityLabel={`${item.name} 产品图片`}
+        category={item.product_category}
+        size={72}
+        uri={item.image_url}
+        expiresAt={item.image_expires_at}
+        onPress={onOpenStandard}
+        onRefresh={item.personal_product_id
+          ? () => getPersonalProduct(request, item.personal_product_id!)
+          : item.standard_product_id ? () => getStandardProduct(request, item.standard_product_id!) : undefined}
+      />
       <Pressable
         accessibilityRole={onOpenStandard ? 'button' : undefined}
         disabled={!onOpenStandard}
         onPress={onOpenStandard}
         style={styles.summary}>
-        <ProductImage accessibilityLabel={`${item.name} 产品图片`} category={item.product_category} radius={14} size={72} uri={item.image_url} />
         <View style={styles.copy}>
           <Text numberOfLines={2} style={styles.name}>{item.name}</Text>
           <Text numberOfLines={1} style={styles.meta}>{meta}</Text>

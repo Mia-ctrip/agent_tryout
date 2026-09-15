@@ -169,15 +169,11 @@ export default function RegionEventDetailScreen() {
               {formatHistoryShortDate(event.started_local_date)}—
               {formatHistoryShortDate(event.last_valid_local_date)} · {event.timepoints.length} 个时间点
             </Text>
-            <Text style={styles.status}>
-              {event.status === 'current' ? '正在记录' : '这段记录已结束'}
-            </Text>
+            {event.status === 'ended' ? <Text style={styles.status}>这段记录已结束</Text> : null}
           </View>
 
           {event.timepoints.length ? (
             <View style={styles.timelineSection}>
-              <Text style={styles.sectionTitle}>图片时间链</Text>
-              <Text style={styles.sectionHint}>从左到右按真实发生时间排列</Text>
               <RegionTimechain
                 onSelect={setSelectedTargetId}
                 regionLabel={region.label}
@@ -197,7 +193,6 @@ export default function RegionEventDetailScreen() {
 
           {productContexts.length || selectedTimepoint?.life_context_completed_at ? (
             <View style={styles.contextSection}>
-              <Text style={styles.sectionTitle}>相邻时间上下文</Text>
               <View style={styles.contextRows}>
                 {productContexts.map((use) => (
                   <View key={use.product_use_id} style={styles.contextRow}>
@@ -250,10 +245,6 @@ export default function RegionEventDetailScreen() {
               />
             </View>
           ) : null}
-          <Text style={styles.contextBoundary}>
-            相邻记录只作时间上下文，不表示关联或疗效。
-          </Text>
-
           {selectedTimepoint ? (
             <View style={styles.evidenceSection}>
               <TimepointEvidenceCard
@@ -266,8 +257,8 @@ export default function RegionEventDetailScreen() {
             </View>
           ) : null}
 
-          <Text style={styles.dataBoundary}>
-            时间链只包含这段区域事件的有效记录；未选择、未记录或无法判断的内容不会被表示为“没有问题”。
+          <Text style={styles.contextBoundary}>
+            相邻记录只作时间上下文，不表示关联或疗效。
           </Text>
 
           {event.status === 'current' ? (
@@ -284,7 +275,7 @@ export default function RegionEventDetailScreen() {
                 onPress={() =>
                   confirmEnding ? void endCurrentEvent() : setConfirmEnding(true)
                 }
-                variant="secondary"
+                variant="text"
               />
               {confirmEnding ? (
                 <AppButton
@@ -305,18 +296,17 @@ const styles = StyleSheet.create({
   loading: { alignItems: 'center', gap: spacing.md, paddingVertical: spacing.xxl },
   muted: { color: colors.textMuted, fontSize: 14, lineHeight: 21 },
   noticeGroup: { gap: spacing.xs },
-  header: { gap: spacing.sm, marginBottom: spacing.xl },
+  header: { alignItems: 'center', gap: spacing.sm, marginBottom: spacing.xl },
   title: {
     color: colors.ink,
     fontSize: 26,
     lineHeight: 36,
     fontWeight: '400',
+    textAlign: 'center',
   },
   meta: { color: colors.textMuted, fontSize: 14, lineHeight: 22 },
   status: { color: colors.actionPrimary, fontSize: 12, fontWeight: '500' },
   timelineSection: { gap: spacing.xs },
-  sectionTitle: { color: colors.earth, fontSize: 16, fontWeight: '500' },
-  sectionHint: { color: colors.textMuted, fontSize: 12, lineHeight: 18 },
   emptyState: {
     gap: spacing.sm,
     borderWidth: 1,
@@ -326,7 +316,7 @@ const styles = StyleSheet.create({
     padding: spacing.xl,
   },
   emptyTitle: { color: colors.text, fontSize: 17, fontWeight: '700' },
-  contextSection: { gap: spacing.sm, marginTop: spacing.xxl },
+  contextSection: { gap: spacing.sm, marginTop: spacing.xl },
   contextRows: { gap: spacing.xs },
   contextRow: {
     minHeight: 44,
@@ -337,7 +327,7 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
     paddingVertical: spacing.sm,
   },
-  contextLabel: { flex: 1, color: colors.textMuted, fontSize: 13, lineHeight: 19 },
+  contextLabel: { flex: 1, color: colors.moss, fontSize: 14, lineHeight: 22 },
   contextDate: { flexShrink: 1, maxWidth: '40%', color: colors.textMuted, fontSize: 11, lineHeight: 18 },
   contextSkipped: { color: colors.textMuted, fontSize: 12, paddingVertical: spacing.sm },
   contextUnavailable: { marginTop: spacing.md, color: colors.textMuted, fontSize: 12 },
@@ -347,13 +337,8 @@ const styles = StyleSheet.create({
     color: colors.textMuted,
     fontSize: 12,
     lineHeight: 19,
+    textAlign: 'center',
   },
-  evidenceSection: { marginTop: spacing.xxl },
-  dataBoundary: {
-    marginTop: spacing.xl,
-    color: colors.textMuted,
-    fontSize: 12,
-    lineHeight: 19,
-  },
+  evidenceSection: { marginTop: spacing.xl },
   endSection: { gap: spacing.sm, marginTop: spacing.xxl },
 });

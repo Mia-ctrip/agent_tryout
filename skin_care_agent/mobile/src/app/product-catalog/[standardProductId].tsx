@@ -44,7 +44,14 @@ export default function StandardProductDetailScreen() {
       {product ? (
         <View style={styles.content}>
           <EditorialText role="pageTitle" style={styles.title}>{product.official_name}</EditorialText>
-          <ProductImage accessibilityLabel={`${product.official_name} 官方产品图片`} category={product.product_category} uri={product.image_url} />
+          <ProductImage
+            accessibilityLabel={`${product.official_name} 官方产品图片`}
+            category={product.product_category}
+            size={160}
+            uri={product.image_url}
+            expiresAt={product.image_expires_at}
+            onRefresh={() => getStandardProduct(request, id)}
+          />
           <Text style={styles.meta}>{product.brand_name} · {product.formula_version}</Text>
           <Text style={styles.boundary}>产品资料仅用于记录，不构成诊断或使用建议。</Text>
           {document ? (

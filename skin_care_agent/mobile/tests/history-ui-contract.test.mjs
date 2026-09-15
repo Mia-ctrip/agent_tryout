@@ -22,13 +22,16 @@ test('history overview does not render the non-region other-history section', ()
   assert.doesNotMatch(overview, /overview\.otherHistory\.map/);
 });
 
-test('timechain is horizontal, privacy blurred, and a single node has no connector', () => {
+test('timechain crops the selected region, blurs only legacy originals, and a single node has no connector', () => {
   const timeline = source('../src/components/region-timechain.tsx');
   const photo = source('../src/components/privacy-photo-thumbnail.tsx');
   assert.match(timeline, /horizontal/);
   assert.match(timeline, /timepoints\.length > 1/);
   assert.match(timeline, /scrollToSelected/);
-  assert.match(photo, /blurRadius=\{10\}/);
+  assert.match(timeline, /regionId=\{timepoint.target.region_id\}/);
+  assert.match(photo, /regionPhotoCrop\(photo, regionId, 80\)/);
+  assert.match(photo, /blurRadius=\{crop \? 0 : 10\}/);
+  assert.match(photo, /原图预览/);
   assert.match(photo, /refreshObservationPhotoUrl/);
 });
 
