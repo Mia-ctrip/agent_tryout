@@ -52,11 +52,17 @@ export function TimepointEvidenceCard({
       <View style={styles.rows}>
         <View style={styles.row}>
           <EvidenceIcon kind="camera" />
-          <Text style={styles.body} numberOfLines={3}>照片中可见：{photoCopy}</Text>
+          <View style={styles.bodyContainer}>
+            <Text style={styles.bodyLabel}>照片中可见</Text>
+            <Text style={styles.body} numberOfLines={3}>{photoCopy}</Text>
+          </View>
         </View>
         <View style={styles.row}>
           <EvidenceIcon kind="note" />
-          <Text style={styles.body} numberOfLines={3}>你的记录：{note || '这次没有补充文字。'}</Text>
+          <View style={styles.bodyContainer}>
+            <Text style={styles.bodyLabel}>你的记录</Text>
+            <Text style={styles.body} numberOfLines={3}>{note || '这次没有补充文字。'}</Text>
+          </View>
         </View>
       </View>
       <Pressable
@@ -86,10 +92,12 @@ const styles = StyleSheet.create({
   time: { color: colors.textMuted, fontSize: 12, lineHeight: 18 },
   rows: { gap: spacing.md },
   row: { flexDirection: 'row', alignItems: 'flex-start', gap: spacing.sm },
+  bodyContainer: { flex: 1, gap: spacing.xs },
+  bodyLabel: { color: colors.ink, fontSize: 15, lineHeight: 20, fontWeight: '600' },
   icon: { width: 28, height: 28, alignItems: 'center', justifyContent: 'center' },
   iconDisc: { borderRadius: radii.pill, backgroundColor: colors.brandOverlay },
   iconDrawing: { width: 20, height: 20 },
-  body: { flex: 1, color: colors.earth, fontSize: 15, lineHeight: 25 },
+  body: { color: colors.earth, fontSize: 15, lineHeight: 25 },
   footer: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, minHeight: 44, borderTopWidth: StyleSheet.hairlineWidth, borderColor: colors.border, paddingTop: spacing.md },
   source: { flex: 1, color: colors.textMuted, fontSize: 12, lineHeight: 19 },
   link: { color: colors.actionPrimary, fontSize: 12, lineHeight: 19 },
