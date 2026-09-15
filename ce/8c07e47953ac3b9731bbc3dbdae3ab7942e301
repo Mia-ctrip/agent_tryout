@@ -1,0 +1,26 @@
+skin_care_agent/mobile/src/components/timepoint-evidence-card.tsx
+  s_6779089816dd1a::t_faaec2625785a7 100
+  s_6779089816dd1a::t_5d42b4c7869d90 55-58,62-65
+  s_6779089816dd1a::t_69f3517beb1fb8 95-96
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.44-trip",
+  "base_commit_sha": "ce8c07e47953ac3b9731bbc3dbdae3ab7942e301",
+  "prompts": {},
+  "humans": {
+    "h_e5cd53142b29a8": {
+      "author": "yumeifeng <yumeifeng@trip.com>"
+    }
+  },
+  "sessions": {
+    "s_6779089816dd1a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "52cdeba7-f9c1-445d-8867-92114085f405",
+        "model": "arn:aws:bedrock:us-east-1:456197019624:application-inference-profile/az6u53ziyd94"
+      },
+      "human_author": "yumeifeng <yumeifeng@trip.com>"
+    }
+  }
+}
