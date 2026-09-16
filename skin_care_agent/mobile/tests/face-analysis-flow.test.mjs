@@ -160,6 +160,31 @@ test('required regions stay selected while every supported region remains select
   ]);
 });
 
+test('full-face shortcut selects six regions idempotently and still allows one-region cancellation', () => {
+  let state = createFaceAnalysisState('request-id');
+  state = faceAnalysisReducer(state, {
+    type: 'quality_passed',
+    quality: { status: 'passed', primary_issue: null, issues: [], metrics: {}, regions: [] },
+  });
+  state = faceAnalysisReducer(state, { type: 'region_toggled', regionId: 'chin' });
+  state = faceAnalysisReducer(state, { type: 'all_regions_selected' });
+  assert.deepEqual(state.selectedRegions, [
+    'forehead',
+    'left_face',
+    'right_face',
+    'nose_area',
+    'mouth_area',
+    'chin',
+  ]);
+
+  const selectedAgain = faceAnalysisReducer(state, { type: 'all_regions_selected' });
+  assert.equal(selectedAgain, state);
+
+  state = faceAnalysisReducer(state, { type: 'region_toggled', regionId: 'chin' });
+  assert.equal(state.selectedRegions.includes('chin'), false);
+  assert.equal(state.selectedRegions.length, 5);
+});
+
 test('region CTA describes empty, single and multiple selections', () => {
   assert.equal(regionSelectionCta([]), '请选择检测区域');
   assert.equal(regionSelectionCta(['right_face']), '检测右脸颊');

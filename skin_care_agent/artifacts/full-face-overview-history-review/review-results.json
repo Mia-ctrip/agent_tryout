@@ -1,0 +1,144 @@
+{
+  "kind": "VISUAL FIXTURES ONLY — not backend or native-device verification",
+  "status": "passed-web-native-review-pending",
+  "results": [
+    {
+      "name": "full-face-history",
+      "width": 320,
+      "scrollWidth": 320,
+      "path": "/history",
+      "text": "肌肤档案\nTODAY · 今天\n今天，也留下一次\n真实观察\n让皮肤的变化，被温和而诚实地保存。\nNATURAL LIGHT\nSLOW OBSERVATIONS\n开始今天的观察\n从相册选择原图\nCURR",
+      "overflow": false
+    },
+    {
+      "name": "full-face-history",
+      "width": 375,
+      "scrollWidth": 375,
+      "path": "/history",
+      "text": "肌肤档案\nTODAY · 今天\n今天，也留下一次\n真实观察\n让皮肤的变化，被温和而诚实地保存。\nNATURAL LIGHT\nSLOW OBSERVATIONS\n开始今天的观察\n从相册选择原图\nCURR",
+      "overflow": false
+    },
+    {
+      "name": "full-face-history",
+      "width": 390,
+      "scrollWidth": 390,
+      "path": "/history",
+      "text": "肌肤档案\nTODAY · 今天\n今天，也留下一次\n真实观察\n让皮肤的变化，被温和而诚实地保存。\nNATURAL LIGHT\nSLOW OBSERVATIONS\n开始今天的观察\n从相册选择原图\nCURR",
+      "overflow": false
+    },
+    {
+      "name": "full-face-history",
+      "width": 430,
+      "scrollWidth": 430,
+      "path": "/history",
+      "text": "肌肤档案\nTODAY · 今天\n今天，也留下一次\n真实观察\n让皮肤的变化，被温和而诚实地保存。\nNATURAL LIGHT\nSLOW OBSERVATIONS\n开始今天的观察\n从相册选择原图\nCURR",
+      "overflow": false
+    },
+    {
+      "name": "full-face-overview",
+      "width": 320,
+      "scrollWidth": 320,
+      "path": "/observation/1",
+      "text": "AI 分析中\n2026年9月1日 16:00\n正在分析今天的照片\n扫描阶段来自各检测区域的真实任务状态，不显示虚假百分比。\n✓ 额头\n✓ 左脸颊\n右脸颊\n鼻周\n口周\n✓ 下巴\n正在汇总已完成区域\n今日",
+      "overflow": false
+    },
+    {
+      "name": "full-face-overview",
+      "width": 375,
+      "scrollWidth": 375,
+      "path": "/observation/1",
+      "text": "AI 分析中\n2026年9月1日 16:00\n正在分析今天的照片\n扫描阶段来自各检测区域的真实任务状态，不显示虚假百分比。\n✓ 额头\n✓ 左脸颊\n右脸颊\n鼻周\n口周\n✓ 下巴\n正在汇总已完成区域\n今日",
+      "overflow": false
+    },
+    {
+      "name": "full-face-overview",
+      "width": 390,
+      "scrollWidth": 390,
+      "path": "/observation/1",
+      "text": "AI 分析中\n2026年9月1日 16:00\n正在分析今天的照片\n扫描阶段来自各检测区域的真实任务状态，不显示虚假百分比。\n✓ 额头\n✓ 左脸颊\n右脸颊\n鼻周\n口周\n✓ 下巴\n正在汇总已完成区域\n今日",
+      "overflow": false
+    },
+    {
+      "name": "full-face-overview",
+      "width": 430,
+      "scrollWidth": 430,
+      "path": "/observation/1",
+      "text": "AI 分析中\n2026年9月1日 16:00\n正在分析今天的照片\n扫描阶段来自各检测区域的真实任务状态，不显示虚假百分比。\n✓ 额头\n✓ 左脸颊\n右脸颊\n鼻周\n口周\n✓ 下巴\n正在汇总已完成区域\n今日",
+      "overflow": false
+    },
+    {
+      "name": "full-face-overview-facts",
+      "width": 320,
+      "scrollWidth": 320,
+      "path": "/observation/1",
+      "text": "AI 分析中\n2026年9月1日 16:00\n正在分析今天的照片\n扫描阶段来自各检测区域的真实任务状态，不显示虚假百分比。\n✓ 额头\n✓ 左脸颊\n右脸颊\n鼻周\n口周\n✓ 下巴\n正在汇总已完成区域\n今日",
+      "overflow": false
+    },
+    {
+      "name": "full-face-regions",
+      "width": 390,
+      "scrollWidth": 390,
+      "path": "/observation/1",
+      "text": "AI 分析中\n2026年9月1日 16:00\n正在分析今天的照片\n扫描阶段来自各检测区域的真实任务状态，不显示虚假百分比。\n✓ 额头\n✓ 左脸颊\n右脸颊\n鼻周\n口周\n✓ 下巴\n正在汇总已完成区域\n今日",
+      "overflow": false
+    },
+    {
+      "name": "full-face-retained-region",
+      "width": 390,
+      "scrollWidth": 390,
+      "path": "/observation/1",
+      "text": "AI 分析中\n2026年9月1日 16:00\n正在分析今天的照片\n扫描阶段来自各检测区域的真实任务状态，不显示虚假百分比。\n✓ 额头\n✓ 左脸颊\n右脸颊\n鼻周\n口周\n✓ 下巴\n正在汇总已完成区域\n今日",
+      "overflow": false
+    },
+    {
+      "name": "full-face-return",
+      "width": 390,
+      "scrollWidth": 390,
+      "path": "/history",
+      "text": "肌肤档案\nTODAY · 今天\n今天，也留下一次\n真实观察\n让皮肤的变化，被温和而诚实地保存。\nNATURAL LIGHT\nSLOW OBSERVATIONS\n开始今天的观察\n从相册选择原图\nCURR",
+      "overflow": false
+    },
+    {
+      "name": "full-face-partial-overview",
+      "width": 320,
+      "scrollWidth": 320,
+      "path": "/observation/2",
+      "text": "分析结果\n2026年9月1日 14:30\n本次观察概览\n✓ 已自动保存 · 1 个目标\n全脸概览\n分区详情\n完整原图 · 未裁切 · 未修饰\n本次观察：下巴\n只汇集当次已选区域的已有事实与真实状态。\n",
+      "overflow": false
+    },
+    {
+      "name": "full-face-legacy-text",
+      "width": 320,
+      "scrollWidth": 320,
+      "path": "/observation/3",
+      "text": "分析结果\n2026年9月1日 16:00\n本次观察概览\n✓ 已自动保存 · 1 个目标\n历史全脸记录\n只汇集当次已选区域的已有事实与真实状态。\n历史全脸\n已记录\n你的记录\n旧版隔离文字原文，不补造照片",
+      "overflow": false
+    },
+    {
+      "name": "full-face-region-api-failure",
+      "width": 320,
+      "scrollWidth": 320,
+      "path": "/history",
+      "text": "肌肤档案\nTODAY · 今天\n今天，也留下一次\n真实观察\n让皮肤的变化，被温和而诚实地保存。\nNATURAL LIGHT\nSLOW OBSERVATIONS\n开始今天的观察\n从相册选择原图\n!\n无法",
+      "overflow": false
+    },
+    {
+      "name": "full-face-photo-unavailable",
+      "width": 320,
+      "scrollWidth": 320,
+      "path": "/history",
+      "text": "肌肤档案\nTODAY · 今天\n今天，也留下一次\n真实观察\n让皮肤的变化，被温和而诚实地保存。\nNATURAL LIGHT\nSLOW OBSERVATIONS\n开始今天的观察\n从相册选择原图\nCURR",
+      "overflow": false
+    },
+    {
+      "name": "full-face-photo-recovered",
+      "width": 320,
+      "scrollWidth": 320,
+      "path": "/history",
+      "text": "肌肤档案\nTODAY · 今天\n今天，也留下一次\n真实观察\n让皮肤的变化，被温和而诚实地保存。\nNATURAL LIGHT\nSLOW OBSERVATIONS\n开始今天的观察\n从相册选择原图\nCURR",
+      "overflow": false
+    }
+  ],
+  "errors": [],
+  "skipped": []
+}

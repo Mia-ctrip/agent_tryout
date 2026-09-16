@@ -2,15 +2,23 @@ import { useEffect, useRef, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import { EditorialText } from '@/components/editorial-text';
 import { FaceRegionMap } from '@/components/face-region-map';
+import { FullObservationPhoto } from '@/components/full-observation-photo';
 import { QuietNotice } from '@/components/quiet-notice';
 import { observationColors as c, observationSpacing as s, observationRadii } from '@/constants/observation-theme';
 import { colors } from '@/constants/theme';
 import type { Observation } from '@/lib/observation-api';
-import { buildObservationResultModel } from '@/lib/observation-flow';
+import {
+  buildObservationOverviewModel,
+  buildObservationResultModel,
+  defaultObservationResultView,
+} from '@/lib/observation-flow';
+import type { ObservationResultView } from '@/lib/observation-flow';
 
-export function ObservationResult({ observation }: { observation: Observation }) {
+export function ObservationResult({ observation, initialView }: { observation: Observation; initialView?: ObservationResultView }) {
   const { fontScale } = useWindowDimensions();
   const model = buildObservationResultModel(observation);
+  const overview = buildObservationOverviewModel(observation);
+  const [view, setView] = useState<ObservationResultView>(() => defaultObservationResultView(observation, initialView));
   const cards = model.regionCards;
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [expandedId, setExpandedId] = useState<number | null>(null);
@@ -30,24 +38,76 @@ export function ObservationResult({ observation }: { observation: Observation })
     width: photo?.width ?? Number(photo?.quality_meta?.metrics.width ?? 3),
     height: photo?.height ?? Number(photo?.quality_meta?.metrics.height ?? 4),
   };
-  useEffect(() => { pager.current?.scrollTo({ x: activeIndex * pageWidth, animated: false }); }, [activeIndex, pageWidth]);
+  useEffect(() => {
+    if (view !== 'regions') return;
+    const frame = requestAnimationFrame(() => pager.current?.scrollTo({ x: activeIndex * pageWidth, animated: false }));
+    return () => cancelAnimationFrame(frame);
+  }, [activeIndex, pageWidth, view]);
   useEffect(() => {
     if (activeId != null) tabs.current?.scrollTo({ x: Math.max(0, (tabOffsets.current[activeId] ?? 0) - s.lg), animated: false });
-  }, [activeId]);
+  }, [activeId, view]);
   const choose = (index: number) => {
     if (scrollEndTimer.current) clearTimeout(scrollEndTimer.current);
     if (!cards[index] || cards[index].targetId === activeId) return;
     setSelectedId(cards[index].targetId);
     setExpandedId(null);
   };
+  const openRegion = (targetId: number) => {
+    const index = cards.findIndex(card => card.targetId === targetId);
+    if (index >= 0) choose(index);
+    setView('regions');
+  };
   useEffect(() => () => { if (scrollEndTimer.current) clearTimeout(scrollEndTimer.current); }, []);
   return (
-    <View style={styles.root}>
+    <View style={styles.root} onLayout={event => { const width = event.nativeEvent.layout.width; if (width > 0) setPageWidth(width); }}>
       <View style={styles.heading}>
-        <Text style={styles.eyebrow}>本次观察结论</Text>
-        <Text style={styles.meta}>✓ 已自动保存{cards.length ? ` · ${cards.length} 个区域` : ''}</Text>
+        <Text style={styles.eyebrow}>{view === 'overview' ? '本次观察概览' : '本次观察结论'}</Text>
+        <Text style={styles.meta}>✓ 已自动保存 · {overview.items.length} 个目标</Text>
       </View>
-      {cards.length ? (
+      {!overview.isLegacyFullFace ? (
+        <View accessibilityLabel="结果视图" accessibilityRole="tablist" style={styles.viewSwitch}>
+          {([['overview', '全脸概览'], ['regions', '分区详情']] as const).map(([value, label]) => (
+            <Pressable accessibilityLabel={label} accessibilityRole="tab" aria-selected={view === value} accessibilityState={{ selected: view === value }} key={value} onPress={() => setView(value)} style={[styles.viewOption, view === value && styles.viewOptionSelected]}>
+              <Text style={[styles.viewOptionText, view === value && styles.viewOptionTextSelected]}>{label}</Text>
+            </Pressable>
+          ))}
+        </View>
+      ) : null}
+      {view === 'overview' ? (
+        <View style={styles.overviewSection}>
+          {photo ? (
+            <>
+              <FullObservationPhoto accessibilityLabel="本次观察完整原图" photo={photo} />
+              <Text style={styles.photoCaption}>完整原图 · 未裁切 · 未修饰</Text>
+            </>
+          ) : null}
+          <View style={styles.scopeCopy}>
+            <EditorialText role="sectionTitle" style={styles.sectionTitle}>{overview.scopeLabel}</EditorialText>
+            <Text style={styles.meta}>只汇集当次已选区域的已有事实与真实状态。</Text>
+          </View>
+          <View style={styles.overviewItems}>
+            {overview.items.map((item) => (
+              <View key={item.targetId} style={styles.overviewItem}>
+                <View style={styles.overviewItemHeading}>
+                  <Text style={styles.overviewRegion}>{item.regionLabel}</Text>
+                  <Text style={styles.statusLabel}>{item.statusLabel}</Text>
+                </View>
+                {item.sourceLabel ? <Text style={styles.sourceLabel}>{item.sourceLabel}</Text> : null}
+                {item.summary ? <Text style={styles.value}>{item.summary}</Text> : (
+                  <Text style={styles.meta}>{item.status === 'queued' ? '已进入队列，稍后会开始整理。' : item.status === 'processing' ? '正在整理照片中的可见事实。' : '原图已保留，可在下方重试或补充文字。'}</Text>
+                )}
+                {item.userNote ? <View style={styles.noteLine}><Text style={styles.label}>你的记录</Text><Text style={styles.value}>{item.userNote}</Text></View> : null}
+                {item.limitations.length ? <Text style={styles.meta}>照片局限：{item.limitations.join('；')}</Text> : null}
+                {cards.some(card => card.targetId === item.targetId) ? (
+                  <Pressable accessibilityLabel={`查看${item.regionLabel}分区详情`} accessibilityRole="button" onPress={() => openRegion(item.targetId)} style={styles.regionLink}>
+                    <Text style={styles.regionLinkText}>查看分区详情 ›</Text>
+                  </Pressable>
+                ) : null}
+              </View>
+            ))}
+          </View>
+        </View>
+      ) : cards.length ? (
         <View style={styles.regionSection}>
           <ScrollView ref={tabs} horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.tabs}>
             {cards.map((card, index) => (
@@ -57,7 +117,7 @@ export function ObservationResult({ observation }: { observation: Observation })
               </Pressable>
             ))}
           </ScrollView>
-          <View onLayout={event => setPageWidth(event.nativeEvent.layout.width)}>
+          <View>
             {pageWidth > 0 ? (
               <ScrollView ref={pager} horizontal pagingEnabled directionalLockEnabled showsHorizontalScrollIndicator={false} contentContainerStyle={styles.pages}
                 scrollEventThrottle={32}
@@ -141,6 +201,22 @@ const styles = StyleSheet.create({
   heading: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: s.sm },
   eyebrow: { color: colors.earth, fontSize: 14, fontWeight: '700' },
   meta: { color: c.textMuted, fontSize: 12, lineHeight: 19 },
+  viewSwitch: { flexDirection: 'row', alignSelf: 'stretch', borderBottomWidth: 1, borderBottomColor: c.border },
+  viewOption: { minHeight: 44, flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: s.sm },
+  viewOptionSelected: { borderBottomWidth: 2, borderBottomColor: c.sage },
+  viewOptionText: { color: c.textMuted, fontSize: 14 },
+  viewOptionTextSelected: { color: c.text, fontWeight: '700' },
+  overviewSection: { gap: s.lg },
+  scopeCopy: { gap: s.xs },
+  overviewItems: { gap: s.md },
+  overviewItem: { gap: s.sm, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: c.border, paddingTop: s.md },
+  overviewItemHeading: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: s.sm },
+  overviewRegion: { flexShrink: 1, color: colors.earth, fontSize: 16, fontWeight: '700' },
+  statusLabel: { color: c.forest, fontSize: 12, fontWeight: '700' },
+  sourceLabel: { color: c.textMuted, fontSize: 12, lineHeight: 18 },
+  noteLine: { gap: s.xs, backgroundColor: c.surfaceMuted, padding: s.md },
+  regionLink: { minHeight: 44, alignSelf: 'flex-start', justifyContent: 'center' },
+  regionLinkText: { color: c.forest, fontSize: 13, fontWeight: '600' },
   regionSection: { gap: s.sm },
   tabs: { gap: s.sm, paddingBottom: s.sm },
   tab: { minHeight: 44, paddingHorizontal: s.lg, justifyContent: 'center', borderRadius: observationRadii.sm, borderWidth: 1, borderColor: c.border, backgroundColor: colors.paper },

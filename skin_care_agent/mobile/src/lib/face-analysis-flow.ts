@@ -70,6 +70,7 @@ export type FaceAnalysisEvent =
   | { type: 'quality_failed'; issue: ObservationQualityIssue }
   | { type: 'regions_suggested'; regionIds: RegionId[] }
   | { type: 'region_toggled'; regionId: RegionId }
+  | { type: 'all_regions_selected' }
   | { type: 'event_confirmation_required' }
   | { type: 'event_confirmation_cancelled' }
   | { type: 'analysis_started' }
@@ -187,6 +188,18 @@ export function faceAnalysisReducer(
         activeRegion: event.regionId,
       };
     }
+    case 'all_regions_selected':
+      if (
+        state.status !== 'selecting_regions' ||
+        state.selectedRegions.length === REGION_IDS.length
+      ) {
+        return state;
+      }
+      return {
+        ...state,
+        selectedRegions: [...REGION_IDS],
+        activeRegion: state.activeRegion ?? REGION_IDS[0],
+      };
     case 'event_confirmation_required':
       return { ...state, status: 'confirming_events', errorMessage: null };
     case 'event_confirmation_cancelled':

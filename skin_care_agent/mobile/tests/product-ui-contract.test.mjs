@@ -16,6 +16,14 @@ test('product picker exposes the searchable catalog boundary and accessible entr
   assert.match(picker, /shouldOfferCustomProduct/);
   assert.match(picker, /!customOpen[\s\S]*<CustomProductForm/);
   assert.match(picker, /Keyboard\.dismiss\(\)/);
+  assert.match(picker, /onCreated={[\s\S]*changeQuery\(''\)/);
+});
+
+test('product search failure offers a same-query retry instead of a false no-match state', () => {
+  const picker = source('../src/components/product-search-picker.tsx');
+  assert.match(picker, /重新搜索/);
+  assert.match(picker, /setRetryKey/);
+  assert.match(picker, /shouldOfferCustomProduct/);
 });
 
 

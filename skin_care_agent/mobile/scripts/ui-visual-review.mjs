@@ -11,26 +11,62 @@ import { buildHistoryFaceSvg, HISTORY_FACE_BOUNDARY } from '../src/lib/history-f
 
 const root = fileURLToPath(new URL('../../', import.meta.url));
 const productReview = process.argv.includes('--products-only');
+const productUseReview = process.argv.includes('--product-use-only');
+const fullFaceReview = process.argv.includes('--full-face-only');
 const resultReview = process.argv.includes('--results-only');
 const historyReview = process.argv.includes('--history-only');
 const colorReview = process.argv.includes('--color-review');
-const output = path.join(root, historyReview ? 'artifacts/history-refresh-review' : colorReview ? 'artifacts/color-refresh-review' : resultReview ? 'artifacts/result-refresh-review' : productReview ? 'artifacts/product-refresh-review' : 'artifacts/ui-rebuild-review');
+const output = path.join(root, fullFaceReview ? 'artifacts/full-face-overview-history-review' : historyReview ? 'artifacts/history-refresh-review' : colorReview ? 'artifacts/color-refresh-review' : resultReview ? 'artifacts/result-refresh-review' : productUseReview ? 'artifacts/product-use-flow-review' : productReview ? 'artifacts/product-refresh-review' : 'artifacts/ui-rebuild-review');
 const assets = path.join(root, 'design/skin-care-ui-rebuild-handoff-v1/golden-screens/assets');
 const profile = await mkdtemp(path.join(tmpdir(), 'skin-ui-review-'));
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 const photoData = `data:image/png;base64,${(await readFile(path.join(assets, 'demo-cheek-observation.png'))).toString('base64')}`;
 const productData = `data:image/png;base64,${(await readFile(path.join(assets, 'medicine-benzihex.png'))).toString('base64')}`;
-const extraProductData = productReview ? await Promise.all(['阿达帕林.jpg', '鱼石脂软膏.jpg'].map(async file => `data:image/jpeg;base64,${(await readFile(path.join(root, 'pic/product', file))).toString('base64')}`)) : [];
+const extraProductData = productReview || productUseReview ? await Promise.all(['阿达帕林.jpg', '鱼石脂软膏.jpg'].map(async file => `data:image/jpeg;base64,${(await readFile(path.join(root, 'pic/product', file))).toString('base64')}`)) : [];
 let productScenario = 'normal';
 let productRefreshCalls = 0;
 let imageRecovered = false;
 const requestedImageHosts = [];
 const requestedApiHosts = new Set();
 const brokenProductImage = 'http://localhost:8000/files/visual-product-missing.png?exp=1&sig=fixture';
+const brokenFullFacePhoto = 'http://localhost:8000/files/visual-full-face-missing.png?exp=1&sig=fixture';
+let fullFacePhotoUnavailable = false;
+let fullFacePhotoRefreshCalls = 0;
+const fullFaceMutationRequests = [];
 const date = '2026-09-01T08:00:00Z';
 const target = { target_id: 1, scope_type: 'region', region_id: 'left_face', user_note: '昨晚睡得较晚，今天没有刺痛。', status: 'completed', result_source: 'photo_analysis', completed_at: date, facts: { main_locations: ['左侧脸颊'], estimated_amount: '少量可见痕迹', distribution: '分布较集中', coverage: '下颊局部', daily_appearance: ['局部泛红仍可见'], unknowns: ['单张照片无法判断变化原因'], summary: '左脸颊局部泛红可见，\n分布较集中。' } };
 const photo = { photo_id: 1, mime_type: 'image/png', size_bytes: 1000, width: 1024, height: 1024, taken_at: date, quality_status: 'passed', quality_meta: { status: 'passed', primary_issue: null, issues: [], metrics: { width: 1024, height: 1024 }, regions: [] }, url: photoData, url_expires_at: '2030-01-01T00:00:00Z' };
 const observation = { observation_id: 1, client_request_id: 'visual-fixture', recorded_at: date, recorded_timezone_offset_minutes: 480, recorded_local_date: '2026-09-01', status: 'saved', created_at: date, life_context_ids: [], life_context_completed_at: date, photo, targets: [target] };
+const fullFaceRegions = ['forehead', 'left_face', 'right_face', 'nose_area', 'mouth_area', 'chin'];
+const fullFaceObservations = [
+  {
+    ...observation,
+    targets: fullFaceRegions.map((region_id, index) => ({
+      ...target,
+      target_id: index + 1,
+      region_id,
+      user_note: index === 0 ? '这是用于检查“你的记录”来源的隔离文字。' : null,
+      status: index === 2 ? 'processing' : index === 3 ? 'queued' : index === 4 ? 'needs_input' : 'completed',
+      result_source: index >= 2 && index <= 4 ? null : 'photo_analysis',
+      facts: index >= 2 && index <= 4 ? null : { ...target.facts, summary: `${region_id} 的隔离状态小结，不代表真实分析。` },
+      completed_at: index >= 2 && index <= 4 ? null : date,
+    })),
+  },
+  {
+    ...observation,
+    observation_id: 2,
+    client_request_id: 'visual-fixture-partial',
+    recorded_at: '2026-09-01T06:30:00Z',
+    photo: { ...photo, photo_id: 2 },
+    targets: [{ ...target, target_id: 20, region_id: 'chin', status: 'needs_input', result_source: null, facts: null, completed_at: null }],
+  },
+  {
+    ...observation,
+    observation_id: 3,
+    photo: null,
+    targets: [{ ...target, target_id: 30, scope_type: 'full_face', region_id: null, result_source: 'user_record', facts: null, user_note: '旧版隔离文字原文，不补造照片或六区分析。' }],
+  },
+];
 let historyScenario = 'normal';
 if (historyReview) {
   const argument = name => process.argv[process.argv.indexOf(name) + 1];
@@ -76,9 +112,18 @@ function fixture(url) {
   const pathname = new URL(url).pathname.replace(/^\/api\/v1/, '');
   if (pathname.startsWith('/auth/')) return auth;
   if (pathname === '/me/consents') return ['terms', 'privacy', 'health_disclaimer', 'ai_processing'].map((consent_type) => ({ consent_type, accepted: true, accepted_at: date, version: 'fixture' }));
-  if (pathname === '/observations') return [observation];
-  if (pathname === '/observations/1') return observation;
+  if (pathname === '/observations') return fullFaceReview ? fullFaceObservations : [observation];
+  if (/^\/observations\/\d+$/.test(pathname)) {
+    const observationId = Number(pathname.split('/').at(-1));
+    return fullFaceReview
+      ? fullFaceObservations.find(item => item.observation_id === observationId)
+      : observation;
+  }
   if (pathname === '/observations/photo-quality') return { ...photo.quality_meta, regions: [{ region_id: 'left_face', points: [{x: 0.2, y: 0.2}, {x: 0.7, y: 0.2}, {x: 0.8, y: 0.75}, {x: 0.2, y: 0.8}] }] };
+  if (fullFaceReview && /^\/photos\/\d+\/url$/.test(pathname)) {
+    fullFacePhotoRefreshCalls++;
+    return { photo_id: Number(pathname.split('/')[2]), url: fullFacePhotoUnavailable ? brokenFullFacePhoto : photoData, url_expires_at: '2030-01-01T00:00:00Z' };
+  }
   if (pathname === '/region-events') return [event];
   if (pathname === '/region-events/1') return { ...event, timepoints: (historyReview ? ['2026-08-12', '2026-08-16', '2026-08-21', '2026-08-26', '2026-09-01'] : ['2026-08-12', '2026-08-21', '2026-09-01']).map((day, index) => ({
     ...observation, recorded_at: `${day}T08:00:00Z`, recorded_local_date: day,
@@ -88,7 +133,7 @@ function fixture(url) {
       user_note: historyScenario === 'long' ? '这是用于检查长文字排版的记录。'.repeat(30) : target.user_note,
     },
   })) };
-  if (pathname === '/products') return productReview ? productFixtures() : [product, { ...product, product_id: 2, name: '我的日常保湿产品', image_url: null, use_count: 0, last_used_at: null }];
+  if (pathname === '/products') return productReview || productUseReview ? productFixtures() : [product, { ...product, product_id: 2, name: '我的日常保湿产品', image_url: null, use_count: 0, last_used_at: null }];
   if (productReview && /^\/products\/\d+$/.test(pathname)) {
     productRefreshCalls++;
     const value = productFixtures().find(item => item.product_id === Number(pathname.split('/').at(-1)));
@@ -121,7 +166,7 @@ try {
   const pending = new Map();
   const send = (method, params = {}) => new Promise((resolve, reject) => {
     const id = ++nextId;
-    const timer = setTimeout(() => { pending.delete(id); reject(new Error(`Timed out: ${method}`)); }, 20000);
+    const timer = setTimeout(() => { pending.delete(id); reject(new Error(`Timed out: ${method}`)); }, method === 'Page.navigate' ? 60000 : 20000);
     pending.set(id, { resolve, reject, timer });
     socket.send(JSON.stringify({ id, method, params }));
   });
@@ -134,14 +179,19 @@ try {
       if (message.error) job.reject(new Error(JSON.stringify(message.error))); else job.resolve(message.result);
     }
     if (message.method === 'Runtime.exceptionThrown') errors.push(message.params.exceptionDetails.text + ': ' + (message.params.exceptionDetails.exception?.description ?? ''));
-    if ((productReview || resultReview || historyReview) && message.method === 'Runtime.consoleAPICalled' && message.params.type === 'error') {
+    if ((productReview || resultReview || historyReview || fullFaceReview) && message.method === 'Runtime.consoleAPICalled' && message.params.type === 'error') {
       errors.push(message.params.args.map(value => value.value ?? value.description ?? '').join(' '));
     }
     if (message.method === 'Fetch.requestPaused') {
       const { requestId, request } = message.params;
       try {
         if (new URL(request.url).pathname.startsWith('/api/v1/')) requestedApiHosts.add(new URL(request.url).hostname);
-        if (request.url.includes('/files/visual-product-missing.png')) {
+        if (fullFaceReview && !['GET', 'OPTIONS'].includes(request.method) && !new URL(request.url).pathname.startsWith('/api/v1/auth/')) fullFaceMutationRequests.push(`${request.method} ${new URL(request.url).pathname}`);
+        if (fullFaceReview && historyScenario === 'region_failure' && new URL(request.url).pathname === '/api/v1/region-events') {
+          await send('Fetch.fulfillRequest', { requestId, responseCode: 503, responseHeaders: [{ name: 'Content-Type', value: 'application/json' }, { name: 'Access-Control-Allow-Origin', value: '*' }], body: Buffer.from(JSON.stringify({ detail: '隔离区域接口故障' })).toString('base64') });
+          return;
+        }
+        if (request.url.includes('/files/visual-product-missing.png') || request.url.includes('/files/visual-full-face-missing.png')) {
           requestedImageHosts.push(new URL(request.url).hostname);
           await send('Fetch.fulfillRequest', { requestId, responseCode: 404, responseHeaders: [{ name: 'Content-Type', value: 'text/plain' }, { name: 'Access-Control-Allow-Origin', value: '*' }], body: Buffer.from('fixture: missing image').toString('base64') });
           return;
@@ -183,13 +233,74 @@ try {
   }
   await send('Page.navigate', { url: 'http://localhost:8082/login' });
   await waitText('登录');
-  if (!productReview && !historyReview) {
+  if (!productReview && !productUseReview && !historyReview && !fullFaceReview) {
     await capture('login');
     await clickText('登录'); await waitText('请输入邮箱和密码'); await capture('form-error', 320);
   }
   await evaluate(`(() => { const fields = document.querySelectorAll('input'); const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set; setter.call(fields[0], 'visual-fixture@example.test'); fields[0].dispatchEvent(new Event('input', {bubbles: true})); setter.call(fields[1], 'fixture-password'); fields[1].dispatchEvent(new Event('input', {bubbles: true})); })()`);
   await clickText('登录'); await waitText('开始今天的观察');
-  if (historyReview) {
+  if (fullFaceReview) {
+    await clickText('历程'); await waitText('从你关心的区域');
+    await clickText('全脸'); await waitText('按照片回看每一次真实观察');
+    await waitText('本次观察：下巴');
+    for (const width of [320, 375, 390, 430]) await capture('full-face-history', width);
+    const historyRecords = await evaluate(`Array.from(document.querySelectorAll('[role="button"]')).filter(node => node.textContent.includes('查看本次概览')).length`);
+    if (historyRecords !== 2) throw new Error(`Expected two full-face history records, received ${historyRecords}`);
+    await clickText('查看本次概览 ›'); await waitText('全脸概览');
+    await waitText('本次观察：额头、左脸颊、右脸颊、鼻周、口周、下巴');
+    for (const width of [320, 375, 390, 430]) await capture('full-face-overview', width);
+    await waitText('正在整理'); await waitText('排队中'); await waitText('需要补充');
+    await evaluate(`Array.from(document.querySelectorAll('div')).find(n => n.textContent === '本次观察：额头、左脸颊、右脸颊、鼻周、口周、下巴').scrollIntoView({block:'start'})`);
+    await capture('full-face-overview-facts', 320);
+    await clickText('分区详情'); await waitText('1 / 3');
+    await capture('full-face-regions', 390);
+    await clickText('下巴'); await waitText('3 / 3');
+    await clickText('全脸概览'); await clickText('分区详情'); await delay(300);
+    const retainedRegionPage = await evaluate(`(() => { const panel = document.querySelector('[data-testid="region-result-page"]:not([aria-hidden="true"])'); let scroll = panel?.parentElement; while (scroll && !(scroll.scrollWidth > scroll.clientWidth && ['auto','scroll'].includes(getComputedStyle(scroll).overflowX))) scroll = scroll.parentElement; return scroll ? Math.round(scroll.scrollLeft / panel.getBoundingClientRect().width) : -1; })()`);
+    if (retainedRegionPage !== 2) {
+      const pagerDiagnostic = await evaluate(`Array.from(document.querySelectorAll('[data-testid="region-result-page"]')).map(panel => ({ hidden: panel.getAttribute('aria-hidden'), width: panel.getBoundingClientRect().width, ancestors: Array.from((function*(){ let n = panel.parentElement; while(n){ yield n; n = n.parentElement; } })()).slice(0,6).map(n => ({ width: n.clientWidth, content: n.scrollWidth, left: n.scrollLeft, overflow: getComputedStyle(n).overflowX })) }))`);
+      const visibleDiagnostic = await evaluate(`({text: document.body.innerText, testids: Array.from(document.querySelectorAll('[data-testid]')).map(n => n.getAttribute('data-testid')), tabs: Array.from(document.querySelectorAll('[role="tab"]')).map(n => ({text:n.textContent,selected:n.getAttribute('aria-selected')}))})`);
+      throw new Error(`Overview toggle lost the selected region page: ${retainedRegionPage}; ${JSON.stringify({pagerDiagnostic,visibleDiagnostic})}`);
+    }
+    await evaluate(`document.querySelector('[data-testid="region-result-page"]:not([aria-hidden="true"])').scrollIntoView({block:'start'})`);
+    await capture('full-face-retained-region', 390);
+    await evaluate('history.back()'); await waitText('按照片回看每一次真实观察');
+    const fullFaceSelected = await evaluate(`new URL(location.href).searchParams.get('view') === 'full_face' && document.body.innerText.includes('按照片回看每一次真实观察')`);
+    if (!fullFaceSelected) throw new Error('History return did not preserve the full-face view');
+    await capture('full-face-return', 390);
+    await evaluate(`Array.from(document.querySelectorAll('[role="button"]')).find(node => node.getAttribute('aria-label')?.startsWith('本次观察：下巴，')).click()`);
+    await waitText('本次观察：下巴'); await waitText('全脸概览');
+    if (!await evaluate(`document.querySelector('[role="tab"][aria-label="全脸概览"]')?.getAttribute('aria-selected') === 'true'`)) throw new Error('Partial history entry did not prefer overview');
+    await capture('full-face-partial-overview', 320);
+    await evaluate('history.back()'); await waitText('历史文字记录');
+    await evaluate(`document.querySelector('[aria-label^="查看历史全脸文字记录"]').click()`);
+    await waitText('旧版隔离文字原文');
+    if (await evaluate(`Boolean(document.querySelector('[aria-label="本次观察完整原图"]')) || document.body.innerText.includes('重试 AI 分析')`)) throw new Error('Legacy text history invented a photo or exposed AI mutation');
+    await capture('full-face-legacy-text', 320);
+    async function reloadFullFaceHistory() {
+      await send('Page.navigate', { url: 'http://localhost:8082/login' }); await waitText('登录');
+      await evaluate(`(() => { const fields = document.querySelectorAll('input'); const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set; setter.call(fields[0], 'visual-fixture@example.test'); fields[0].dispatchEvent(new Event('input', {bubbles: true})); setter.call(fields[1], 'fixture-password'); fields[1].dispatchEvent(new Event('input', {bubbles: true})); })()`);
+      await clickText('登录'); await waitText('开始今天的观察');
+      await clickText('历程'); await waitText('从你关心的区域'); await clickText('全脸'); await waitText('本次观察：下巴');
+    }
+    historyScenario = 'region_failure';
+    await reloadFullFaceHistory(); await capture('full-face-region-api-failure', 320);
+    if (!await evaluate(`document.body.innerText.includes('查看本次概览')`)) throw new Error('Region API failure hid photographed observations');
+    historyScenario = 'normal';
+    fullFaceObservations[0].photo = { ...photo, url: brokenFullFacePhoto };
+    fullFacePhotoUnavailable = true;
+    await reloadFullFaceHistory(); await waitText('照片暂不可用');
+    await delay(700);
+    if (fullFacePhotoRefreshCalls !== 1) throw new Error(`Broken photo re-sign looped: ${fullFacePhotoRefreshCalls}`);
+    await capture('full-face-photo-unavailable', 320);
+    fullFacePhotoUnavailable = false;
+    await evaluate(`Array.from(document.querySelectorAll('[role="button"]')).find(node => node.getAttribute('aria-label')?.includes('完整照片预览，照片暂不可用')).click()`);
+    await delay(700);
+    if (fullFacePhotoRefreshCalls !== 2 || await evaluate(`document.body.innerText.includes('照片暂不可用')`)) throw new Error('Manual original-photo recovery failed');
+    await capture('full-face-photo-recovered', 320);
+    if (fullFaceMutationRequests.length) throw new Error(`Read-only full-face views mutated business data: ${fullFaceMutationRequests.join(', ')}`);
+    if (errors.length || results.some(item => item.overflow)) throw new Error('Full-face review found runtime errors or overflow');
+  } else if (historyReview) {
     await clickText('历程'); await waitText('从你关心的区域');
     async function openHistoryRegion() {
       const clicked = await evaluate(`(() => { const node = Array.from(document.querySelectorAll('[role="button"]')).find(n => n.getAttribute('aria-label')?.includes('正在记录且已有时间点')); node?.click(); return Boolean(node); })()`);
@@ -269,6 +380,48 @@ try {
     observation.targets = observation.targets.map(item => ({ ...item, status: 'processing', facts: null, result_source: null }));
     await evaluate('history.back()'); await waitText('这一段记录'); await clickText('查看原图与完整记录');
     await waitText('正在读取'); await delay(800); await capture('scanner');
+  } else if (productUseReview) {
+    productScenario = 'long';
+    await clickText('记录产品使用'); await waitText('今天用了哪些产品？');
+    for (const width of [320, 375, 390, 430]) await capture('product-use', width);
+    const initialState = await evaluate(`(() => {
+      const controls = Array.from(document.querySelectorAll('[role="button"],button'));
+      const byText = text => controls.find(node => node.textContent.trim().endsWith(text));
+      const save = byText('保存使用记录');
+      const unnamed = byText('用过，但暂不注明产品');
+      const checks = Array.from(document.querySelectorAll('[role="checkbox"]'));
+      return { saveDisabled: save?.getAttribute('aria-disabled') === 'true' || save?.disabled === true || getComputedStyle(save).pointerEvents === 'none', unnamed: Boolean(unnamed), selected: checks.filter(node => node.getAttribute('aria-checked') === 'true').length };
+    })()`);
+    if (!initialState.saveDisabled || !initialState.unnamed || initialState.selected !== 0) throw new Error(`Product-use initial state failed: ${JSON.stringify(initialState)}`);
+    await clickText('搜索或添加产品'); await waitText('搜索产品');
+    await evaluate(`(() => { const field = document.querySelector('[aria-label="搜索或添加产品"]'); const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set; setter.call(field, 'LongNoMatchProduct0915'); field.dispatchEvent(new Event('input', {bubbles: true})); })()`);
+    await waitText('没有找到你的产品？');
+    await clickText('创建自定义产品'); await waitText('自定义产品资料');
+    const prefilled = await evaluate(`document.querySelector('[aria-label="自建产品名称"]')?.value`);
+    if (prefilled !== 'LongNoMatchProduct0915') throw new Error(`Custom product name was not preserved: ${prefilled}`);
+    await evaluate(`document.querySelector('[aria-label="自建产品名称"]').scrollIntoView({block:'center'})`);
+    await capture('product-use-custom', 320);
+    await clickText('取消新增');
+    if (await evaluate(`Boolean(document.querySelector('[aria-label="自建产品名称"]'))`)) throw new Error('Custom product cancel did not close the inline form');
+    await clickText('取消'); await waitText('开始今天的观察');
+    await clickText('历程'); await waitText('从你关心的区域');
+    const openedEvent = await evaluate(`(() => { const node = Array.from(document.querySelectorAll('[role="button"]')).find(n => n.getAttribute('aria-label')?.includes('正在记录且已有时间点')); node?.click(); return Boolean(node); })()`);
+    if (!openedEvent) throw new Error('Product-use review could not open the fixture region event');
+    await waitText('这一段记录'); await clickText('查看原图与完整记录'); await waitText('本次观察结论');
+    const completedFacts = target.facts;
+    target.status = 'processing'; target.facts = null;
+    await clickText('继续记录产品使用'); await waitText('AI 正在后台分析');
+    await clickText('搜索或添加产品'); await waitText('搜索产品');
+    await evaluate(`(() => { const field = document.querySelector('[aria-label="搜索或添加产品"]'); const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set; setter.call(field, 'DraftSurvivesAI'); field.dispatchEvent(new Event('input', {bubbles: true})); })()`);
+    await waitText('没有找到你的产品？'); await clickText('创建自定义产品'); await waitText('自定义产品资料');
+    target.status = 'completed'; target.facts = completedFacts;
+    await waitText('分析已完成');
+    const draftAfterAi = await evaluate(`document.querySelector('[aria-label="自建产品名称"]')?.value`);
+    if (draftAfterAi !== 'DraftSurvivesAI') throw new Error(`AI completion interrupted the custom draft: ${draftAfterAi}`);
+    await capture('product-use-ai-completed', 390);
+    await clickText('取消新增'); await clickText('取消'); await delay(500);
+    if (await evaluate('location.pathname') !== '/observation/1') throw new Error(`Observation source return failed: ${await evaluate('location.pathname')}`);
+    if (errors.length || results.some(item => item.overflow)) throw new Error('Product-use review found runtime errors or overflow');
   } else if (productReview) {
     async function waitImages() {
       for (let i = 0; i < 50; i++) {
@@ -407,7 +560,7 @@ try {
   throw error;
 } finally {
   const reportFile = colorReview ? (productReview ? 'product-review.json' : 'result-review.json') : 'review-results.json';
-  await writeFile(path.join(output, reportFile), JSON.stringify({ kind: 'VISUAL FIXTURES ONLY — not backend or native-device verification', status: errors.length ? 'failed' : (productReview || resultReview || historyReview) ? 'passed-web-native-review-pending' : 'partial-native-review-pending', results, errors, skipped }, null, 2));
+  await writeFile(path.join(output, reportFile), JSON.stringify({ kind: 'VISUAL FIXTURES ONLY — not backend or native-device verification', status: errors.length ? 'failed' : (productReview || productUseReview || fullFaceReview || resultReview || historyReview) ? 'passed-web-native-review-pending' : 'partial-native-review-pending', results, errors, skipped }, null, 2));
   socket?.close(); edge.kill();
   // Only this script's unique temporary browser profile is removed.
   if (path.basename(profile).startsWith('skin-ui-review-') && path.dirname(profile) === tmpdir()) await rm(profile, { recursive: true, force: true, maxRetries: 5, retryDelay: 250 }).catch(() => {});

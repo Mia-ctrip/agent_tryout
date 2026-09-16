@@ -16,7 +16,8 @@ import { colors, radii, spacing } from '@/constants/theme';
 import { listObservations } from '@/lib/observation-api';
 import type { Observation } from '@/lib/observation-api';
 import { createObservationGenerationGuard } from '@/lib/observation-flow';
-import { observationCaptureHref } from '@/lib/observation-navigation';
+import { createClientRequestId } from '@/lib/client-request-id';
+import { observationCaptureHref, productUseHref } from '@/lib/observation-navigation';
 import { userFacingError } from '@/lib/errors';
 import { listRegionEvents } from '@/lib/region-event-api';
 import type { RegionEvent } from '@/lib/region-event-api';
@@ -119,7 +120,14 @@ export default function ObserveScreen() {
         <Text style={styles.contextCopy}>也可以只记录一次真实发生的产品使用。</Text>
         <AppButton
           label="记录产品使用"
-          onPress={() => router.push('/product-use/new')}
+          onPress={() =>
+            router.push(
+              productUseHref({
+                source: 'observe',
+                flowId: createClientRequestId(),
+              }) as Href,
+            )
+          }
           variant="text"
         />
       </View>

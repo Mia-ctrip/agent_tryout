@@ -1,4 +1,5 @@
 import { router, Stack, useFocusEffect, useLocalSearchParams } from 'expo-router';
+import type { Href } from 'expo-router';
 import { useCallback, useMemo, useState } from 'react';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 
@@ -9,6 +10,7 @@ import { InlineNotice } from '@/components/inline-notice';
 import { RegionTimechain } from '@/components/region-timechain';
 import { TimepointEvidenceCard } from '@/components/timepoint-evidence-card';
 import { colors, radii, spacing } from '@/constants/theme';
+import { createClientRequestId } from '@/lib/client-request-id';
 import { userFacingError } from '@/lib/errors';
 import {
   chooseDefaultTimepointId,
@@ -17,6 +19,7 @@ import {
 } from '@/lib/history-flow';
 import { lifeContextLabel } from '@/lib/life-context';
 import { createObservationGenerationGuard } from '@/lib/observation-flow';
+import { productUseHref } from '@/lib/observation-navigation';
 import { listAllProductUses } from '@/lib/product-api';
 import type { ProductUse } from '@/lib/product-api';
 import { formatProductUseDate } from '@/lib/product-ui';
@@ -254,6 +257,20 @@ export default function RegionEventDetailScreen() {
                 regionLabel={region.label}
                 timepoint={selectedTimepoint}
               />
+              <AppButton
+                label="继续记录产品使用"
+                onPress={() =>
+                  router.push(
+                    productUseHref({
+                      source: 'region_event',
+                      flowId: createClientRequestId(),
+                      observationId: selectedTimepoint.observation_id,
+                      eventId: event.event_id,
+                    }) as Href,
+                  )
+                }
+                variant="secondary"
+              />
             </View>
           ) : null}
 
@@ -339,6 +356,6 @@ const styles = StyleSheet.create({
     lineHeight: 19,
     textAlign: 'center',
   },
-  evidenceSection: { marginTop: spacing.xl },
+  evidenceSection: { gap: spacing.md, marginTop: spacing.xl },
   endSection: { gap: spacing.sm, marginTop: spacing.xxl },
 });

@@ -1,4 +1,5 @@
-import type { Observation, ObservationTarget } from './observation-api.ts';
+import type { Observation, ObservationPhoto, ObservationTarget } from './observation-api.ts';
+import { buildObservationOverviewModel } from './observation-flow.ts';
 import type {
   RegionEvent,
   RegionEventTimepoint,
@@ -52,6 +53,20 @@ export type RegionEntry =
   | { kind: 'event'; eventId: number }
   | { kind: 'event_picker'; regionId: RegionId }
   | { kind: 'observation'; observationId: number };
+
+export type FullFaceHistoryRecord = {
+  observationId: number;
+  recordedAt: string;
+  recordedTimezoneOffsetMinutes: number | null;
+  photo: ObservationPhoto;
+  scopeLabel: string;
+  isLegacyFullFace: boolean;
+  statuses: {
+    targetId: number;
+    regionLabel: string;
+    statusLabel: string;
+  }[];
+};
 
 const PENDING_STATUS_LABELS = {
   queued: '排队中',
@@ -230,6 +245,51 @@ export function buildRegionOverview({
         item.kind !== 'region_event',
     ),
   };
+}
+
+export function buildFullFaceHistory(
+  observations: readonly Observation[],
+): FullFaceHistoryRecord[] {
+  const seen = new Set<number>();
+  return observations
+    .flatMap((observation) => {
+      if (!observation.photo || seen.has(observation.observation_id)) return [];
+      seen.add(observation.observation_id);
+      const overview = buildObservationOverviewModel(observation);
+      return [{
+        observationId: observation.observation_id,
+        recordedAt: observation.recorded_at,
+        recordedTimezoneOffsetMinutes: observation.recorded_timezone_offset_minutes,
+        photo: observation.photo,
+        scopeLabel: overview.scopeLabel,
+        isLegacyFullFace: overview.isLegacyFullFace,
+        statuses: overview.items.map((item) => ({
+          targetId: item.targetId,
+          regionLabel: item.regionLabel,
+          statusLabel: item.statusLabel,
+        })),
+      } satisfies FullFaceHistoryRecord];
+    })
+    .sort(
+      (left, right) =>
+        right.recordedAt.localeCompare(left.recordedAt) ||
+        right.observationId - left.observationId,
+    );
+}
+
+export function buildLegacyTextHistory(
+  observations: readonly Observation[],
+): Observation[] {
+  const seen = new Set<number>();
+  return observations.filter((observation) => {
+    if (observation.photo || seen.has(observation.observation_id) ||
+      !observation.targets.some(target => target.scope_type === 'full_face')) return false;
+    seen.add(observation.observation_id);
+    return true;
+  }).sort((left, right) =>
+    right.recorded_at.localeCompare(left.recorded_at) ||
+    right.observation_id - left.observation_id,
+  );
 }
 
 export function timepointCountForEvent(

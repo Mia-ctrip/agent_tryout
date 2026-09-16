@@ -2,6 +2,8 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import {
+  buildFullFaceHistory,
+  buildLegacyTextHistory,
   buildRegionOverview,
   chooseDefaultTimepointId,
   formatHistoryDateTime,
@@ -350,4 +352,53 @@ test('full-face or product history does not hide the region-history empty state'
 
   assert.equal(overview.otherHistory.length, 1);
   assert.equal(hasRegionHistory(overview), false);
+});
+
+test('full-face history keeps every photographed observation once, including partial selections', () => {
+  const sharedPhoto = { ...PHOTO, photo_id: 90 };
+  const records = buildFullFaceHistory([
+    observation({ observation_id: 12, recorded_at: '2026-08-20T09:00:00Z', photo: sharedPhoto, targets: [target({ region_id: 'chin' })] }),
+    observation({ observation_id: 11, recorded_at: '2026-08-20T08:00:00Z', photo: sharedPhoto, targets: [target({ region_id: 'forehead' })] }),
+    observation({ observation_id: 12, recorded_at: '2026-08-20T09:00:00Z', photo: sharedPhoto, targets: [target({ region_id: 'chin' })] }),
+    observation({ observation_id: 10, recorded_at: '2026-08-19T08:00:00Z', photo: null }),
+  ]);
+
+  assert.deepEqual(records.map((record) => record.observationId), [12, 11]);
+  assert.equal(records[0].scopeLabel, '本次观察：下巴');
+  assert.equal(records[1].scopeLabel, '本次观察：额头');
+  assert.equal(records[0].photo.photo_id, records[1].photo.photo_id);
+});
+
+test('full-face history uses stable ordering and exposes independent target states', () => {
+  const records = buildFullFaceHistory([
+    observation({ observation_id: 21, recorded_at: '2026-08-20T08:00:00Z', targets: [target({ target_id: 1, region_id: 'forehead', status: 'completed' }), target({ target_id: 2, region_id: 'chin', status: 'processing', facts: null, result_source: null })] }),
+    observation({ observation_id: 22, recorded_at: '2026-08-20T08:00:00Z', targets: [target({ target_id: 3, region_id: 'mouth_area', status: 'needs_input', facts: null, result_source: null })] }),
+  ]);
+
+  assert.deepEqual(records.map((record) => record.observationId), [22, 21]);
+  assert.deepEqual(records[1].statuses.map((item) => `${item.regionLabel}:${item.statusLabel}`), [
+    '额头:已完成',
+    '下巴:正在整理',
+  ]);
+});
+
+test('legacy full-face photos remain one explicitly labelled historical record', () => {
+  const legacyTarget = target({ scope_type: 'full_face', region_id: null });
+  const [record] = buildFullFaceHistory([observation({ targets: [legacyTarget] })]);
+  assert.equal(record.isLegacyFullFace, true);
+  assert.equal(record.scopeLabel, '历史全脸记录');
+});
+
+test('legacy text history remains reachable without inventing a photo or regional facts', () => {
+  const legacy = observation({ observation_id: 31, photo: null, targets: [target({ scope_type: 'full_face', region_id: null, result_source: 'user_record', facts: null, user_note: '保留旧版原文' })] });
+  const records = buildLegacyTextHistory([
+    legacy,
+    legacy,
+    observation({ observation_id: 32 }),
+    observation({ observation_id: 33, photo: null }),
+  ]);
+  assert.deepEqual(records.map(item => item.observation_id), [31]);
+  assert.equal(records[0], legacy);
+  assert.equal(records[0].targets[0].user_note, '保留旧版原文');
+  assert.equal(records[0].photo, null);
 });

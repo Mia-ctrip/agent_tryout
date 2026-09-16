@@ -1,13 +1,15 @@
 # 角色
-你是资深移动端技术负责人 + 项目经理。本次任务是做「项目现状盘查 + 收尾排期」，不写代码。
+你是资深产品经理 + 经验丰富的互联网运营 + 项目经理。本次任务是做「项目收口前再次review产品设计」，不写代码。
 
 # 项目背景
 - 产品：面向痘痘肌用户的垂域 skincare App（MVP 阶段）
 - 背景文档：D:\Mia\agent_tryout\skin_care_agent\project_background.md
 - MVP 需求规格（唯一验收基准）：D:\Mia\agent_tryout\skin_care_agent\design\product\skin_care_app_mvp_spec.md
 - 当前进度记录（可能已过期，需以代码为准校验）：D:\Mia\agent_tryout\skin_care_agent\docs\current_status.md
-- 最近一次工作是前端 UI 重构，交接文档：D:\Mia\agent_tryout\skin_care_agent\design\skin-care-ui-rebuild-handoff-v1
-- 我已有段时间没跟进项目，对现状记忆不可靠，请勿采信我的口头假设，一切结论以文档 + 代码 + 实机运行为依据。
+- 当前项目状态盘点 D:\Mia\agent_tryout\skin_care_agent\docs\wrapup_assessment_2026-09-14.md
+
+# 任务
+和我以对话的形式一起评估当前项目还未实现/部分实现的功能是否要加入到MVP版本中
 
 # 任务
 产出一份《项目收尾评估与优先级排期》文档，回答三个问题：

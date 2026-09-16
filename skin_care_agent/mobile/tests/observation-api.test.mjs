@@ -148,3 +148,42 @@ test('history observation loader follows every backend page', async () => {
     '/observations?limit=50&before_id=51',
   ]);
 });
+
+test('overlapping observation pages deduplicate IDs but preserve separate uses of the same photo', async () => {
+  const first = Array.from({ length: 50 }, (_, index) => ({ observation_id: 100 - index, photo: { photo_id: 1 } }));
+  let calls = 0;
+  const records = await listAllObservations(async () => ++calls === 1 ? first : [first.at(-1), { observation_id: 50, photo: { photo_id: 1 } }]);
+  assert.equal(records.length, 51);
+  assert.equal(records.filter(record => record.observation_id === 51).length, 1);
+  assert.equal(records.at(-1).observation_id, 50);
+});
+
+test('a stuck pagination cursor reports an error instead of silently truncating history', async () => {
+  const page = Array.from({ length: 50 }, (_, index) => ({ observation_id: 100 - index }));
+  await assert.rejects(listAllObservations(async () => page), /分页/);
+});
+
+test('chronological pages use the last record cursor, not the minimum ID', async () => {
+  const first = [{ observation_id: 1 }, ...Array.from({ length: 49 }, (_, index) => ({ observation_id: 51 - index }))];
+  const calls = [];
+  const records = await listAllObservations(async path => {
+    calls.push(path);
+    return calls.length === 1 ? first : [{ observation_id: 2 }];
+  });
+  assert.equal(records.length, 51);
+  assert.equal(calls[1], '/observations?limit=50&before_id=3');
+});
+
+test('six selected regions create one request with exactly six regional targets', async () => {
+  const entries = [];
+  const regions = ['forehead', 'left_face', 'right_face', 'nose_area', 'mouth_area', 'chin'];
+  const form = buildObservationForm({ clientRequestId: 'six-regions', recordedAt: '2026-09-16T08:00:00Z', timezoneOffsetMinutes: 480, targets: regions.map(regionId => ({ regionId, userNote: null })), file: { uri: 'file:///original.jpg', name: 'original.jpg', type: 'image/jpeg' } }, { append: (name, value) => entries.push([name, value]) });
+  const calls = [];
+  await createObservation(async (path, init) => { calls.push({ path, init }); return { observation_id: 1 }; }, form);
+  const targets = JSON.parse(entries.find(([name]) => name === 'targets_json')[1]);
+  assert.deepEqual(targets.map(target => target.region_id), regions);
+  assert.equal(targets.length, 6);
+  assert.equal(targets.some(target => target.scope_type === 'full_face'), false);
+  assert.deepEqual(calls.map(call => call.path), ['/observations']);
+  assert.equal(entries.filter(([name]) => name === 'file').length, 1);
+});

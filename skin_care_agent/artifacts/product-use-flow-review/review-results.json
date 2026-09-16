@@ -1,0 +1,56 @@
+{
+  "kind": "VISUAL FIXTURES ONLY — not backend or native-device verification",
+  "status": "passed-web-native-review-pending",
+  "results": [
+    {
+      "name": "product-use",
+      "width": 320,
+      "scrollWidth": 320,
+      "path": "/product-use/new",
+      "text": "取消\n记录产品使用\n今天用了哪些产品？\n只记录截至现在真实发生的使用，不需要填完全天。\n常用与最近产品\n按真实使用次数与最近时间排列，不会默认勾选。\n用于窄屏排版检查的超长中英文产品名称 Adapal",
+      "overflow": false
+    },
+    {
+      "name": "product-use",
+      "width": 375,
+      "scrollWidth": 375,
+      "path": "/product-use/new",
+      "text": "取消\n记录产品使用\n今天用了哪些产品？\n只记录截至现在真实发生的使用，不需要填完全天。\n常用与最近产品\n按真实使用次数与最近时间排列，不会默认勾选。\n用于窄屏排版检查的超长中英文产品名称 Adapal",
+      "overflow": false
+    },
+    {
+      "name": "product-use",
+      "width": 390,
+      "scrollWidth": 390,
+      "path": "/product-use/new",
+      "text": "取消\n记录产品使用\n今天用了哪些产品？\n只记录截至现在真实发生的使用，不需要填完全天。\n常用与最近产品\n按真实使用次数与最近时间排列，不会默认勾选。\n用于窄屏排版检查的超长中英文产品名称 Adapal",
+      "overflow": false
+    },
+    {
+      "name": "product-use",
+      "width": 430,
+      "scrollWidth": 430,
+      "path": "/product-use/new",
+      "text": "取消\n记录产品使用\n今天用了哪些产品？\n只记录截至现在真实发生的使用，不需要填完全天。\n常用与最近产品\n按真实使用次数与最近时间排列，不会默认勾选。\n用于窄屏排版检查的超长中英文产品名称 Adapal",
+      "overflow": false
+    },
+    {
+      "name": "product-use-custom",
+      "width": 320,
+      "scrollWidth": 320,
+      "path": "/product-use/new",
+      "text": "取消\n记录产品使用\n今天用了哪些产品？\n只记录截至现在真实发生的使用，不需要填完全天。\n常用与最近产品\n按真实使用次数与最近时间排列，不会默认勾选。\n用于窄屏排版检查的超长中英文产品名称 Adapal",
+      "overflow": false
+    },
+    {
+      "name": "product-use-ai-completed",
+      "width": 390,
+      "scrollWidth": 390,
+      "path": "/product-use/new",
+      "text": "取消\n记录产品使用\n今天用了哪些产品？\n只记录截至现在真实发生的使用，不需要填完全天。\ni\n照片已保存，分析已完成；填写后即可查看本次结果。\n常用与最近产品\n按真实使用次数与最近时间排列，不会默认勾选",
+      "overflow": false
+    }
+  ],
+  "errors": [],
+  "skipped": []
+}

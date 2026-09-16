@@ -4,6 +4,7 @@ import { File } from 'expo-file-system';
 import { Image } from 'expo-image';
 import * as ImagePicker from 'expo-image-picker';
 import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
+import type { Href } from 'expo-router';
 import { useCallback, useEffect, useReducer, useRef, useState } from 'react';
 import {
   ActivityIndicator,
@@ -17,6 +18,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { AppScreen } from '@/components/app-screen';
+import { AppButton } from '@/components/app-button';
 import { CameraGuideOverlay } from '@/components/camera-guide-overlay';
 import { CameraStartPanel } from '@/components/camera-start-panel';
 import { FaceRegionMap } from '@/components/face-region-map';
@@ -74,6 +76,7 @@ import {
   loadLastRegionSelection,
   saveLastRegionSelection,
 } from '@/lib/region-selection-storage';
+import { productUseHref } from '@/lib/observation-navigation';
 import { userFacingError } from '@/lib/errors';
 import { useSession } from '@/providers/session-provider';
 
@@ -113,6 +116,7 @@ export default function NewObservationScreen() {
   const { entry } = useLocalSearchParams<{ entry?: string | string[] }>();
   const [permission, requestPermission] = useCameraPermissions();
   const requestIdRef = useRef(createClientRequestId());
+  const productUseRequestIdRef = useRef(createClientRequestId());
   const [flow, dispatch] = useReducer(
     faceAnalysisReducer,
     requestIdRef.current,
@@ -127,6 +131,7 @@ export default function NewObservationScreen() {
   const [choosingPhoto, setChoosingPhoto] = useState(false);
   const [eventPreviews, setEventPreviews] = useState<RegionEventPreview[]>([]);
   const [notice, setNotice] = useState<string | null>(null);
+  const [savedObservationId, setSavedObservationId] = useState<number | null>(null);
   const cameraRef = useRef<CameraView | null>(null);
   const captureGuard = useRef(false);
   const liveSampleGuard = useRef(false);
@@ -349,12 +354,12 @@ export default function NewObservationScreen() {
   }
 
   async function persistObservation(confirmedDraft: ObservationDraft) {
+    let observation;
     try {
       const file = confirmedDraft.photoUri ? new File(confirmedDraft.photoUri) : undefined;
       const form = buildObservationForm(observationDraftToInput(confirmedDraft, file));
-      const observation = await createObservation(request, form);
+      observation = await createObservation(request, form);
       void saveLastRegionSelection(confirmedDraft.selectedRegions).catch(() => undefined);
-      router.replace(`/observation/${observation.observation_id}`);
     } catch (error) {
       const issue = apiQualityIssue(error);
       if (issue) {
@@ -367,7 +372,31 @@ export default function NewObservationScreen() {
         dispatch({ type: 'analysis_failed', message: userFacingError(error) });
       }
       submitGuard.current = false;
+      return;
     }
+    setSavedObservationId(observation.observation_id);
+    try {
+      router.replace(
+        productUseHref({
+          source: 'after_observation',
+          flowId: productUseRequestIdRef.current,
+          observationId: observation.observation_id,
+        }) as Href,
+      );
+    } catch {
+      setNotice('照片已保存，AI 正在后台分析。请继续记录产品使用。');
+    }
+  }
+
+  function continueAfterSavedObservation() {
+    if (!savedObservationId) return;
+    router.replace(
+      productUseHref({
+        source: 'after_observation',
+        flowId: productUseRequestIdRef.current,
+        observationId: savedObservationId,
+      }) as Href,
+    );
   }
 
   async function prepareAnalysis(
@@ -423,6 +452,11 @@ export default function NewObservationScreen() {
     dispatch({ type: 'region_toggled', regionId });
   }
 
+  function selectAllObservationRegions() {
+    setNotice(null);
+    dispatch({ type: 'all_regions_selected' });
+  }
+
   function confirmEventsAndAnalyze() {
     const decisionError = regionEventDecisionError(eventPreviews, draft.eventDecisions);
     if (decisionError) {
@@ -457,6 +491,19 @@ export default function NewObservationScreen() {
     // Entry intents are consumed once; recovery remains on this state machine.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [entry, flow.status, permissionState]);
+
+  if (savedObservationId) {
+    return (
+      <AppScreen backgroundColor={observationColors.background}>
+        <View style={styles.pageHeader}>
+          <Text accessibilityRole="header" style={styles.title}>照片已保存</Text>
+          <Text style={styles.description}>AI 已在后台开始分析，不需要等待。</Text>
+        </View>
+        {notice ? <InlineNotice tone="info" message={notice} /> : null}
+        <AppButton label="继续记录产品使用" onPress={continueAfterSavedObservation} />
+      </AppScreen>
+    );
+  }
 
   if (flow.status === 'permission_required') {
     return (
@@ -612,7 +659,11 @@ export default function NewObservationScreen() {
             onPrimaryPress={startAnalysis}
             onSecondaryPress={retake}
             primaryDisabled={flow.selectedRegions.length === 0}
-            primaryLabel="使用这张照片"
+            primaryLabel={
+              flow.selectedRegions.length > 0
+                ? `确认 ${flow.selectedRegions.length} 个区域`
+                : '请选择观察区域'
+            }
             secondaryLabel="重新拍摄"
           />
         }>
@@ -653,6 +704,7 @@ export default function NewObservationScreen() {
               <Text style={styles.confirmSectionMeta}>可选择多个区域</Text>
           </View>
           <RegionChoiceBar
+            onSelectAll={selectAllObservationRegions}
             onToggle={toggleObservationRegion}
             required={flow.requiredRegions}
             selected={flow.selectedRegions}

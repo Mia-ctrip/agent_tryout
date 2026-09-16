@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { ActivityIndicator, Keyboard, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { useCallback, useEffect, useState } from 'react';
+import { ActivityIndicator, BackHandler, Keyboard, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { CustomProductForm } from '@/components/custom-product-form';
 import { InlineNotice } from '@/components/inline-notice';
@@ -10,7 +10,11 @@ import { createClientRequestId } from '@/lib/client-request-id';
 import { userFacingError } from '@/lib/errors';
 import { addStandardProductToCabinet, searchProducts } from '@/lib/product-api';
 import type { ProductSearchItem } from '@/lib/product-api';
-import { createProductSearchGuard, selectedPersonalProductId } from '@/lib/product-search-flow';
+import {
+  createProductSearchGuard,
+  linkStandardResultToCabinet,
+  selectedPersonalProductId,
+} from '@/lib/product-search-flow';
 import { shouldOfferCustomProduct } from '@/lib/product-ui';
 import { useSession } from '@/providers/session-provider';
 
@@ -19,11 +23,15 @@ export function ProductSearchPicker({
   onProductReady,
   onOpenStandard,
   autoFocus = false,
+  customFormOpen,
+  onCustomFormOpenChange,
 }: {
   selectedProductIds: number[];
   onProductReady: (productId: number) => void;
   onOpenStandard?: (standardProductId: number) => void;
   autoFocus?: boolean;
+  customFormOpen?: boolean;
+  onCustomFormOpenChange?: (open: boolean) => void;
 }) {
   const { request } = useSession();
   const [guard] = useState(() => createProductSearchGuard());
@@ -32,8 +40,23 @@ export function ProductSearchPicker({
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
+  const [retryKey, setRetryKey] = useState(0);
   const [addingId, setAddingId] = useState<number | null>(null);
-  const [customOpen, setCustomOpen] = useState(false);
+  const [internalCustomOpen, setInternalCustomOpen] = useState(false);
+  const customOpen = customFormOpen ?? internalCustomOpen;
+  const setCustomOpen = useCallback((open: boolean) => {
+    setInternalCustomOpen(open);
+    onCustomFormOpenChange?.(open);
+  }, [onCustomFormOpenChange]);
+
+  useEffect(() => {
+    if (!customOpen || customFormOpen !== undefined) return undefined;
+    const subscription = BackHandler.addEventListener('hardwareBackPress', () => {
+      setCustomOpen(false);
+      return true;
+    });
+    return () => subscription.remove();
+  }, [customFormOpen, customOpen, setCustomOpen]);
 
   useEffect(() => {
     const trimmed = query.trim();
@@ -57,7 +80,7 @@ export function ProductSearchPicker({
         });
     }, 250);
     return () => clearTimeout(timer);
-  }, [guard, query, request]);
+  }, [guard, query, request, retryKey]);
 
   async function choose(item: ProductSearchItem) {
     const existing = selectedPersonalProductId(item);
@@ -77,6 +100,11 @@ export function ProductSearchPicker({
         clientRequestId: createClientRequestId(),
         standardProductId: item.standard_product_id,
       });
+      setItems((current) => current.map((result) => linkStandardResultToCabinet(
+        result,
+        item.standard_product_id as number,
+        product.product_id,
+      )));
       onProductReady(product.product_id);
     } catch (addError) {
       setError(userFacingError(addError));
@@ -127,7 +155,22 @@ export function ProductSearchPicker({
       </View>
       <Text style={styles.searchHint}>同时匹配产品名称、品牌、简称和受控别名</Text>
 
-      {error ? <InlineNotice tone="error" message={error} /> : null}
+      {error ? (
+        <View style={styles.errorGroup}>
+          <InlineNotice tone="error" message={error} />
+          <Pressable
+            accessibilityRole="button"
+            onPress={() => {
+              setError(null);
+              setHasSearched(false);
+              setLoading(true);
+              setRetryKey((key) => key + 1);
+            }}
+            style={({ pressed }) => [styles.retryButton, pressed && styles.pressed]}>
+            <Text style={styles.retryButtonText}>重新搜索</Text>
+          </Pressable>
+        </View>
+      ) : null}
       {loading ? (
         <View style={styles.progressRow}>
           <ActivityIndicator color={productColors.actionPrimary} size="small" />
@@ -175,7 +218,14 @@ export function ProductSearchPicker({
               <Text style={styles.customButtonText}>创建自定义产品</Text>
             </Pressable>
           ) : (
-            <CustomProductForm initialName={query.trim()} onCreated={onProductReady} />
+            <CustomProductForm
+              initialName={query.trim()}
+              onCancel={() => setCustomOpen(false)}
+              onCreated={(productId) => {
+                changeQuery('');
+                onProductReady(productId);
+              }}
+            />
           )}
         </View>
       ) : null}
@@ -199,6 +249,9 @@ const styles = StyleSheet.create({
   clear: { width: 30, height: 30, alignItems: 'center', justifyContent: 'center', borderRadius: 15, backgroundColor: productColors.surfaceMuted },
   clearText: { color: productColors.textSecondary, fontSize: 19, lineHeight: 21 },
   searchHint: { color: productColors.textSecondary, fontSize: 10.5, lineHeight: 16 },
+  errorGroup: { alignItems: 'flex-start', gap: spacing.sm },
+  retryButton: { minHeight: 44, justifyContent: 'center', paddingHorizontal: spacing.md },
+  retryButtonText: { color: productColors.actionPrimary, fontSize: 13, fontWeight: '700' },
   progressRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, paddingVertical: spacing.md },
   progress: { color: productColors.actionPrimary, fontSize: 13 },
   results: { gap: 12, marginTop: spacing.sm },

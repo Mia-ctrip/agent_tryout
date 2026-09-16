@@ -8,6 +8,7 @@ import {
   toggleProductSelection,
   validateProductName,
 } from '../src/lib/product-use-flow.ts';
+import * as productUseFlow from '../src/lib/product-use-flow.ts';
 import { selectReadyProduct } from '../src/lib/product-search-flow.ts';
 
 
@@ -37,7 +38,22 @@ test('a newly added catalog product is selected once without changing the produc
 });
 
 
-test('blank selection builds a real unnamed use without a pseudo product', () => {
+test('blank selection cannot silently become an unnamed use', () => {
+  const usedAt = new Date('2026-08-24T05:30:00.000Z');
+  Object.defineProperty(usedAt, 'getTimezoneOffset', { value: () => -480 });
+
+  assert.throws(
+    () => buildProductUseInput({
+      clientRequestId: '22222222-2222-4222-8222-222222222222',
+      usedAt,
+      productIds: [],
+      note: '   ',
+    }),
+    /请先选择产品/,
+  );
+});
+
+test('explicit unnamed intent builds a zero-link use without a pseudo product', () => {
   const usedAt = new Date('2026-08-24T05:30:00.000Z');
   Object.defineProperty(usedAt, 'getTimezoneOffset', { value: () => -480 });
 
@@ -47,7 +63,7 @@ test('blank selection builds a real unnamed use without a pseudo product', () =>
       usedAt,
       productIds: [],
       note: '   ',
-    }),
+    }, 'unnamed'),
     {
       clientRequestId: '22222222-2222-4222-8222-222222222222',
       usedAt: '2026-08-24T05:30:00.000Z',
@@ -56,6 +72,82 @@ test('blank selection builds a real unnamed use without a pseudo product', () =>
       note: null,
     },
   );
+});
+
+test('product-use draft restores only the matching account flow and saved server result', async () => {
+  assert.equal(typeof productUseFlow.loadProductUseSession, 'function');
+  assert.equal(typeof productUseFlow.saveProductUseSession, 'function');
+  const values = new Map();
+  const storage = {
+    async getItemAsync(key) { return values.get(key) ?? null; },
+    async setItemAsync(key, value) { values.set(key, value); },
+  };
+  const draft = {
+    clientRequestId: '33333333-3333-4333-8333-333333333333',
+    usedAt: new Date('2026-09-15T02:30:00.000Z'),
+    productIds: [9, 3, 9],
+    note: '  晨间使用  ',
+  };
+
+  await productUseFlow.saveProductUseSession(
+    7,
+    '33333333-3333-4333-8333-333333333333',
+    draft,
+    81,
+    storage,
+  );
+  const restored = await productUseFlow.loadProductUseSession(
+    7,
+    '33333333-3333-4333-8333-333333333333',
+    new Date('2026-09-15T03:00:00.000Z'),
+    storage,
+  );
+
+  assert.equal(restored.draft.clientRequestId, draft.clientRequestId);
+  assert.equal(restored.draft.usedAt.toISOString(), draft.usedAt.toISOString());
+  assert.deepEqual(restored.draft.productIds, [3, 9]);
+  assert.equal(restored.draft.note, '  晨间使用  ');
+  assert.equal(restored.savedProductUseId, 81);
+
+  const otherFlow = await productUseFlow.loadProductUseSession(
+    7,
+    '44444444-4444-4444-8444-444444444444',
+    new Date('2026-09-15T03:00:00.000Z'),
+    storage,
+  );
+  assert.equal(otherFlow.draft.clientRequestId, '44444444-4444-4444-8444-444444444444');
+  assert.equal(otherFlow.draft.usedAt.toISOString(), '2026-09-15T03:00:00.000Z');
+  assert.equal(otherFlow.savedProductUseId, null);
+});
+
+test('corrupt product-use storage falls back to a fresh stable flow draft', async () => {
+  assert.equal(typeof productUseFlow.loadProductUseSession, 'function');
+  const storage = {
+    async getItemAsync() { return '{broken'; },
+    async setItemAsync() {},
+  };
+  const restored = await productUseFlow.loadProductUseSession(
+    5,
+    '55555555-5555-4555-8555-555555555555',
+    new Date('2026-09-15T04:00:00.000Z'),
+    storage,
+  );
+  assert.equal(restored.draft.clientRequestId, '55555555-5555-4555-8555-555555555555');
+  assert.equal(restored.draft.usedAt.toISOString(), '2026-09-15T04:00:00.000Z');
+  assert.equal(restored.savedProductUseId, null);
+});
+
+test('background analysis copy reflects slow, instant, failed and partial outcomes', () => {
+  assert.equal(typeof productUseFlow.productUseObservationStatus, 'function');
+  const status = (statuses) => productUseFlow.productUseObservationStatus(
+    statuses.map((value, index) => ({ target_id: index + 1, status: value })),
+  );
+
+  assert.match(status(['queued', 'processing']), /后台.*分析/);
+  assert.match(status(['completed', 'completed']), /分析已完成/);
+  assert.match(status(['needs_input', 'needs_input']), /稍后.*重试或补充/);
+  assert.match(status(['completed', 'needs_input']), /部分区域/);
+  assert.match(status(['completed', 'processing', 'needs_input']), /部分区域.*后台/);
 });
 
 

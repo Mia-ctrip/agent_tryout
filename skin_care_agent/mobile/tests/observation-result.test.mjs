@@ -1,7 +1,11 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { buildObservationResultModel } from '../src/lib/observation-flow.ts';
+import {
+  buildObservationOverviewModel,
+  buildObservationResultModel,
+  defaultObservationResultView,
+} from '../src/lib/observation-flow.ts';
 
 const geometry = [
   { region_id: 'forehead', points: Array.from({ length: 6 }, (_, index) => ({ x: 0.3 + index * 0.02, y: 0.2 })) },
@@ -93,4 +97,74 @@ test('result model preserves user words and offers only process guidance', () =>
   ]);
   assert.equal(model.nextStep.title, '在相近条件下继续观察');
   assert.doesNotMatch(JSON.stringify(model.nextStep), /治疗|用药|停药|购买/);
+});
+
+test('six selected regions default to a factual overview without a combined conclusion', () => {
+  const regions = ['forehead', 'left_face', 'right_face', 'nose_area', 'mouth_area', 'chin'];
+  const record = observation(regions.map((regionId, index) => target(index + 1, regionId)));
+  const model = buildObservationOverviewModel(record);
+
+  assert.equal(model.isAllRegionsSelected, true);
+  assert.equal(model.scopeLabel, '本次观察：额头、左脸颊、右脸颊、鼻周、口周、下巴');
+  assert.equal(model.items.length, 6);
+  assert.equal(defaultObservationResultView(record), 'overview');
+  assert.equal('summary' in model, false);
+  assert.doesNotMatch(JSON.stringify(model), /总数量|严重度|评分/);
+});
+
+test('partial selection defaults to regions but can be opened as a full-photo overview', () => {
+  const record = observation([target(1, 'chin')]);
+  const model = buildObservationOverviewModel(record);
+
+  assert.equal(model.isAllRegionsSelected, false);
+  assert.equal(model.scopeLabel, '本次观察：下巴');
+  assert.equal(defaultObservationResultView(record), 'regions');
+  assert.equal(defaultObservationResultView(record, 'overview'), 'overview');
+});
+
+test('overview keeps every selected target and its independent source and status', () => {
+  const photo = target(1, 'forehead');
+  photo.user_note = '今天额头有一点紧绷。';
+  const user = target(2, 'left_face');
+  user.result_source = 'user_record';
+  user.facts = null;
+  user.user_note = '左脸是我自己写下的记录。';
+  const record = observation([
+    photo,
+    user,
+    target(3, 'right_face', 'queued'),
+    target(4, 'nose_area', 'processing'),
+    target(5, 'mouth_area', 'needs_input'),
+  ]);
+  const model = buildObservationOverviewModel(record);
+
+  assert.deepEqual(model.items.map((item) => item.statusLabel), [
+    '已完成',
+    '已记录',
+    '排队中',
+    '正在整理',
+    '需要补充',
+  ]);
+  assert.equal(model.items[0].sourceLabel, '照片整理');
+  assert.equal(model.items[0].userNote, '今天额头有一点紧绷。');
+  assert.equal(model.items[1].sourceLabel, '你的记录');
+  assert.equal(model.items[1].summary, '左脸是我自己写下的记录。');
+});
+
+test('overview preserves all failed regions and labels legacy full-face records', () => {
+  const failed = observation([
+    target(1, 'forehead', 'needs_input'),
+    target(2, 'chin', 'needs_input'),
+  ]);
+  assert.equal(buildObservationOverviewModel(failed).items.length, 2);
+
+  const legacy = observation([{
+    ...target(1, 'forehead'),
+    scope_type: 'full_face',
+    region_id: null,
+  }]);
+  const legacyModel = buildObservationOverviewModel(legacy);
+  assert.equal(legacyModel.isLegacyFullFace, true);
+  assert.equal(legacyModel.scopeLabel, '历史全脸记录');
+  assert.equal(defaultObservationResultView(legacy), 'overview');
 });

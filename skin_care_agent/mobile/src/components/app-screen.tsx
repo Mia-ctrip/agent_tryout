@@ -1,8 +1,9 @@
-import { PropsWithChildren, ReactNode } from 'react';
+import { PropsWithChildren, ReactNode, RefObject } from 'react';
 import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  ScrollViewProps,
   StyleProp,
   StyleSheet,
   View,
@@ -21,6 +22,8 @@ type AppScreenProps = PropsWithChildren<{
   safeAreaEdges?: SafeAreaViewProps['edges'];
   backgroundColor?: string;
   variant?: AppScreenVariant;
+  scrollViewRef?: RefObject<ScrollView | null>;
+  onScroll?: ScrollViewProps['onScroll'];
 }>;
 
 export function AppScreen({
@@ -30,6 +33,8 @@ export function AppScreen({
   safeAreaEdges,
   backgroundColor,
   variant = 'paper',
+  scrollViewRef,
+  onScroll,
 }: AppScreenProps) {
   const presentation = appScreenPresentation(variant);
   const resolvedBackground = backgroundColor ?? presentation.background;
@@ -40,6 +45,7 @@ export function AppScreen({
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         style={styles.keyboard}>
         <ScrollView
+          ref={scrollViewRef}
           contentContainerStyle={[
             styles.scrollContent,
             {
@@ -48,7 +54,9 @@ export function AppScreen({
             },
             contentStyle,
           ]}
-          keyboardShouldPersistTaps="handled">
+          keyboardShouldPersistTaps="handled"
+          onScroll={onScroll}
+          scrollEventThrottle={16}>
           <View style={[styles.content, { gap, rowGap, columnGap }, presentation.edgeToEdge && styles.edgeToEdgeContent]}>
             {children}
           </View>

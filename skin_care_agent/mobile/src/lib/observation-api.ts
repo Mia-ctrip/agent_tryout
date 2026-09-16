@@ -155,6 +155,7 @@ export async function listAllObservations(
   const pageSize = 50;
   const observations: Observation[] = [];
   const seenIds = new Set<number>();
+  const seenCursors = new Set<number>();
   let beforeId: number | undefined;
 
   while (true) {
@@ -166,10 +167,11 @@ export async function listAllObservations(
       }
     }
     if (page.length < pageSize) break;
-    const nextBeforeId = Math.min(
-      ...page.map(({ observation_id }) => observation_id),
-    );
-    if (!Number.isSafeInteger(nextBeforeId) || nextBeforeId === beforeId) break;
+    const nextBeforeId = page[page.length - 1].observation_id;
+    if (!Number.isSafeInteger(nextBeforeId) || seenCursors.has(nextBeforeId)) {
+      throw new Error('照片历程分页未能继续，请重新读取。');
+    }
+    seenCursors.add(nextBeforeId);
     beforeId = nextBeforeId;
   }
 

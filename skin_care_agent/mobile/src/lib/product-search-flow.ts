@@ -26,6 +26,19 @@ export function selectedPersonalProductId(result: CabinetSearchResult): number |
   return result.in_cabinet ? result.personal_product_id : null;
 }
 
+export function linkStandardResultToCabinet<T extends CabinetSearchResult>(
+  result: T,
+  standardProductId: number,
+  personalProductId: number,
+): T {
+  if (result.standard_product_id !== standardProductId) return result;
+  return {
+    ...result,
+    personal_product_id: personalProductId,
+    in_cabinet: true,
+  };
+}
+
 export function selectReadyProduct(current: number[], ready: ReadyProduct): number[] {
   return [...new Set([...current, ready.product_id])].sort((left, right) => left - right);
 }

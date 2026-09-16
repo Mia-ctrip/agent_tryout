@@ -6,12 +6,14 @@ import {
   observationSpacing,
 } from '@/constants/observation-theme';
 import { buildRegionChoiceItems } from '@/lib/face-analysis-visual';
+import { hasAllRegions } from '@/lib/region-catalog';
 import type { RegionId } from '@/lib/region-catalog';
 
 type RegionChoiceBarProps = {
   selected: readonly RegionId[];
   required?: readonly RegionId[];
   onToggle: (regionId: RegionId) => void;
+  onSelectAll: () => void;
   disabled?: boolean;
 };
 
@@ -19,11 +21,32 @@ export function RegionChoiceBar({
   selected,
   required = [],
   onToggle,
+  onSelectAll,
   disabled = false,
 }: RegionChoiceBarProps) {
   const items = buildRegionChoiceItems(selected, required);
+  const allSelected = hasAllRegions(selected);
   return (
     <View accessibilityLabel="检测区域文字选项" style={styles.list}>
+      <Pressable
+        accessibilityHint="一次选择固定的全部六个面部区域"
+        accessibilityLabel="全脸，选择全部 6 个区域"
+        accessibilityRole="checkbox"
+        accessibilityState={{ checked: allSelected, disabled }}
+        disabled={disabled}
+        onPress={onSelectAll}
+        style={({ pressed }) => [
+          styles.fullFaceOption,
+          allSelected && styles.optionSelected,
+          pressed && styles.pressed,
+        ]}>
+        <View style={styles.fullFaceCopy}>
+          <Text style={[styles.optionLabel, allSelected && styles.optionLabelSelected]}>
+            {allSelected ? '✓ ' : ''}全脸
+          </Text>
+          <Text style={styles.fullFaceHint}>选择全部 6 个区域</Text>
+        </View>
+      </Pressable>
       {items.map((item) => (
         <Pressable
           accessibilityHint={
@@ -52,6 +75,19 @@ export function RegionChoiceBar({
 
 const styles = StyleSheet.create({
   list: { flexDirection: 'row', flexWrap: 'wrap', gap: observationSpacing.sm },
+  fullFaceOption: {
+    width: '100%',
+    minHeight: 56,
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: observationColors.border,
+    borderRadius: observationRadii.sm,
+    backgroundColor: observationColors.surface,
+    paddingHorizontal: observationSpacing.md,
+    paddingVertical: observationSpacing.sm,
+  },
+  fullFaceCopy: { gap: 2 },
+  fullFaceHint: { color: observationColors.textMuted, fontSize: 12, lineHeight: 18 },
   option: {
     minHeight: 44,
     justifyContent: 'center',
@@ -72,4 +108,3 @@ const styles = StyleSheet.create({
   badge: { color: observationColors.textMuted, fontSize: 10 },
   pressed: { opacity: 0.72 },
 });
-

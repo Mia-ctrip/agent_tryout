@@ -22,6 +22,18 @@ test('history overview does not render the non-region other-history section', ()
   assert.doesNotMatch(overview, /overview\.otherHistory\.map/);
 });
 
+test('history switches between photographed observations and region events above the face map', () => {
+  const overview = source('../src/app/(tabs)/history.tsx');
+  assert.match(overview, /全脸/);
+  assert.match(overview, /分区/);
+  assert.match(overview, /buildFullFaceHistory/);
+  assert.match(overview, /FullFaceHistoryCard/);
+  assert.ok(
+    overview.indexOf('style={styles.historyViewSwitch}') <
+      overview.indexOf('<HistoryFaceOverview'),
+  );
+});
+
 test('timechain crops the selected region, blurs only legacy originals, and a single node has no connector', () => {
   const timeline = source('../src/components/region-timechain.tsx');
   const photo = source('../src/components/privacy-photo-thumbnail.tsx');

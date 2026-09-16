@@ -2,7 +2,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { radii, spacing } from '@/constants/theme';
 import { productColors } from '@/constants/product-theme';
-import { REGIONS } from '@/lib/region-catalog';
+import { hasAllRegions, REGIONS, REGION_IDS } from '@/lib/region-catalog';
 import type { RegionId } from '@/lib/region-catalog';
 
 type RegionSelectorProps = {
@@ -17,8 +17,29 @@ export function RegionSelector({
   disabled = false,
 }: RegionSelectorProps) {
   const selectedSet = new Set(selected);
+  const allSelected = hasAllRegions(selected);
   return (
     <View accessibilityLabel="固定观察区域" style={styles.list}>
+      <Pressable
+        accessibilityHint="一次选择固定的全部六个面部区域"
+        accessibilityLabel="全脸，选择全部 6 个区域"
+        accessibilityRole="checkbox"
+        accessibilityState={{ checked: allSelected, disabled }}
+        disabled={disabled}
+        onPress={() => onChange([...REGION_IDS])}
+        style={({ pressed }) => [
+          styles.option,
+          allSelected && styles.optionSelected,
+          pressed && styles.pressed,
+        ]}>
+        <View style={[styles.checkbox, allSelected && styles.checkboxSelected]}>
+          <Text style={styles.checkmark}>{allSelected ? '✓' : ''}</Text>
+        </View>
+        <View style={styles.copy}>
+          <Text style={styles.label}>全脸</Text>
+          <Text style={styles.boundary}>选择全部 6 个区域</Text>
+        </View>
+      </Pressable>
       {REGIONS.map((region) => {
         const active = selectedSet.has(region.id);
         return (

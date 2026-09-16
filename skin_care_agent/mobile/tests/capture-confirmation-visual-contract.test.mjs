@@ -36,12 +36,12 @@ test('photo confirmation keeps usability, region, and optional feeling on one sc
   assert.doesNotMatch(confirmation, /BotanicalTrace/);
 });
 
-test('photo confirmation exposes the approved primary and recovery actions', () => {
+test('photo confirmation exposes the actual selected count and recovery action', () => {
   const confirmation = screen.slice(
     screen.indexOf("flow.status === 'selecting_regions'"),
     screen.indexOf("flow.status === 'confirming_events'"),
   );
 
-  assert.match(confirmation, /primaryLabel="使用这张照片"/);
+  assert.match(confirmation, /确认 \$\{flow\.selectedRegions\.length\} 个区域/);
   assert.match(confirmation, /secondaryLabel="重新拍摄"/);
 });

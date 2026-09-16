@@ -7,7 +7,7 @@ from datetime import date, datetime, timedelta, timezone
 
 from fastapi import HTTPException, status
 from PIL import Image, ImageOps, UnidentifiedImageError
-from sqlalchemy import delete, select
+from sqlalchemy import Select, and_, delete, or_, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
@@ -387,6 +387,31 @@ def _bundle_statement(user_id: int, observation_id: int | None = None):
     return statement
 
 
+def _observation_page_ids(
+    *,
+    user_id: int,
+    limit: int,
+    before_id: int | None,
+) -> Select[tuple[int]]:
+    record_ids = select(ObservationRecord.id).where(
+        ObservationRecord.user_id == user_id,
+        ObservationRecord.deleted_at.is_(None),
+    )
+    if before_id is not None:
+        cursor_time = select(ObservationRecord.recorded_at).where(
+            ObservationRecord.user_id == user_id,
+            ObservationRecord.id == before_id,
+        ).correlate(None).scalar_subquery()
+        record_ids = record_ids.where(or_(
+            ObservationRecord.recorded_at < cursor_time,
+            and_(ObservationRecord.recorded_at == cursor_time, ObservationRecord.id < before_id),
+        ))
+    return record_ids.order_by(
+        ObservationRecord.recorded_at.desc(),
+        ObservationRecord.id.desc(),
+    ).limit(max(1, min(limit, 50)))
+
+
 def list_observations(
     db: Session,
     *,
@@ -394,16 +419,7 @@ def list_observations(
     limit: int,
     before_id: int | None,
 ) -> list[ObservationOut]:
-    record_ids = select(ObservationRecord.id).where(
-        ObservationRecord.user_id == user_id,
-        ObservationRecord.deleted_at.is_(None),
-    )
-    if before_id is not None:
-        record_ids = record_ids.where(ObservationRecord.id < before_id)
-    record_ids = record_ids.order_by(
-        ObservationRecord.recorded_at.desc(),
-        ObservationRecord.id.desc(),
-    ).limit(max(1, min(limit, 50)))
+    record_ids = _observation_page_ids(user_id=user_id, limit=limit, before_id=before_id)
     statement = _bundle_statement(user_id).where(ObservationRecord.id.in_(record_ids))
     rows = db.execute(
         statement.order_by(

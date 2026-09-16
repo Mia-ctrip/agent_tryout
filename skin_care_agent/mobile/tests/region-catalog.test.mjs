@@ -1,7 +1,13 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { REGIONS, normalizeRegionIds, regionById } from '../src/lib/region-catalog.ts';
+import {
+  REGIONS,
+  REGION_IDS,
+  hasAllRegions,
+  normalizeRegionIds,
+  regionById,
+} from '../src/lib/region-catalog.ts';
 
 test('region catalog keeps fixed order and user physical directions', () => {
   assert.deepEqual(
@@ -19,4 +25,14 @@ test('region normalization rejects empty, duplicates and unknown IDs', () => {
   assert.throws(() => normalizeRegionIds(['forehead', 'forehead']), /重复/);
   assert.throws(() => normalizeRegionIds(['other']), /不支持/);
   assert.deepEqual(normalizeRegionIds(['chin', 'forehead']), ['forehead', 'chin']);
+});
+
+test('full-face selection is derived only from the fixed six-region set', () => {
+  assert.equal(hasAllRegions(REGION_IDS), true);
+  assert.equal(
+    hasAllRegions(['chin', 'mouth_area', 'nose_area', 'right_face', 'left_face', 'forehead']),
+    true,
+  );
+  assert.equal(hasAllRegions(REGION_IDS.filter((regionId) => regionId !== 'chin')), false);
+  assert.equal(hasAllRegions([]), false);
 });

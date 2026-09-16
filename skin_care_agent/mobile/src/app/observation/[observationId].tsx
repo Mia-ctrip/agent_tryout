@@ -5,6 +5,7 @@ import {
   useLocalSearchParams,
   useNavigation,
 } from 'expo-router';
+import type { Href } from 'expo-router';
 import { SymbolView } from 'expo-symbols';
 import { useCallback, useState } from 'react';
 import {
@@ -29,6 +30,7 @@ import {
   observationSpacing,
 } from '@/constants/observation-theme';
 import { ApiError } from '@/lib/api';
+import { createClientRequestId } from '@/lib/client-request-id';
 import { userFacingError } from '@/lib/errors';
 import { lifeContextLabel, updateObservationLifeContexts } from '@/lib/life-context';
 import type { LifeContextId } from '@/lib/life-context';
@@ -40,11 +42,16 @@ import {
 import type { Observation } from '@/lib/observation-api';
 import {
   createObservationGenerationGuard,
+  defaultObservationResultView,
   nextObservationPollDelay,
   presentObservation,
   shouldPollObservationTargets,
 } from '@/lib/observation-flow';
-import { observationDetailBackTarget } from '@/lib/observation-navigation';
+import type { ObservationResultView } from '@/lib/observation-flow';
+import {
+  observationDetailBackTarget,
+  productUseHref,
+} from '@/lib/observation-navigation';
 import { colors } from '@/constants/theme';
 import { regionById } from '@/lib/region-catalog';
 import { useSession } from '@/providers/session-provider';
@@ -65,9 +72,9 @@ function recordedAtLabel(recordedAt: string): string {
 }
 
 export default function ObservationDetailScreen() {
-  const params = useLocalSearchParams<{ observationId: string }>();
+  const params = useLocalSearchParams<{ observationId: string; view?: string; source?: string }>();
   const navigation = useNavigation();
-  const backTarget = observationDetailBackTarget(navigation.canGoBack());
+  const backTarget = observationDetailBackTarget(navigation.canGoBack(), params.source);
   const observationId = parseObservationId(params.observationId);
   const { request } = useSession();
   const [observation, setObservation] = useState<Observation | null>(null);
@@ -192,6 +199,12 @@ export default function ObservationDetailScreen() {
       target.facts,
   ) ?? false;
   const showResultActions = Boolean(observation && !analyzing && completedPhotoResults);
+  const initialResultView: ObservationResultView | undefined =
+    params.view === 'overview' || params.view === 'regions'
+      ? params.view
+      : observation
+        ? defaultObservationResultView(observation)
+        : undefined;
   const complete = () => {
     if (backTarget === 'native') router.back();
     else router.replace(backTarget);
@@ -270,13 +283,14 @@ export default function ObservationDetailScreen() {
             </>
           ) : null}
 
-          {!analyzing && completedPhotoResults ? (
-            <ObservationResult observation={observation} />
+          {observation.photo || observation.targets.some(target => target.scope_type === 'full_face') ? (
+            <ObservationResult observation={observation} initialView={initialResultView} />
           ) : null}
 
-          {!analyzing ? (
-            <View style={styles.fallbacks}>
+          <View style={styles.fallbacks}>
               {observation.targets.map((target) => {
+                // Legacy targets are read-only; the overview preserves their original source and text.
+                if (target.scope_type === 'full_face') return null;
                 const presentation = presentObservation(observation, target);
                 const targetLabel = target.region_id
                   ? regionById(target.region_id).label
@@ -327,8 +341,25 @@ export default function ObservationDetailScreen() {
                   </View>
                 );
               })}
-            </View>
-          ) : null}
+          </View>
+
+          <View style={styles.productUseSection}>
+            <Text style={styles.contextTitle}>这次的产品使用</Text>
+            <Text style={styles.body}>可以补记当天晚些时候或另一个真实时间的使用。</Text>
+            <AppButton
+              label="继续记录产品使用"
+              onPress={() =>
+                router.push(
+                  productUseHref({
+                    source: 'observation',
+                    flowId: createClientRequestId(),
+                    observationId: observation.observation_id,
+                  }) as Href,
+                )
+              }
+              variant="secondary"
+            />
+          </View>
 
           {!analyzing && observation.targets.every((target) => target.status === 'completed') ? (
             <View style={styles.contextSection}>
@@ -427,6 +458,13 @@ const styles = StyleSheet.create({
     paddingTop: observationSpacing.xl,
   },
   contextTitle: { color: observationColors.text, fontSize: 18, fontWeight: '700' },
+  productUseSection: {
+    gap: observationSpacing.md,
+    marginTop: observationSpacing.xxl,
+    borderTopWidth: 1,
+    borderTopColor: observationColors.border,
+    paddingTop: observationSpacing.xl,
+  },
   savedContexts: { flexDirection: 'row', flexWrap: 'wrap', gap: observationSpacing.sm },
   savedContext: {
     borderRadius: observationRadii.sm,

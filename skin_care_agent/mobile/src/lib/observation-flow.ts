@@ -4,7 +4,7 @@ import type {
   Observation,
   ObservationTargetStatus,
 } from './observation-api.ts';
-import { normalizeRegionIds, regionById } from './region-catalog.ts';
+import { hasAllRegions, normalizeRegionIds, regionById } from './region-catalog.ts';
 import type { RegionId } from './region-catalog.ts';
 import type { RegionEventDecision } from './region-event-api.ts';
 import type { ObservationRegionGeometry } from './observation-quality-api.ts';
@@ -298,6 +298,92 @@ export function presentObservationTargets(observation: Observation) {
     targetId: target.target_id,
     presentation: presentObservation(observation, target),
   }));
+}
+
+export type ObservationResultView = 'overview' | 'regions';
+
+export type ObservationOverviewItem = {
+  targetId: number;
+  regionId: RegionId | null;
+  regionLabel: string;
+  status: ObservationTargetStatus;
+  statusLabel: string;
+  sourceLabel: '照片整理' | '你的记录' | null;
+  summary: string | null;
+  userNote: string | null;
+  limitations: string[];
+};
+
+export type ObservationOverviewModel = {
+  scopeLabel: string;
+  isAllRegionsSelected: boolean;
+  isLegacyFullFace: boolean;
+  items: ObservationOverviewItem[];
+};
+
+const OVERVIEW_STATUS_LABELS: Readonly<Record<ObservationTargetStatus, string>> = {
+  queued: '排队中',
+  processing: '正在整理',
+  completed: '已完成',
+  needs_input: '需要补充',
+};
+
+export function buildObservationOverviewModel(
+  observation: Observation,
+): ObservationOverviewModel {
+  const regionIds = observation.targets.flatMap((target) =>
+    target.scope_type === 'region' && target.region_id ? [target.region_id] : [],
+  );
+  const isLegacyFullFace = observation.targets.some(
+    (target) => target.scope_type === 'full_face',
+  );
+  const items = observation.targets.map((target): ObservationOverviewItem => {
+    const photoResult =
+      target.status === 'completed' &&
+      target.result_source === 'photo_analysis' &&
+      target.facts;
+    const userResult =
+      target.status === 'completed' &&
+      target.result_source === 'user_record' &&
+      target.user_note?.trim();
+    return {
+      targetId: target.target_id,
+      regionId: target.region_id,
+      regionLabel: target.region_id
+        ? regionById(target.region_id).label
+        : '历史全脸',
+      status: target.status,
+      statusLabel: userResult ? '已记录' : OVERVIEW_STATUS_LABELS[target.status],
+      sourceLabel: photoResult ? '照片整理' : userResult ? '你的记录' : null,
+      summary: photoResult
+        ? photoResult.summary.trim() || '本次未形成简短小结。'
+        : userResult || null,
+      userNote:
+        photoResult && target.user_note?.trim() ? target.user_note.trim() : null,
+      limitations: photoResult ? photoResult.unknowns.filter(Boolean) : [],
+    };
+  });
+  return {
+    scopeLabel: isLegacyFullFace
+      ? '历史全脸记录'
+      : `本次观察：${regionIds.map((regionId) => regionById(regionId).label).join('、')}`,
+    isAllRegionsSelected: hasAllRegions(regionIds),
+    isLegacyFullFace,
+    items,
+  };
+}
+
+export function defaultObservationResultView(
+  observation: Observation,
+  requestedView?: string,
+): ObservationResultView {
+  if (requestedView === 'overview' || requestedView === 'regions') {
+    return requestedView;
+  }
+  const overview = buildObservationOverviewModel(observation);
+  return overview.isAllRegionsSelected || overview.isLegacyFullFace
+    ? 'overview'
+    : 'regions';
 }
 
 export type ObservationResultFinding = {

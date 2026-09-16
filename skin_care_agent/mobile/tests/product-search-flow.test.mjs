@@ -3,6 +3,7 @@ import test from 'node:test';
 
 import {
   createProductSearchGuard,
+  linkStandardResultToCabinet,
   selectReadyProduct,
   selectedPersonalProductId,
 } from '../src/lib/product-search-flow.ts';
@@ -30,4 +31,22 @@ test('catalog results use existing cabinet IDs and ready products are selected o
   );
   assert.deepEqual(selectReadyProduct([4, 2], { product_id: 6 }), [2, 4, 6]);
   assert.deepEqual(selectReadyProduct([2, 4, 6], { product_id: 6 }), [2, 4, 6]);
+});
+
+
+test('a catalog result becomes the selected cabinet product immediately after adding it', () => {
+  const result = {
+    source_type: 'standard',
+    personal_product_id: null,
+    standard_product_id: 9,
+    in_cabinet: false,
+    name: 'Skinoren',
+  };
+
+  assert.deepEqual(linkStandardResultToCabinet(result, 9, 27), {
+    ...result,
+    personal_product_id: 27,
+    in_cabinet: true,
+  });
+  assert.equal(linkStandardResultToCabinet(result, 10, 27), result);
 });

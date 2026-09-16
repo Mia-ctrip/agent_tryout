@@ -8,7 +8,7 @@ import { productColors } from '@/constants/product-theme';
 import { radii, spacing } from '@/constants/theme';
 import { createClientRequestId } from '@/lib/client-request-id';
 import { userFacingError } from '@/lib/errors';
-import { productImageFromPickerAsset } from '@/lib/product-image-picker';
+import { productImageFromPickerResult } from '@/lib/product-image-picker';
 import { buildCustomProductForm, createCustomProduct } from '@/lib/product-api';
 import type { NativePhotoFile } from '@/lib/observation-api';
 import { validateProductName } from '@/lib/product-use-flow';
@@ -40,9 +40,11 @@ function ProductFormButton({
 
 export function CustomProductForm({
   initialName = '',
+  onCancel,
   onCreated,
 }: {
   initialName?: string;
+  onCancel: () => void;
   onCreated: (productId: number) => void;
 }) {
   const { request } = useSession();
@@ -53,19 +55,24 @@ export function CustomProductForm({
   const [error, setError] = useState<string | null>(null);
 
   async function chooseImage(fromCamera: boolean) {
-    if (fromCamera) {
-      const permission = await ImagePicker.requestCameraPermissionsAsync();
-      if (!permission.granted) {
-        setError('需要相机权限才能拍摄产品图片。');
-        return;
+    try {
+      if (fromCamera) {
+        const permission = await ImagePicker.requestCameraPermissionsAsync();
+        if (!permission.granted) {
+          setError('需要相机权限才能拍摄产品图片。');
+          return;
+        }
       }
-    }
-    const result = fromCamera
-      ? await ImagePicker.launchCameraAsync({ mediaTypes: ['images'], quality: 1 })
-      : await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images'], quality: 1 });
-    if (!result.canceled && result.assets[0]) {
-      setImage(productImageFromPickerAsset(result.assets[0]));
-      setError(null);
+      const result = fromCamera
+        ? await ImagePicker.launchCameraAsync({ mediaTypes: ['images'], quality: 1 })
+        : await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images'], quality: 1 });
+      const selected = productImageFromPickerResult(result);
+      if (selected) {
+        setImage(selected);
+        setError(null);
+      }
+    } catch (pickerError) {
+      setError(userFacingError(pickerError));
     }
   }
 
@@ -121,6 +128,7 @@ export function CustomProductForm({
       {error ? <InlineNotice tone="error" message={error} /> : null}
       {error && image ? <ProductFormButton label="重试上传" onPress={() => void save()} /> : null}
       <ProductFormButton label="创建并加入产品柜" loading={saving} onPress={() => void save()} primary />
+      <ProductFormButton label="取消新增" loading={saving} onPress={onCancel} />
     </View>
   );
 }

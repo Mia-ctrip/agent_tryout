@@ -52,6 +52,11 @@ export function normalizeRegionIds(values: readonly unknown[]): RegionId[] {
   return REGION_IDS.filter((regionId) => selected.has(regionId));
 }
 
+export function hasAllRegions(values: readonly RegionId[]): boolean {
+  return new Set(values).size === REGION_IDS.length &&
+    REGION_IDS.every((regionId) => values.includes(regionId));
+}
+
 export function regionById(regionId: RegionId): RegionDefinition {
   return REGIONS.find(({ id }) => id === regionId)!;
 }
