@@ -1,0 +1,56 @@
+skin_care_agent/docs/ai-prompts/vision-analyze.md
+  s_df4ddf36bee3f0::t_9bb3f6331d4c4f 1-232
+skin_care_agent/design/ui-rebuild/trend/prompt.md
+  h_e5cd53142b29a8 1-276
+skin_care_agent/design/ui-rebuild/trend/prompt_cn.md
+  h_e5cd53142b29a8 1-240
+skin_care_agent/docs/prompts/prompt_modify.md
+  h_e5cd53142b29a8 6-8,10-15
+skin_care_agent/docs/ai-prompts/full-face-observation.md
+  s_df4ddf36bee3f0::t_1ecf6a702bcba5 1-96
+skin_care_agent/mobile/scripts/ui-visual-review.mjs
+  s_7a96710a50a9c4::t_25c461b000204c 254-255
+skin_care_agent/docs/ai-prompts/region-observation.md
+  s_df4ddf36bee3f0::t_099b324beeaec8 1-334
+skin_care_agent/docs/superpowers/plans/2026-09-16-full-face-overview-history.md
+  s_7a96710a50a9c4::t_47e04a1c7563ae 92
+skin_care_agent/design/ui-rebuild/observation/prompt.md
+  h_e5cd53142b29a8 1-304
+skin_care_agent/design/ui-rebuild/observation/prompt_cn.md
+  h_e5cd53142b29a8 1-318
+skin_care_agent/docs/ai-prompts/chat-qa.md
+  s_df4ddf36bee3f0::t_7fc95cb7d6a001 1-91
+skin_care_agent/docs/current_status.md
+  s_7a96710a50a9c4::t_25c461b000204c 20
+skin_care_agent/docs/ai-prompts/README.md
+  s_df4ddf36bee3f0::t_85562e532773c2 1-60
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.44-trip",
+  "base_commit_sha": "b8d7c7dd38154d9bb9225357746a51014f17263d",
+  "prompts": {},
+  "humans": {
+    "h_e5cd53142b29a8": {
+      "author": "yumeifeng <yumeifeng@trip.com>"
+    }
+  },
+  "sessions": {
+    "s_7a96710a50a9c4": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0a4bf-c855-7e31-a266-feaccbd3aca0",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "yumeifeng <yumeifeng@trip.com>"
+    },
+    "s_df4ddf36bee3f0": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "00008a9d-631f-4888-b684-e5d7daa703d9",
+        "model": "ep-s52bpjk9"
+      },
+      "human_author": "yumeifeng <yumeifeng@trip.com>"
+    }
+  }
+}
