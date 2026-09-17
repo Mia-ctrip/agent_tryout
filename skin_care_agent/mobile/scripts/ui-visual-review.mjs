@@ -251,6 +251,8 @@ try {
     for (const width of [320, 375, 390, 430]) await capture('full-face-overview', width);
     await waitText('正在整理'); await waitText('排队中'); await waitText('需要补充');
     await evaluate(`Array.from(document.querySelectorAll('div')).find(n => n.textContent === '本次观察：额头、左脸颊、右脸颊、鼻周、口周、下巴').scrollIntoView({block:'start'})`);
+    await send('Input.dispatchMouseEvent', { type: 'mouseWheel', x: 160, y: 650, deltaX: 0, deltaY: 800 });
+    await delay(400);
     await capture('full-face-overview-facts', 320);
     await clickText('分区详情'); await waitText('1 / 3');
     await capture('full-face-regions', 390);

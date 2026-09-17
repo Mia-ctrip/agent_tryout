@@ -89,7 +89,7 @@
 - [x] 运行全脸专项 Web 布局脚本，检查 320/375/390/430、混合状态、返回与横向溢出。
 - [x] 使用 Android 模拟器只读验证已有部分选区照片概览、分区横滑和历程系统返回；缺失环境项目记录于 `artifacts/full-face-overview-history-review/native-review.md`。
 - [ ] 使用授权测试原图和可丢弃环境补验原生新六区保存/产品/真实 AI、小屏大字体/读屏与 PostgreSQL/跨账号持久化。
-- [ ] 运行 `git diff --check` 和 `git status --short`。
+- [x] 运行 `git diff --check` 和 `git status --short`。
 - [x] 仅按实际证据更新当前状态与收口盘点；不更改 Slice 4A ACTIVE 状态，不把本项等同整个 MVP 完成。
 
 ## 最小读取修正与复核
