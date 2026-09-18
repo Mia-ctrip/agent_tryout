@@ -9,7 +9,14 @@ Skin Care Agent 是面向希望长期回看皮肤外观变化用户的个人记�
 本项目需要利用AI的图像分析能力处理以下三个场景：
 1. 对当天单张照片的痘痘进行分析
 2. 对指定两张照片呈现的痘痘趋势进行分析
-3. 对多张痘痘照片组成的时间轴趋势进行分组
-我希望你和我一起调整prompt的表述，使得识别出来的结果更符合我们产品的需求
+3. 对一段观察历程中记录的多张痘痘照片组成的图片时间轴呈现的痘痘趋势进行分析
+我希望你和我一起调整prompt的表述，使得LLM图像识别出来的结果更符合我们产品的需求
 
 # 目前代码实现
+本项目在调用LLM分析图片时LLM所需要的prompt都没有完整的一份prompt.md全文文件，都是通过python代码实现的构建
+场景1的prompt在backend/app/services/region_observation_prompt.py中构建，构建后完整的全文demo可见：D:\Mia\agent_tryout\skin_care_agent\docs\ai-prompts\region-observation.md
+场景2和场景3的prompt都完全没实现,也没有可用的prompt.md demo全文
+
+# 要求：
+目前prompt调用LLM呈现的效果非常非常笼统不聚焦，AI能力是我们产品的核心能力之一，而呈现的效果和LLM Prompt的构造有相当大的关系，我希望我们能反复打磨下这三种场景的prompt, 在合规性、硬性合规红线、核心建模等方向都呈现的更好。我不需要你修改代码，只需要先输出不同场景完整的prompt全文即可。 
+prompt需要准确，逻辑清晰，包含全局的system prompt也有合规红线，输出格式等内容
