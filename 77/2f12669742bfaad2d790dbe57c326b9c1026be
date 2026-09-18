@@ -1,0 +1,22 @@
+skin_care_agent/docs/prompts/prompt_modify.md
+  h_e5cd53142b29a8 12-13,16-22
+skin_care_agent/backend/app/services/prompt/skin_compare.md
+  h_e5cd53142b29a8 1-506
+skin_care_agent/backend/app/services/prompt/skin_trend.md
+  h_e5cd53142b29a8 1-730
+skin_care_agent/backend/deploy/depoly_guidance.md
+  h_e5cd53142b29a8 1-1171
+skin_care_agent/backend/app/services/prompt/single_check.md
+  h_e5cd53142b29a8 1-610
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.44-trip",
+  "base_commit_sha": "772f12669742bfaad2d790dbe57c326b9c1026be",
+  "prompts": {},
+  "humans": {
+    "h_e5cd53142b29a8": {
+      "author": "yumeifeng <yumeifeng@trip.com>"
+    }
+  }
+}
