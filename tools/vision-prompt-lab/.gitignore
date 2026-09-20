@@ -1,0 +1,8 @@
+backend/.env
+backend/.venv/
+data/runs.json
+data/presets.json
+data/images/*
+frontend/node_modules/
+frontend/dist/
+frontend/*.tsbuildinfo
