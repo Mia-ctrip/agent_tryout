@@ -1,4 +1,5 @@
-import { ActivityIndicator, Pressable, StyleProp, StyleSheet, Text, ViewStyle } from 'react-native';
+import type { ReactNode } from 'react';
+import { ActivityIndicator, Pressable, StyleProp, StyleSheet, Text, View, ViewStyle } from 'react-native';
 
 import { spacing } from '@/constants/theme';
 import { appButtonPresentation } from '@/lib/app-shell';
@@ -11,6 +12,8 @@ type AppButtonProps = {
   disabled?: boolean;
   variant?: AppButtonVariant;
   style?: StyleProp<ViewStyle>;
+  leadingIcon?: ReactNode;
+  trailingIcon?: ReactNode;
 };
 
 export function AppButton({
@@ -20,17 +23,21 @@ export function AppButton({
   disabled = false,
   variant = 'primary',
   style,
+  leadingIcon,
+  trailingIcon,
 }: AppButtonProps) {
   const unavailable = disabled || loading;
   const presentation = appButtonPresentation(variant);
   return (
     <Pressable
       accessibilityRole="button"
+      accessibilityLabel={label}
       accessibilityState={{ disabled: unavailable, busy: loading }}
       disabled={unavailable}
       onPress={onPress}
       style={({ pressed }) => [
         styles.base,
+        (leadingIcon || trailingIcon) ? styles.iconRow : null,
         {
           minHeight: presentation.minHeight,
           borderRadius: presentation.borderRadius,
@@ -45,13 +52,18 @@ export function AppButton({
       {loading ? (
         <ActivityIndicator color={presentation.labelColor} />
       ) : (
-        <Text style={[styles.label, { color: presentation.labelColor }]}>{label}</Text>
+        <>
+          {leadingIcon ? <View accessibilityElementsHidden importantForAccessibility="no-hide-descendants">{leadingIcon}</View> : null}
+          <Text style={[styles.label, { color: presentation.labelColor }]}>{label}</Text>
+          {trailingIcon ? <View accessibilityElementsHidden importantForAccessibility="no-hide-descendants">{trailingIcon}</View> : null}
+        </>
       )}
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
+  iconRow: { flexDirection: 'row', gap: spacing.sm },
   base: {
     alignItems: 'center',
     justifyContent: 'center',

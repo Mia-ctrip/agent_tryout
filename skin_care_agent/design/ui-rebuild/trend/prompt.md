@@ -1,4 +1,4 @@
-Implement the final “历程” module UI based on the supplied reference image.
+Implement the final “历程” module UI based on the supplied reference image. You must refer to this pic as sample : D:\Mia\agent_tryout\skin_care_agent\design\ui-rebuild\trend\image.png and modify front code to make front display as similar as you can.
 
 The supplied reference image is the visual source of truth.
 Your task is to reproduce the design faithfully, not reinterpret it.

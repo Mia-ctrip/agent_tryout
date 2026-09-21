@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
+import type { StyleProp, TextStyle } from 'react-native';
 
 import { EditorialText } from '@/components/editorial-text';
 import { colors, spacing } from '@/constants/theme';
@@ -8,14 +9,15 @@ type SectionHeaderProps = {
   title: string;
   eyebrow?: string;
   action?: ReactNode;
+  titleStyle?: StyleProp<TextStyle>;
 };
 
-export function SectionHeader({ title, eyebrow, action }: SectionHeaderProps) {
+export function SectionHeader({ title, eyebrow, action, titleStyle }: SectionHeaderProps) {
   return (
     <View style={styles.root}>
       <View style={styles.copy}>
         {eyebrow ? <EditorialText role="metadata" style={styles.eyebrow}>{eyebrow}</EditorialText> : null}
-        <EditorialText accessibilityRole="header" role="sectionTitle" style={styles.title}>
+        <EditorialText accessibilityRole="header" role="sectionTitle" style={[styles.title, titleStyle]}>
           {title}
         </EditorialText>
       </View>

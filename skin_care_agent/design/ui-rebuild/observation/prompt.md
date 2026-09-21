@@ -1,4 +1,4 @@
-Refine the existing “观察” screen based on the supplied reference image.
+Refine the existing “观察” screen based on the supplied reference image. you can refer to D:\Mia\agent_tryout\skin_care_agent\design\ui-rebuild\observation\image.png
 
 IMPORTANT:
 The upper half of this screen is already approved and MUST remain visually unchanged.

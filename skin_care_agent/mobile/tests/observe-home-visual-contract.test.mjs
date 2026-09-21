@@ -22,7 +22,7 @@ test('observe hero reserves a two-image editorial dose without unlicensed assets
   );
 });
 
-test('observe home leads with one primary action before archive context', () => {
+test('observe home leads with one primary action and lightweight current context', () => {
   const page = readFileSync(
     fileURLToPath(new URL('../src/app/(tabs)/observe.tsx', import.meta.url)),
     'utf8',
@@ -32,8 +32,9 @@ test('observe home leads with one primary action before archive context', () => 
   assert.match(page, /title=\{'今天，也留下一次\\n真实观察'\}/);
   assert.match(page, /label="开始今天的观察"/);
   assert.equal((page.match(/variant="primary"/g) ?? []).length, 1);
-  assert.ok(page.indexOf('开始今天的观察') < page.indexOf('正在记录的区域'));
-  assert.ok(page.indexOf('开始今天的观察') < page.indexOf('最近记录'));
+  assert.ok(page.indexOf('开始今天的观察') < page.indexOf('title="正在观察"'));
+  assert.match(page, /eyebrow="CURRENT"/);
+  assert.doesNotMatch(page, /最近记录|ObservationListItem|RegionEventCard|listObservations|setLatest/);
   assert.doesNotMatch(page, /skin-care-ui-rebuild-handoff|golden-preview|motion-reference/);
 });
 

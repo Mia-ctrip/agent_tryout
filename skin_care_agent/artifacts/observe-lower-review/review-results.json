@@ -1,0 +1,88 @@
+{
+  "kind": "VISUAL FIXTURES ONLY — not backend or native-device verification",
+  "status": "passed-web-native-review-pending",
+  "results": [
+    {
+      "name": "after-top",
+      "width": 320,
+      "scrollWidth": 320,
+      "path": "/observe",
+      "text": "肌肤档案\nTODAY · 今天\n今天，也留下一次\n真实观察\n让皮肤的变化，被温和而诚实地保存。\nNATURAL LIGHT\nSLOW OBSERVATIONS\n开始今天的观察\n从相册导入原图\nCURR",
+      "overflow": false
+    },
+    {
+      "name": "after-lower",
+      "width": 320,
+      "scrollWidth": 320,
+      "path": "/observe",
+      "text": "肌肤档案\nTODAY · 今天\n今天，也留下一次\n真实观察\n让皮肤的变化，被温和而诚实地保存。\nNATURAL LIGHT\nSLOW OBSERVATIONS\n开始今天的观察\n从相册导入原图\nCURR",
+      "overflow": false
+    },
+    {
+      "name": "after-top",
+      "width": 375,
+      "scrollWidth": 375,
+      "path": "/observe",
+      "text": "肌肤档案\nTODAY · 今天\n今天，也留下一次\n真实观察\n让皮肤的变化，被温和而诚实地保存。\nNATURAL LIGHT\nSLOW OBSERVATIONS\n开始今天的观察\n从相册导入原图\nCURR",
+      "overflow": false
+    },
+    {
+      "name": "after-lower",
+      "width": 375,
+      "scrollWidth": 375,
+      "path": "/observe",
+      "text": "肌肤档案\nTODAY · 今天\n今天，也留下一次\n真实观察\n让皮肤的变化，被温和而诚实地保存。\nNATURAL LIGHT\nSLOW OBSERVATIONS\n开始今天的观察\n从相册导入原图\nCURR",
+      "overflow": false
+    },
+    {
+      "name": "after-top",
+      "width": 390,
+      "scrollWidth": 390,
+      "path": "/observe",
+      "text": "肌肤档案\nTODAY · 今天\n今天，也留下一次\n真实观察\n让皮肤的变化，被温和而诚实地保存。\nNATURAL LIGHT\nSLOW OBSERVATIONS\n开始今天的观察\n从相册导入原图\nCURR",
+      "overflow": false
+    },
+    {
+      "name": "after-lower",
+      "width": 390,
+      "scrollWidth": 390,
+      "path": "/observe",
+      "text": "肌肤档案\nTODAY · 今天\n今天，也留下一次\n真实观察\n让皮肤的变化，被温和而诚实地保存。\nNATURAL LIGHT\nSLOW OBSERVATIONS\n开始今天的观察\n从相册导入原图\nCURR",
+      "overflow": false
+    },
+    {
+      "name": "after-top",
+      "width": 430,
+      "scrollWidth": 430,
+      "path": "/observe",
+      "text": "肌肤档案\nTODAY · 今天\n今天，也留下一次\n真实观察\n让皮肤的变化，被温和而诚实地保存。\nNATURAL LIGHT\nSLOW OBSERVATIONS\n开始今天的观察\n从相册导入原图\nCURR",
+      "overflow": false
+    },
+    {
+      "name": "after-lower",
+      "width": 430,
+      "scrollWidth": 430,
+      "path": "/observe",
+      "text": "肌肤档案\nTODAY · 今天\n今天，也留下一次\n真实观察\n让皮肤的变化，被温和而诚实地保存。\nNATURAL LIGHT\nSLOW OBSERVATIONS\n开始今天的观察\n从相册导入原图\nCURR",
+      "overflow": false
+    },
+    {
+      "name": "observe-all",
+      "width": 320,
+      "scrollWidth": 320,
+      "path": "/observe",
+      "text": "肌肤档案\nTODAY · 今天\n今天，也留下一次\n真实观察\n让皮肤的变化，被温和而诚实地保存。\nNATURAL LIGHT\nSLOW OBSERVATIONS\n开始今天的观察\n从相册导入原图\nCURR",
+      "overflow": false
+    },
+    {
+      "name": "observe-empty",
+      "width": 320,
+      "scrollWidth": 320,
+      "path": "/observe",
+      "text": "肌肤档案\nTODAY · 今天\n今天，也留下一次\n真实观察\n让皮肤的变化，被温和而诚实地保存。\nNATURAL LIGHT\nSLOW OBSERVATIONS\n开始今天的观察\n从相册导入原图\n记录产品",
+      "overflow": false
+    }
+  ],
+  "errors": [],
+  "skipped": []
+}

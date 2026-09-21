@@ -1,7 +1,8 @@
 import { router, useFocusEffect } from 'expo-router';
 import type { Href } from 'expo-router';
+import { Image } from 'expo-image';
 import { useCallback, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { AppButton } from '@/components/app-button';
 import { AppScreen } from '@/components/app-screen';
@@ -9,23 +10,18 @@ import { EditorialCollage } from '@/components/editorial-collage';
 import { EditorialHeader } from '@/components/editorial-header';
 import { EditorialText } from '@/components/editorial-text';
 import { InlineNotice } from '@/components/inline-notice';
-import { ObservationListItem } from '@/components/observation-list-item';
-import { RegionEventCard } from '@/components/region-event-card';
 import { SectionHeader } from '@/components/section-header';
 import { colors, radii, spacing } from '@/constants/theme';
-import { listObservations } from '@/lib/observation-api';
-import type { Observation } from '@/lib/observation-api';
 import { createObservationGenerationGuard } from '@/lib/observation-flow';
-import { createClientRequestId } from '@/lib/client-request-id';
-import { observationCaptureHref, productUseHref } from '@/lib/observation-navigation';
+import { observationCaptureHref } from '@/lib/observation-navigation';
 import { userFacingError } from '@/lib/errors';
 import { listRegionEvents } from '@/lib/region-event-api';
 import type { RegionEvent } from '@/lib/region-event-api';
+import { regionById } from '@/lib/region-catalog';
 import { useSession } from '@/providers/session-provider';
 
 export default function ObserveScreen() {
   const { request } = useSession();
-  const [latest, setLatest] = useState<Observation[]>([]);
   const [events, setEvents] = useState<RegionEvent[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [guard] = useState(() => createObservationGenerationGuard());
@@ -34,13 +30,9 @@ export default function ObserveScreen() {
     useCallback(() => {
       const generation = guard.begin();
       setError(null);
-      void Promise.all([
-        listObservations(request, { limit: 3 }),
-        listRegionEvents(request, 'current'),
-      ])
-        .then(([observations, currentEvents]) => {
+      void listRegionEvents(request, 'current')
+        .then((currentEvents) => {
           if (guard.isCurrent(generation)) {
-            setLatest(observations);
             setEvents(currentEvents);
           }
         })
@@ -75,61 +67,65 @@ export default function ObserveScreen() {
       <View style={styles.primaryActions}>
         <AppButton
           label="开始今天的观察"
+          trailingIcon={<Image source={{ uri: `data:image/svg+xml;base64,${btoa(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="${colors.paperElevated}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h16m-6-6 6 6-6 6"/></svg>`)}` }} style={styles.actionIcon} />}
           onPress={() => router.push(observationCaptureHref('camera') as Href)}
           variant="primary"
         />
         <AppButton
-          label="从相册选择原图"
+          label="从相册导入原图"
+          leadingIcon={<Image source={{ uri: `data:image/svg+xml;base64,${btoa(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="${colors.mossDeep}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8" cy="8" r="1.5"/><path d="m3 18 5-5 4 4 4-6 5 7"/></svg>`)}` }} style={styles.actionIcon} />}
           onPress={() => router.push(observationCaptureHref('library') as Href)}
-          variant="text"
+          variant="secondary"
         />
       </View>
       </View>
       {error ? <InlineNotice tone="error" message={error} /> : null}
-      {events.length > 0 ? (
-        <View style={styles.archiveSection}>
-          <SectionHeader eyebrow="CURRENT ARCHIVE" title="正在记录的区域" />
-          <View style={styles.latestList}>
-            {events.map((event) => (
-              <RegionEventCard
-                event={event}
-                key={event.event_id}
-                onPress={() =>
-                  router.push(`/region-event/${event.event_id}` as Href)
-                }
+      <View style={styles.currentSection}>
+        {events.length > 0 ? (
+          <SectionHeader eyebrow="CURRENT" title="正在观察" titleStyle={styles.currentTitle} />
+        ) : null}
+        {events.length > 0 ? (
+          <Pressable
+            accessibilityLabel="查看正在观察的区域"
+            accessibilityHint={`${events.map((event) => regionById(event.region_id).label).join('、')}，进入历程查看`}
+            accessibilityRole="button"
+            onPress={() => router.navigate('/(tabs)/history')}
+            style={({ pressed }) => [styles.entryRow, pressed && styles.pressed]}>
+            <View accessibilityElementsHidden importantForAccessibility="no-hide-descendants" style={styles.entryIcon}>
+              <Image
+                source={{ uri: `data:image/svg+xml;base64,${btoa(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="${colors.paperElevated}" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 9V7a7 7 0 0 1 14 0v2m-14 0c0 7 3 12 7 12s7-5 7-12M8 10h1m6 0h1m-4 1v4h1m-4 2c2 1 4 1 6 0"/></svg>`)}` }}
+                style={styles.entryIconDrawing}
               />
-            ))}
+            </View>
+            <View style={styles.rowCopy}>
+              <EditorialText role="body" style={styles.rowTitle}>
+                {events.map((event) => regionById(event.region_id).label).join(' · ')}
+              </EditorialText>
+              <EditorialText role="caption" style={styles.rowMeta}>
+                {events.length} 个区域正在记录
+              </EditorialText>
+            </View>
+            <EditorialText role="sectionTitle" accessibilityElementsHidden importantForAccessibility="no" style={styles.chevron}>›</EditorialText>
+          </Pressable>
+        ) : null}
+        <Pressable
+          accessibilityLabel="记录产品使用"
+          accessibilityHint="进入产品栏查看产品与使用记录"
+          accessibilityRole="button"
+          onPress={() => router.navigate('/(tabs)/products')}
+          style={({ pressed }) => [styles.entryRow, pressed && styles.pressed]}>
+          <View accessibilityElementsHidden importantForAccessibility="no-hide-descendants" style={styles.entryIcon}>
+            <Image
+              source={{ uri: `data:image/svg+xml;base64,${btoa(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="${colors.paperElevated}" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3h4v5h-4zM9 8h6l2 3v10H7V11zM10 1h4"/></svg>`)}` }}
+              style={styles.entryIconDrawing}
+            />
           </View>
-        </View>
-      ) : null}
-      {latest.length > 0 ? (
-        <View style={styles.archiveSection}>
-          <SectionHeader eyebrow="RECENT" title="最近记录" />
-          <View style={styles.latestList}>
-            {latest.map((observation) => (
-              <ObservationListItem
-                key={observation.observation_id}
-                observation={observation}
-                onPress={() => router.push(`/observation/${observation.observation_id}`)}
-              />
-            ))}
+          <View style={styles.rowCopy}>
+            <EditorialText role="body" style={styles.rowTitle}>记录产品使用</EditorialText>
+            <EditorialText role="caption" style={styles.rowMeta}>查看产品与使用记录</EditorialText>
           </View>
-        </View>
-      ) : null}
-      <View style={styles.productUseAction}>
-        <Text style={styles.contextCopy}>也可以只记录一次真实发生的产品使用。</Text>
-        <AppButton
-          label="记录产品使用"
-          onPress={() =>
-            router.push(
-              productUseHref({
-                source: 'observe',
-                flowId: createClientRequestId(),
-              }) as Href,
-            )
-          }
-          variant="text"
-        />
+          <EditorialText role="sectionTitle" accessibilityElementsHidden importantForAccessibility="no" style={styles.chevron}>›</EditorialText>
+        </Pressable>
       </View>
     </AppScreen>
   );
@@ -142,15 +138,24 @@ const styles = StyleSheet.create({
   todayTag: { backgroundColor: colors.amber, borderRadius: radii.pill, paddingHorizontal: spacing.md, paddingVertical: spacing.xs },
   brandMeta: { color: colors.earth, fontSize: 10, lineHeight: 16, letterSpacing: 1 },
   todaySection: { backgroundColor: colors.paperElevated, marginHorizontal: -spacing.xl, paddingHorizontal: spacing.xl, paddingVertical: spacing.xl, gap: spacing.xl },
-  primaryActions: { gap: spacing.xs },
-  productUseAction: {
+  primaryActions: { gap: spacing.sm },
+  actionIcon: { width: spacing.lg, height: spacing.lg },
+  entryRow: {
+    flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing.xs,
-    borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: colors.hairline,
-    paddingTop: spacing.xl,
+    gap: spacing.md,
+    backgroundColor: colors.surface,
+    borderRadius: radii.md,
+    padding: spacing.lg,
+    minHeight: spacing.ritual,
   },
-  contextCopy: { color: colors.textMuted, fontSize: 13, lineHeight: 20, textAlign: 'center' },
-  archiveSection: { gap: spacing.md },
-  latestList: { gap: spacing.md },
+  currentSection: { gap: spacing.md },
+  currentTitle: { fontWeight: '700' },
+  rowCopy: { flex: 1, gap: spacing.xs },
+  rowTitle: { color: colors.earth, fontSize: 17, fontWeight: '700' },
+  rowMeta: { color: colors.textMuted },
+  chevron: { color: colors.textMuted },
+  entryIcon: { width: spacing.xxxl, height: spacing.xxxl, borderRadius: radii.pill, backgroundColor: colors.mossDeep, alignItems: 'center', justifyContent: 'center' },
+  entryIconDrawing: { width: spacing.xl, height: spacing.xl },
+  pressed: { opacity: 0.72 },
 });

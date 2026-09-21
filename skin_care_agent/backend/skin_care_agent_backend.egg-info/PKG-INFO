@@ -18,6 +18,7 @@ Requires-Dist: numpy>=1.26
 Requires-Dist: opencv-python>=4.10
 Requires-Dist: mediapipe>=0.10
 Requires-Dist: pillow>=10.4
+Requires-Dist: cos-python-sdk-v5>=1.9.0
 Provides-Extra: dev
 Requires-Dist: pytest>=8.0; extra == "dev"
 Requires-Dist: pytest-asyncio>=0.23; extra == "dev"

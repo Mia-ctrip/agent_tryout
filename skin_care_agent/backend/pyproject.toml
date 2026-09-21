@@ -19,6 +19,7 @@ dependencies = [
     "opencv-python>=4.10",
     "mediapipe>=0.10",
     "pillow>=10.4",
+    "cos-python-sdk-v5>=1.9.0",
 ]
 
 [project.optional-dependencies]

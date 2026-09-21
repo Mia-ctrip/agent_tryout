@@ -35,6 +35,10 @@ class Settings(BaseSettings):
     storage_local_base_url: str = "http://localhost:8000/files"
     storage_url_sign_secret: str = "dev-only-change-me"
     storage_url_ttl_seconds: int = 900  # 15 minutes
+    cos_secret_id: str = ""
+    cos_secret_key: str = ""
+    cos_region: str = ""
+    cos_bucket: str = ""
 
     # upload constraints
     upload_max_bytes: int = 8 * 1024 * 1024  # 8MB
