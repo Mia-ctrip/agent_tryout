@@ -1,8 +1,7 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { ProductImage } from '@/components/product-image';
-import { productColors } from '@/constants/product-theme';
-import { radii, spacing } from '@/constants/theme';
+import { colors, radii, spacing } from '@/constants/theme';
 import { getPersonalProduct, type PersonalProduct } from '@/lib/product-api';
 import { productLastUsedLabel } from '@/lib/product-ui';
 import { useSession } from '@/providers/session-provider';
@@ -24,7 +23,8 @@ export function PersonalProductCard({
         accessibilityLabel={`${product.name} 产品图片`}
         category={null}
         radius={radii.sm}
-        size={80}
+        size={76}
+        variant="archive"
         uri={product.image_url}
         expiresAt={product.image_expires_at}
         onRefresh={() => getPersonalProduct(request, product.product_id)}
@@ -54,15 +54,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.lg,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderColor: productColors.border,
-    paddingVertical: spacing.lg,
+    borderRadius: radii.md,
+    backgroundColor: `${colors.paper}CC`,
+    padding: spacing.md,
   },
   copy: { flex: 1, minWidth: 0, gap: spacing.xs },
-  openProduct: { flex: 1, minWidth: 0, minHeight: 80, flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
-  name: { color: productColors.textPrimary, fontSize: 16, lineHeight: 23, fontWeight: '500' },
-  meta: { color: productColors.textSecondary, fontSize: 12, lineHeight: 17 },
-  lastUsed: { color: productColors.textSecondary, fontSize: 12, lineHeight: 18, marginTop: spacing.xs },
-  chevron: { color: productColors.textSecondary, fontSize: 24, lineHeight: 28, marginLeft: -4 },
+  openProduct: { flex: 1, minWidth: 0, minHeight: 76, flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
+  name: { color: colors.earth, fontSize: 16, lineHeight: 22, fontWeight: '500' },
+  meta: { color: colors.earth, opacity: 0.8, fontSize: 13, lineHeight: 18 },
+  lastUsed: { color: colors.earth, opacity: 0.8, fontSize: 12, lineHeight: 18, marginTop: spacing.xs },
+  chevron: { color: colors.earth, fontSize: 28, lineHeight: 32, marginRight: spacing.xs },
   pressed: { opacity: 0.82, transform: [{ scale: 0.995 }] },
 });

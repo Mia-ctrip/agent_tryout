@@ -242,6 +242,27 @@ export async function listProductUses(
   return request<ProductUse[]>(`/product-uses?${params.toString()}`);
 }
 
+export function buildCustomProductUpdateForm(
+  input: { name: string; image?: NativePhotoFile; removeImage: boolean },
+  form: FormDataLike = new FormData() as unknown as FormDataLike,
+): FormDataLike {
+  form.append('name', input.name.trim());
+  form.append('remove_image', String(input.removeImage));
+  if (input.image) form.append('file', input.image);
+  return form;
+}
+
+export async function updateCustomProduct(
+  request: AuthenticatedRequest,
+  productId: number,
+  form: FormDataLike,
+): Promise<PersonalProductDetail> {
+  return request<PersonalProductDetail>(`/products/${productId}/custom`, {
+    method: 'PATCH',
+    body: form as unknown as BodyInit,
+  });
+}
+
 export async function listAllProductUses(
   request: AuthenticatedRequest,
 ): Promise<ProductUse[]> {

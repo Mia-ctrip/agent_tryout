@@ -19,5 +19,6 @@ def get_storage() -> StorageBackend:
             region=s.cos_region,
             secret_id=s.cos_secret_id,
             secret_key=s.cos_secret_key,
+            local_fallback=LocalStorage(s.storage_local_path),
         )
     raise NotImplementedError(f"storage backend not supported yet: {s.storage_backend}")

@@ -30,6 +30,7 @@ def test_openapi_exposes_tracking_endpoints() -> None:
     assert "/api/v1/region-events/{event_id}/end" in paths
     assert "/api/v1/products" in paths
     assert "/api/v1/products/{product_id}" in paths
+    assert "patch" in paths["/api/v1/products/{product_id}/custom"]
     assert "/api/v1/product-search" in paths
     assert "/api/v1/catalog/products/{standard_product_id}" in paths
     assert "/api/v1/product-uses" in paths

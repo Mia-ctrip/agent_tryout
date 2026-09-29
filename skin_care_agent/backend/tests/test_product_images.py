@@ -132,6 +132,30 @@ class _RaceDatabase:
         return None
 
 
+class _UpdateDatabase:
+    def __init__(self, product: object) -> None:
+        self.product = product
+        self.added: list[object] = []
+        self.commits = 0
+
+    def scalar(self, statement: object) -> object:
+        return self.product
+
+    def add(self, item: object) -> None:
+        self.added.append(item)
+
+    def flush(self) -> None:
+        for index, item in enumerate(self.added, start=41):
+            if getattr(item, "id", None) is None:
+                item.id = index
+
+    def commit(self) -> None:
+        self.commits += 1
+
+    def rollback(self) -> None:
+        pass
+
+
 def test_custom_product_race_deletes_only_the_new_unreferenced_object(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -201,3 +225,57 @@ def test_custom_product_route_precedes_the_dynamic_product_route() -> None:
     paths = [route.path for route in products_router.routes]
 
     assert paths.index("/products/custom") < paths.index("/products/{product_id}")
+
+
+def test_custom_product_update_keeps_old_image_for_historical_snapshots(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from app.models.product import PersonalProduct
+
+    storage = _TrackingStorage()
+    old_key = "product-images/users/7/original.jpg"
+    storage.objects[old_key] = b"historical-image"
+    product = PersonalProduct(
+        id=9,
+        user_id=7,
+        client_request_id=uuid4(),
+        name="旧名字",
+        normalized_name="旧名字",
+        user_image_asset_id=3,
+    )
+    db = _UpdateDatabase(product)
+    image = product_image_service.validate_product_image(_image_bytes("PNG"), "image/png")
+    detail = object()
+    monkeypatch.setattr(product_service, "get_storage", lambda: storage)
+    monkeypatch.setattr(product_service, "get_product_detail", lambda *args, **kwargs: detail)
+
+    result = product_service.update_custom_product(
+        db, user_id=7, product_id=9, name="  新名字  ", image=image,
+    )
+
+    assert result is detail
+    assert product.name == "新名字"
+    assert product.normalized_name == "新名字"
+    assert product.user_image_asset_id == 41
+    assert storage.objects[old_key] == b"historical-image"
+    assert storage.put_count == 1
+    assert db.commits == 1
+
+
+def test_standard_product_cannot_be_edited_through_custom_product_update() -> None:
+    from app.models.product import PersonalProduct
+
+    product = PersonalProduct(
+        id=9,
+        user_id=7,
+        client_request_id=uuid4(),
+        name="标准产品",
+        normalized_name="标准产品",
+        standard_product_id=8,
+    )
+    with pytest.raises(HTTPException) as error:
+        product_service.update_custom_product(
+            _UpdateDatabase(product), user_id=7, product_id=9, name="不应修改",
+        )
+
+    assert error.value.status_code == 403

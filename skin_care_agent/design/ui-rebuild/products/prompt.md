@@ -5,7 +5,7 @@ and the supplied reference/background assets.
 Reuse existing components and typography where appropriate.
 Do not duplicate existing design tokens.
 
-Implement/refine the Product Archive screen based on the supplied UI reference image.
+Implement/refine the Product Archive screen based on the supplied UI reference image：D:\Mia\agent_tryout\skin_care_agent\design\ui-rebuild\products\reference\final.png，background pic you can use D:\Mia\agent_tryout\skin_care_agent\design\ui-rebuild\products\reference\background\image.png directly.
 
 The reference image is the visual source of truth.
 Do not redesign, reinterpret, simplify, or replace the visual language with framework-default styling.

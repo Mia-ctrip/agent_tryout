@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections.abc import Sequence
 from dataclasses import dataclass
 import unicodedata
-from uuid import UUID
+from uuid import UUID, uuid4
 
 from fastapi import HTTPException
 from sqlalchemy import and_, func, select
@@ -242,6 +242,63 @@ def create_custom_product(
         raise
     db.refresh(product)
     return _product_out(db, product), True
+
+
+def update_custom_product(
+    db: Session,
+    *,
+    user_id: int,
+    product_id: int,
+    name: str,
+    image: ValidatedProductImage | None = None,
+    remove_image: bool = False,
+) -> ProductDetailOut:
+    product = db.scalar(
+        select(PersonalProduct).where(
+            PersonalProduct.id == product_id,
+            PersonalProduct.user_id == user_id,
+            PersonalProduct.deleted_at.is_(None),
+        ).with_for_update()
+    )
+    if product is None:
+        raise HTTPException(status_code=404, detail="product not found")
+    if product.standard_product_id is not None:
+        raise HTTPException(status_code=403, detail="只能编辑自己创建的产品。")
+    product_name = _normalize_custom_product_name(name)
+    if image is not None and remove_image:
+        raise HTTPException(status_code=422, detail="不能同时上传和移除图片。")
+
+    storage_key = None
+    storage_was_written = False
+    try:
+        if image is not None:
+            # Each replacement has its own asset: historical snapshots retain the old bytes.
+            storage_key = user_product_image_key(
+                user_id=user_id, client_request_id=uuid4(), extension=image.extension,
+            )
+            get_storage().put(storage_key, image.data, image.mime_type)
+            storage_was_written = True
+            asset = ProductImageAsset(
+                storage_key=storage_key, mime_type=image.mime_type,
+                byte_size=len(image.data), width=image.width, height=image.height,
+                sha256=image.sha256, source_type="user", owner_user_id=user_id,
+            )
+            db.add(asset)
+            db.flush()
+            product.user_image_asset_id = asset.id
+        elif remove_image:
+            product.user_image_asset_id = None
+        product.name = product_name
+        product.normalized_name = normalize_personal_product_name(product_name)
+        product.display_name_override = None
+        db.commit()
+    except Exception:
+        db.rollback()
+        _delete_new_unreferenced_image(
+            db, storage_key=storage_key, storage_was_written=storage_was_written,
+        )
+        raise
+    return get_product_detail(db, user_id=user_id, product_id=product_id)
 
 
 def create_product(

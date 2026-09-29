@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { colors, radii, spacing } from '@/constants/theme';
+import { journeyColors } from '@/constants/journey-theme';
 import { svgDataUri } from '@/lib/face-analysis-visual';
 import { buildHistoryFaceSvg, HISTORY_FACE_REGIONS } from '@/lib/history-face-visual';
 import {
@@ -29,14 +30,17 @@ export function HistoryFaceOverview({
   onPressRegion,
 }: HistoryFaceOverviewProps) {
   const [canvasWidth, setCanvasWidth] = useState(340);
+  // Native maxWidth can clamp width after aspectRatio has computed height.
+  // Size both the portrait and its targets from the actual measured width.
   const scale = canvasWidth / 340;
   const portraitLines = buildHistoryFaceSvg(regions);
   return (
     <View>
       <View
-        accessibilityLabel="六个固定面部区域总览"
+        testID="history-face-canvas"
+        accessibilityLabel="六个固定面部区域总览，均指你本人真实左右"
         onLayout={(event) => setCanvasWidth(event.nativeEvent.layout.width)}
-        style={styles.canvas}>
+        style={[styles.canvas, { height: 366 * scale }]}>
         <Image
           accessibilityElementsHidden
           importantForAccessibility="no-hide-descendants"
@@ -91,27 +95,6 @@ export function HistoryFaceOverview({
           );
         })}
       </View>
-      <View style={styles.legend}>
-        <View style={styles.legendItem}>
-          <View style={[styles.legendSwatch, styles.legendActive]} />
-          <Text style={styles.legendLabel}>正在记录</Text>
-        </View>
-        <View style={styles.legendItem}>
-          <View style={[styles.legendSwatch, styles.legendHistorical]} />
-          <Text style={styles.legendLabel}>历史记录</Text>
-        </View>
-        <View style={styles.legendItem}>
-          <View style={[styles.legendSwatch, styles.legendNeutral]} />
-          <Text style={styles.legendLabel}>尚无时间点</Text>
-        </View>
-        <View style={styles.legendItem}>
-          <View style={[styles.legendSwatch, styles.legendPending]} />
-          <Text style={styles.legendLabel}>整理中或需补充</Text>
-        </View>
-      </View>
-      <Text style={styles.directionNote}>
-        图中左脸颊位于画面右侧、右脸颊位于画面左侧，均指你本人真实左右。
-      </Text>
     </View>
   );
 }
@@ -120,11 +103,10 @@ const styles = StyleSheet.create({
   canvas: {
     width: '100%',
     maxWidth: 340,
-    aspectRatio: 340 / 366,
     alignSelf: 'center',
     position: 'relative',
     borderRadius: radii.lg,
-    backgroundColor: colors.paper,
+    backgroundColor: 'transparent',
   },
   region: {
     position: 'absolute',
@@ -135,15 +117,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.xs,
   },
   label: {
-    color: colors.text,
+    color: journeyColors.ink,
     fontSize: 12,
-    fontWeight: '600',
+    fontWeight: '400',
     textAlign: 'center',
   },
   labelActive: {
-    color: colors.actionPrimary,
+    color: journeyColors.ink,
     fontSize: 12,
-    fontWeight: '600',
+    fontWeight: '500',
     textAlign: 'center',
   },
   statusBadge: {
@@ -163,25 +145,4 @@ const styles = StyleSheet.create({
   },
   statusBadgeNeedsInput: { borderColor: colors.danger, color: colors.danger },
   pressed: { opacity: 0.72 },
-  legend: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'center',
-    gap: spacing.md,
-    marginTop: spacing.md,
-  },
-  legendItem: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs },
-  legendSwatch: { width: 14, height: 10, borderWidth: 1, borderRadius: 5 },
-  legendActive: { borderColor: colors.actionPrimary, backgroundColor: colors.sageSoft },
-  legendHistorical: { borderColor: colors.brand, backgroundColor: colors.paperElevated },
-  legendNeutral: { borderColor: colors.border, backgroundColor: 'transparent' },
-  legendPending: { borderStyle: 'dashed', borderColor: colors.context },
-  legendLabel: { color: colors.textMuted, fontSize: 11 },
-  directionNote: {
-    marginTop: spacing.sm,
-    color: colors.textMuted,
-    fontSize: 11,
-    lineHeight: 17,
-    textAlign: 'center',
-  },
 });

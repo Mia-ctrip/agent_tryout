@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { buildHistoryFaceSvg, HISTORY_FACE_REGIONS } from '../src/lib/history-face-visual.ts';
 import { colors } from '../src/constants/theme.ts';
+import { journeyColors } from '../src/constants/journey-theme.ts';
 
 test('history illustration paints each region with its actual state and clips to the face', () => {
   const svg = buildHistoryFaceSvg([
@@ -9,7 +10,7 @@ test('history illustration paints each region with its actual state and clips to
     { regionId: 'nose_area', visualState: 'needs_input' },
     { regionId: 'forehead', visualState: 'historical' },
   ]);
-  assert.match(svg, new RegExp(`data-region="left_face"[^>]*fill="${colors.sageSoft}"`));
+  assert.match(svg, new RegExp(`data-region="left_face"[^>]*fill="${journeyColors.sage}"`));
   assert.match(svg, /data-region="nose_area"[^>]*stroke-dasharray="4 3"/);
   assert.match(svg, new RegExp(`data-region="forehead"[^>]*fill="${colors.paperElevated}"`));
   assert.match(svg, /clip-path="url\(#face-boundary\)"/);

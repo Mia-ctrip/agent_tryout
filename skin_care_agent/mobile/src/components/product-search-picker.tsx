@@ -221,9 +221,9 @@ export function ProductSearchPicker({
             <CustomProductForm
               initialName={query.trim()}
               onCancel={() => setCustomOpen(false)}
-              onCreated={(productId) => {
+              onSaved={(product) => {
                 changeQuery('');
-                onProductReady(productId);
+                onProductReady(product.product_id);
               }}
             />
           )}

@@ -44,8 +44,9 @@ export default function ProductsScreen() {
   );
 
   return (
-    <AppScreen backgroundColor={colors.ground} contentStyle={styles.screenContent}>
-      <ProductArchiveBackdrop showEchoes={orderedProducts.length > 0} />
+    <View style={styles.screen}>
+      <ProductArchiveBackdrop />
+    <AppScreen backgroundColor="transparent" safeAreaEdges={['top', 'left', 'right']} contentStyle={styles.screenContent}>
       <View style={styles.header}>
         <View style={styles.headerCopy}>
           <EditorialText role="sectionTitle" style={styles.title}>产品档案</EditorialText>
@@ -103,30 +104,31 @@ export default function ProductsScreen() {
         </View>
       ) : null}
     </AppScreen>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  screenContent: { paddingHorizontal: 20, paddingTop: 12, paddingBottom: 96 },
-  header: { minHeight: 48, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: spacing.lg },
+  screen: { flex: 1, backgroundColor: colors.ground },
+  screenContent: { paddingHorizontal: spacing.xl, paddingTop: spacing.xl, paddingBottom: spacing.hero },
+  header: { minHeight: 44, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: spacing.lg },
   headerCopy: { flex: 1, gap: 4 },
-  eyebrow: { color: productColors.textSecondary, fontSize: 10, lineHeight: 16, fontWeight: '700', letterSpacing: 2.1 },
-  title: { color: productColors.textPrimary, fontSize: 20, lineHeight: 28 },
-  summary: { color: productColors.textSecondary, fontSize: 13, lineHeight: 20, paddingBottom: spacing.lg, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: productColors.border },
-  addButton: { minHeight: 44, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing.xs, borderRadius: radii.pill, borderWidth: 1, borderColor: productColors.border, paddingHorizontal: spacing.md },
-  addSymbol: { color: productColors.actionPrimary, fontSize: 22, lineHeight: 26, fontWeight: '400' },
-  addLabel: { color: productColors.actionPrimary, fontSize: 12, fontWeight: '500' },
-  listHeading: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingTop: spacing.xl, paddingBottom: spacing.md },
-  sortLabel: { color: productColors.textSecondary, fontSize: 12, fontWeight: '600' },
-  totalLabel: { color: productColors.textSecondary, fontSize: 11 },
-  list: { gap: 0 },
+  title: { color: colors.earth, fontSize: 22, lineHeight: 30 },
+  summary: { color: colors.earth, fontSize: 15, lineHeight: 24 },
+  addButton: { minHeight: 44, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing.xs, borderRadius: radii.pill, backgroundColor: colors.paper, paddingHorizontal: spacing.lg },
+  addSymbol: { color: colors.mossDeep, fontSize: 28, lineHeight: 32, fontWeight: '300' },
+  addLabel: { color: colors.mossDeep, fontSize: 14, fontWeight: '500' },
+  listHeading: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingTop: spacing.xxxl, paddingBottom: spacing.md },
+  sortLabel: { color: colors.earth, fontSize: 14, lineHeight: 20, fontWeight: '600' },
+  totalLabel: { color: colors.earth, fontSize: 13, opacity: 0.8 },
+  list: { gap: spacing.md },
   loading: { alignItems: 'center', gap: spacing.md, paddingVertical: 64 },
-  muted: { color: productColors.textSecondary, fontSize: 13 },
-  emptyState: { gap: spacing.sm, borderRadius: 20, backgroundColor: productColors.surface, padding: spacing.xl },
-  emptyTitle: { color: productColors.textPrimary, fontSize: 18, fontWeight: '700' },
-  emptyBody: { color: productColors.textSecondary, fontSize: 14, lineHeight: 22 },
-  archiveNotice: { borderRadius: 14, backgroundColor: productColors.surfaceMuted, paddingHorizontal: 14, paddingVertical: 11, marginBottom: 10 },
+  muted: { color: colors.earth, opacity: 0.8, fontSize: 13 },
+  emptyState: { gap: spacing.sm, borderRadius: radii.md, backgroundColor: colors.paper, padding: spacing.xl },
+  emptyTitle: { color: colors.earth, fontSize: 18, fontWeight: '700' },
+  emptyBody: { color: colors.earth, opacity: 0.8, fontSize: 14, lineHeight: 22 },
+  archiveNotice: { borderRadius: radii.md, backgroundColor: colors.paper, padding: spacing.md, marginBottom: spacing.md },
   archiveNoticeText: { color: productColors.actionPrimary, fontSize: 12, lineHeight: 18 },
-  moreHint: { color: productColors.textSecondary, fontSize: 11, textAlign: 'center', paddingVertical: spacing.md },
+  moreHint: { color: colors.earth, opacity: 0.8, fontSize: 11, textAlign: 'center', paddingVertical: spacing.md },
   pressed: { opacity: 0.82 },
 });

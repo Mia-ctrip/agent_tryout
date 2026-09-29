@@ -41,7 +41,7 @@ test('timechain crops the selected region, blurs only legacy originals, and a si
   assert.match(timeline, /timepoints\.length > 1/);
   assert.match(timeline, /scrollToSelected/);
   assert.match(timeline, /regionId=\{timepoint.target.region_id\}/);
-  assert.match(photo, /regionPhotoCrop\(photo, regionId, 80\)/);
+  assert.match(photo, /regionPhotoCrop\(photo, regionId, Math.max\(size, height\) - 8\)/);
   assert.match(photo, /blurRadius=\{crop \? 0 : 10\}/);
   assert.match(photo, /原图预览/);
   assert.match(photo, /refreshObservationPhotoUrl/);
@@ -51,6 +51,10 @@ test('evidence detail keeps the existing observation route and non-causal bounda
   const detail = source('../src/app/region-event/[eventId].tsx');
   assert.match(detail, /router\.push\(`\/observation\/\$\{selectedTimepoint\.observation_id\}`\)/);
   assert.match(detail, /相邻记录只作时间上下文，不表示关联或疗效/);
-  assert.match(detail, /产品使用上下文暂未加载/);
-  assert.match(detail, /重新读取时间上下文/);
+  const card = source('../src/components/timepoint-evidence-card.tsx');
+  assert.match(card, /产品使用暂未加载/);
+  assert.match(card, /onPress=\{onRetryProducts\}/);
+  assert.match(detail, /onRetryProducts=/);
+  for (const label of ['照片中可见', '你的记录', '产品使用记录', '来源']) assert.ok(card.includes('label="' + label + '"'));
+  assert.doesNotMatch(card, /numberOfLines=/);
 });

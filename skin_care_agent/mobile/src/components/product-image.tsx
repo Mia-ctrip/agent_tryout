@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { Image as DecorativeImage } from 'expo-image';
 import { ActivityIndicator, AppState, Image, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { colors, radii, spacing } from '@/constants/theme';
@@ -14,6 +15,7 @@ type ProductImageProps = {
   accessibilityLabel: string;
   size?: number;
   radius?: number;
+  variant?: 'default' | 'archive';
 };
 
 export function ProductImage(props: ProductImageProps) {
@@ -21,7 +23,7 @@ export function ProductImage(props: ProductImageProps) {
   return <ProductImageContent key={`${props.uri}:${props.expiresAt}`} {...props} />;
 }
 
-function ProductImageContent({ uri, expiresAt = null, onRefresh, onPress, category, accessibilityLabel, size = 72, radius = radii.sm }: ProductImageProps) {
+function ProductImageContent({ uri, expiresAt = null, onRefresh, onPress, category, accessibilityLabel, size = 72, radius = radii.sm, variant = 'default' }: ProductImageProps) {
   const refreshRef = useRef(onRefresh);
   useEffect(() => { refreshRef.current = onRefresh; }, [onRefresh]);
   const [snapshot, setSnapshot] = useState(() => createProductImageLoader({ image_url: uri, image_expires_at: expiresAt }, API_BASE_URL).current());
@@ -52,7 +54,7 @@ function ProductImageContent({ uri, expiresAt = null, onRefresh, onPress, catego
   }, [canRefresh, snapshot.uri, snapshot.expiresAt, snapshot.attempt, snapshot.phase]);
 
   const frame = { width: size, height: size, borderRadius: radius };
-  const imageSize = size - spacing.md * 2;
+  const imageSize = size - (variant === 'archive' ? spacing.xs * 2 : spacing.md * 2);
   const failed = snapshot.phase === 'error';
   const interactive = failed || Boolean(onPress);
   const Frame = interactive ? Pressable : View;
@@ -65,7 +67,7 @@ function ProductImageContent({ uri, expiresAt = null, onRefresh, onPress, catego
         if (failed) void loaderRef.current?.retry();
         else onPress?.();
       } : undefined}
-      style={[styles.frame, frame]}>
+      style={[styles.frame, frame, variant === 'archive' && styles.archiveFrame]}>
       {snapshot.uri && snapshot.phase !== 'error' ? (
         <Image
           key={snapshot.attempt}
@@ -78,13 +80,13 @@ function ProductImageContent({ uri, expiresAt = null, onRefresh, onPress, catego
         />
       ) : snapshot.phase === 'error' ? (
         <View style={styles.fallback}>
-          <Text style={styles.placeholderText}>加载失败</Text>
+          <Text style={[styles.placeholderText, variant === 'archive' && styles.archivePlaceholder]}>加载失败</Text>
           <Text style={styles.retryText}>点按重试</Text>
         </View>
       ) : (
         <View accessibilityLabel={`${accessibilityLabel}，暂无图片`} style={styles.fallback}>
-          <Text numberOfLines={1} style={styles.placeholderText}>{category || '产品'}</Text>
-          <Text style={styles.placeholderText}>暂无图片</Text>
+          {variant === 'archive' ? <DecorativeImage accessible={false} source={{ uri: 'data:image/svg+xml;base64,' + btoa(`<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40"><path d="M14 37 27 10" fill="none" stroke="${colors.moss}" stroke-width="1.4"/><path d="M22 22C20 11 28 5 35 4c1 9-3 17-13 18ZM17 29C7 26 6 19 9 12c8 4 10 10 8 17ZM19 29c3-9 10-9 16-8-3 7-8 10-16 8Z" fill="${colors.moss}" opacity=".6"/></svg>`) }} style={styles.sprig} /> : <Text numberOfLines={1} style={styles.placeholderText}>{category || '产品'}</Text>}
+          <Text style={[styles.placeholderText, variant === 'archive' && styles.archivePlaceholder]}>暂无图片</Text>
         </View>
       )}
       {snapshot.phase === 'loading' ? (
@@ -96,6 +98,9 @@ function ProductImageContent({ uri, expiresAt = null, onRefresh, onPress, catego
 
 const styles = StyleSheet.create({
   frame: { flexShrink: 0, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.paperElevated, borderWidth: 1, borderColor: colors.hairline },
+  archiveFrame: { backgroundColor: `${colors.ground}B3`, borderWidth: 0 },
+  archivePlaceholder: { color: colors.earth, opacity: 0.75, fontSize: 10 },
+  sprig: { width: 32, height: 32 },
   fallback: { width: '100%', height: '100%', minHeight: 44, alignItems: 'center', justifyContent: 'center', gap: spacing.xs, padding: spacing.xs },
   placeholderText: { color: colors.textMuted, fontSize: 11, lineHeight: 16, textAlign: 'center' },
   retryText: { color: colors.actionPrimary, fontSize: 11, lineHeight: 16 },

@@ -16,7 +16,7 @@ test('product picker exposes the searchable catalog boundary and accessible entr
   assert.match(picker, /shouldOfferCustomProduct/);
   assert.match(picker, /!customOpen[\s\S]*<CustomProductForm/);
   assert.match(picker, /Keyboard\.dismiss\(\)/);
-  assert.match(picker, /onCreated={[\s\S]*changeQuery\(''\)/);
+  assert.match(picker, /onSaved={[\s\S]*changeQuery\(''\)/);
 });
 
 test('product search failure offers a same-query retry instead of a false no-match state', () => {
@@ -63,6 +63,9 @@ test('personal product detail renders compact facts and the official manual in p
   assert.match(detail, /累计使用/);
   assert.match(detail, /最近使用/);
   assert.doesNotMatch(detail, /记录一次使用|product-catalog/);
+  assert.match(detail, /source_type === 'custom'/);
+  assert.match(detail, /accessibilityLabel="编辑自建产品"/);
+  assert.match(detail, /editingProduct={product}/);
 });
 
 

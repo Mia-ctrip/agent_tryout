@@ -119,6 +119,24 @@ def get_product_endpoint(
     )
 
 
+@products_router.patch("/{product_id}/custom", response_model=ProductDetailOut)
+async def update_custom_product_endpoint(
+    product_id: int,
+    name: str = Form(...),
+    remove_image: bool = Form(default=False),
+    file: UploadFile | None = File(default=None),
+    current_user: User = Depends(get_current_app_user),
+    db: Session = Depends(get_db),
+) -> ProductDetailOut:
+    image = None
+    if file is not None:
+        image = validate_product_image(await file.read(), file.content_type or "")
+    return product_service.update_custom_product(
+        db, user_id=current_user.id, product_id=product_id,
+        name=name, image=image, remove_image=remove_image,
+    )
+
+
 @product_uses_router.post("", response_model=ProductUseOut, status_code=status.HTTP_201_CREATED)
 def create_product_use_endpoint(
     body: ProductUseCreate,

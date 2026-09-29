@@ -21,7 +21,7 @@ export function HistoryEventRow({
   const region = regionById(event.region_id);
   const detail =
     typeof timepointCount === 'number'
-      ? `${timepointCount} 个时间点`
+      ? `${timepointCount} 个时间点 · 最近 ${formatHistoryShortDate(event.last_valid_local_date)}`
       : `最近记录于 ${formatHistoryShortDate(event.last_valid_local_date)}`;
   return (
     <Pressable
@@ -47,9 +47,7 @@ export function HistoryEventRow({
       <View style={styles.copy}>
         <View style={styles.titleRow}>
           <Text style={styles.title}>{region.label}</Text>
-          <Text style={styles.status}>
-            {event.status === 'current' ? '正在记录' : '已结束'}
-          </Text>
+          {event.status === 'ended' ? <Text style={styles.status}>已结束</Text> : null}
         </View>
         <Text style={styles.detail}>{detail}</Text>
       </View>
@@ -60,13 +58,13 @@ export function HistoryEventRow({
 
 const styles = StyleSheet.create({
   row: {
-    minHeight: 72,
+    minHeight: 56,
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.md,
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderColor: colors.border,
-    paddingVertical: spacing.md,
+    paddingVertical: spacing.sm,
   },
   rowCompact: { minHeight: 62, paddingVertical: spacing.sm },
   marker: {
@@ -75,7 +73,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: radii.pill,
-    backgroundColor: colors.surfaceMuted,
+    backgroundColor: colors.brandOverlay,
   },
   markerCore: {
     width: 10,
@@ -90,7 +88,7 @@ const styles = StyleSheet.create({
   },
   copy: { flex: 1, gap: spacing.xs },
   titleRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
-  title: { color: colors.text, fontSize: 16, fontWeight: '700' },
+  title: { color: colors.ink, fontSize: 15, fontWeight: '500' },
   status: { color: colors.textMuted, fontSize: 11, fontWeight: '600' },
   detail: { color: colors.textMuted, fontSize: 13 },
   chevron: { color: colors.actionPrimary, fontSize: 26, lineHeight: 28 },

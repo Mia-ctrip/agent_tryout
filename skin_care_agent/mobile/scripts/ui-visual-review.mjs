@@ -18,8 +18,9 @@ const productUseReview = process.argv.includes('--product-use-only');
 const fullFaceReview = process.argv.includes('--full-face-only');
 const resultReview = process.argv.includes('--results-only');
 const historyReview = process.argv.includes('--history-only');
+const journeyReview = process.argv.includes('--journey-only');
 const colorReview = process.argv.includes('--color-review');
-const output = path.join(root, observeReview ? 'artifacts/observe-lower-review' : fullFaceReview ? 'artifacts/full-face-overview-history-review' : historyReview ? 'artifacts/history-refresh-review' : colorReview ? 'artifacts/color-refresh-review' : resultReview ? 'artifacts/result-refresh-review' : productUseReview ? 'artifacts/product-use-flow-review' : productReview ? 'artifacts/product-refresh-review' : 'artifacts/ui-rebuild-review');
+const output = path.join(root, journeyReview ? 'artifacts/journey-final-review' : observeReview ? 'artifacts/observe-lower-review' : fullFaceReview ? 'artifacts/full-face-overview-history-review' : historyReview ? 'artifacts/history-refresh-review' : colorReview ? 'artifacts/color-refresh-review' : resultReview ? 'artifacts/result-refresh-review' : productUseReview ? 'artifacts/product-use-flow-review' : productReview ? 'artifacts/product-archive-reference-review' : 'artifacts/ui-rebuild-review');
 const assets = path.join(root, 'design/skin-care-ui-rebuild-handoff-v1/golden-screens/assets');
 const profile = await mkdtemp(path.join(tmpdir(), 'skin-ui-review-'));
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -27,6 +28,7 @@ const photoData = `data:image/png;base64,${(await readFile(path.join(assets, 'de
 const productData = `data:image/png;base64,${(await readFile(path.join(assets, 'medicine-benzihex.png'))).toString('base64')}`;
 const extraProductData = productReview || productUseReview ? await Promise.all(['阿达帕林.jpg', '鱼石脂软膏.jpg'].map(async file => `data:image/jpeg;base64,${(await readFile(path.join(root, 'pic/product', file))).toString('base64')}`)) : [];
 let productScenario = 'normal';
+const archiveReferenceImage = productReview ? `data:image/jpeg;base64,${(await readFile(path.join(root, 'pic/product/壬二酸.jpg'))).toString('base64')}` : null;
 let productRefreshCalls = 0;
 let imageRecovered = false;
 const requestedImageHosts = [];
@@ -96,6 +98,13 @@ const product = { product_id: 1, client_request_id: 'visual-fixture', name: '过
 const use = { product_use_id: 1, client_request_id: 'visual-fixture', used_at: date, used_timezone_offset_minutes: 480, note: '按自己的原始记录回看。', created_at: date, products: [product] };
 const auth = { user: { user_id: 1, email: 'visual-fixture@example.test', nickname: '视觉验收示例', created_at: date }, tokens: { access_token: 'fixture-only', refresh_token: 'fixture-only', token_type: 'bearer', expires_in: 3600, refresh_expires_in: 7200 } };
 function productFixtures() {
+  if (productScenario === 'reference') {
+    const yesterday = new Date(); yesterday.setDate(yesterday.getDate() - 1);
+    return [
+      { ...product, name: 'Skinoren 壬二酸乳膏', brand_name: 'LEO', formula_version: '20% · 30g', source_type: 'standard', image_url: archiveReferenceImage, use_count: 2, last_used_at: yesterday.toISOString() },
+      { ...product, product_id: 2, name: 'FlowCustom0915', image_url: null, use_count: 2, last_used_at: yesterday.toISOString() },
+    ];
+  }
   const first = { ...product };
   if (productScenario === 'failure' || productScenario === 'expired') first.image_url = brokenProductImage;
   if (productScenario === 'expired') first.image_expires_at = '2000-01-01T00:00:00Z';
@@ -113,6 +122,18 @@ function productFixtures() {
 }
 function fixture(url) {
   const pathname = new URL(url).pathname.replace(/^\/api\/v1/, '');
+  if (journeyReview) {
+    const days = ['2026-07-02', '2026-07-12', '2026-07-29', '2026-08-14', '2026-08-30'];
+    const events = [{ ...event, started_local_date: days[0], last_valid_local_date: days[4] }, { ...event, event_id: 2, region_id: 'chin', started_local_date: days[0], last_valid_local_date: '2026-08-25' }];
+    if (pathname === '/region-events') return events;
+    if (pathname === '/timeline') return events.map((item, i) => ({ ...item, kind: 'region_event', timeline_id: 'event-' + item.event_id, occurred_at: date, timepoint_count: i ? 3 : 5, sources: ['photo_analysis'] }));
+    if (/^\/region-events\/\d+$/.test(pathname)) return { ...events[Number(pathname.split('/').at(-1)) - 1], timepoints: days.map((day, i) => ({
+      ...observation, recorded_at: day + 'T08:00:00Z', recorded_local_date: day,
+      photo: { ...photo, photo_id: i + 1, url: `http://localhost:8000/files/journey-photo-${i + 1}.png`, quality_meta: { ...photo.quality_meta, regions: [{ region_id: 'left_face', points: [{x:0.03,y:0.03},{x:0.97,y:0.03},{x:0.97,y:0.97},{x:0.03,y:0.97}] }] } },
+      target: { ...target, target_id: i + 1, user_note: '这几天有些不稳定。', facts: { ...target.facts, unknowns: [], summary: i === 4 ? '局部泛红较淡，肤色较均匀。' : '左脸颊局部泛红，分布较集中。', daily_appearance: [i === 4 ? '局部泛红较淡' : '局部泛红可见'] } },
+    })) };
+    if (pathname === '/product-uses') return [{ ...use, used_at: days[4] + 'T09:00:00Z', note: null, products: [{ ...product, name: '阿达帕林凝胶' }] }];
+  }
   if (pathname.startsWith('/auth/')) return auth;
   if (pathname === '/me/consents') return ['terms', 'privacy', 'health_disclaimer', 'ai_processing'].map((consent_type) => ({ consent_type, accepted: true, accepted_at: date, version: 'fixture' }));
   if (pathname === '/observations') return fullFaceReview ? fullFaceObservations : [observation];
@@ -139,6 +160,10 @@ function fixture(url) {
     },
   })) };
   if (pathname === '/products') return productReview || productUseReview ? productFixtures() : [product, { ...product, product_id: 2, name: '我的日常保湿产品', image_url: null, use_count: 0, last_used_at: null }];
+  if (productReview && /^\/products\/\d+\/custom$/.test(pathname)) {
+    const value = productFixtures().find(item => item.product_id === Number(pathname.split('/')[2]));
+    return { ...value, name: '视觉验收已修改', image_url: null, image_expires_at: null, uses: [use] };
+  }
   if (productReview && /^\/products\/\d+$/.test(pathname)) {
     productRefreshCalls++;
     const value = productFixtures().find(item => item.product_id === Number(pathname.split('/').at(-1)));
@@ -184,14 +209,18 @@ try {
       if (message.error) job.reject(new Error(JSON.stringify(message.error))); else job.resolve(message.result);
     }
     if (message.method === 'Runtime.exceptionThrown') errors.push(message.params.exceptionDetails.text + ': ' + (message.params.exceptionDetails.exception?.description ?? ''));
-    if ((observeReview || productReview || resultReview || historyReview || fullFaceReview) && message.method === 'Runtime.consoleAPICalled' && message.params.type === 'error') {
+    if ((journeyReview || observeReview || productReview || resultReview || historyReview || fullFaceReview) && message.method === 'Runtime.consoleAPICalled' && message.params.type === 'error') {
       errors.push(message.params.args.map(value => value.value ?? value.description ?? '').join(' '));
     }
     if (message.method === 'Fetch.requestPaused') {
       const { requestId, request } = message.params;
       try {
         if (new URL(request.url).pathname.startsWith('/api/v1/')) requestedApiHosts.add(new URL(request.url).hostname);
-        if (fullFaceReview && !['GET', 'OPTIONS'].includes(request.method) && !new URL(request.url).pathname.startsWith('/api/v1/auth/')) fullFaceMutationRequests.push(`${request.method} ${new URL(request.url).pathname}`);
+        if ((fullFaceReview || journeyReview) && !['GET', 'OPTIONS'].includes(request.method) && !new URL(request.url).pathname.startsWith('/api/v1/auth/')) fullFaceMutationRequests.push(`${request.method} ${new URL(request.url).pathname}`);
+        if (journeyReview && /\/files\/journey-photo-\d+\.png$/.test(new URL(request.url).pathname)) {
+          await send('Fetch.fulfillRequest', { requestId, responseCode: 200, responseHeaders: [{ name: 'Content-Type', value: 'image/png' }, { name: 'Access-Control-Allow-Origin', value: '*' }], body: photoData.split(',')[1] });
+          return;
+        }
         if (fullFaceReview && historyScenario === 'region_failure' && new URL(request.url).pathname === '/api/v1/region-events') {
           await send('Fetch.fulfillRequest', { requestId, responseCode: 503, responseHeaders: [{ name: 'Content-Type', value: 'application/json' }, { name: 'Access-Control-Allow-Origin', value: '*' }], body: Buffer.from(JSON.stringify({ detail: '隔离区域接口故障' })).toString('base64') });
           return;
@@ -202,7 +231,7 @@ try {
           return;
         }
         const body = request.method === 'OPTIONS' ? '' : JSON.stringify(fixture(request.url));
-        await send('Fetch.fulfillRequest', { requestId, responseCode: 200, responseHeaders: [{ name: 'Content-Type', value: 'application/json' }, { name: 'Access-Control-Allow-Origin', value: '*' }, { name: 'Access-Control-Allow-Headers', value: '*' }, { name: 'Access-Control-Allow-Methods', value: 'GET,POST,PUT,OPTIONS' }], body: Buffer.from(body).toString('base64') });
+        await send('Fetch.fulfillRequest', { requestId, responseCode: 200, responseHeaders: [{ name: 'Content-Type', value: 'application/json' }, { name: 'Access-Control-Allow-Origin', value: '*' }, { name: 'Access-Control-Allow-Headers', value: '*' }, { name: 'Access-Control-Allow-Methods', value: 'GET,POST,PUT,PATCH,OPTIONS' }], body: Buffer.from(body).toString('base64') });
       } catch (error) { errors.push(error.message); await send('Fetch.failRequest', { requestId, errorReason: 'BlockedByClient' }); }
     }
   };
@@ -223,8 +252,8 @@ try {
     if (!found) throw new Error(`Missing control: ${text}`);
     await delay(500);
   }
-  async function capture(name, width = 390) {
-    await send('Emulation.setDeviceMetricsOverride', { width, height: 844, deviceScaleFactor: 1, mobile: true });
+  async function capture(name, width = 390, height = 844) {
+    await send('Emulation.setDeviceMetricsOverride', { width, height, deviceScaleFactor: 1, mobile: true });
     await delay(500);
     const layout = await evaluate(`({ width: innerWidth, scrollWidth: document.documentElement.scrollWidth, path: location.pathname, text: document.body.innerText.slice(0, 100) })`);
     const { data } = await send('Page.captureScreenshot', { format: 'png', captureBeyondViewport: false });
@@ -238,13 +267,89 @@ try {
   }
   await send('Page.navigate', { url: 'http://localhost:8082/login' });
   await waitText('登录');
-  if (!observeReview && !productReview && !productUseReview && !historyReview && !fullFaceReview) {
+  if (!observeReview && !productReview && !productUseReview && !historyReview && !fullFaceReview && !journeyReview) {
     await capture('login');
     await clickText('登录'); await waitText('请输入邮箱和密码'); await capture('form-error', 320);
   }
   await evaluate(`(() => { const fields = document.querySelectorAll('input'); const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set; setter.call(fields[0], 'visual-fixture@example.test'); fields[0].dispatchEvent(new Event('input', {bubbles: true})); setter.call(fields[1], 'fixture-password'); fields[1].dispatchEvent(new Event('input', {bubbles: true})); })()`);
   await clickText('登录'); await waitText('开始今天的观察');
-  if (observeReview) {
+  if (journeyReview) {
+    await clickText('历程'); await waitText('从你关心的区域');
+    const faceGeometry = await evaluate(`(() => {
+      const svg = new DOMParser().parseFromString(${JSON.stringify(buildHistoryFaceSvg([]))}, 'image/svg+xml');
+      const ctx = document.createElement('canvas').getContext('2d');
+      const face = new Path2D(${JSON.stringify(HISTORY_FACE_BOUNDARY + ' Z')});
+      const regions = Array.from(svg.querySelectorAll('[data-region]')).map(n => new Path2D(n.getAttribute('d')));
+      let outside = 0, overlaps = 0;
+      const firstOutside = [];
+      for (let y = 0; y <= 366; y += 2) for (let x = 0; x <= 340; x += 2) {
+        const count = regions.filter(path => ctx.isPointInPath(path, x, y)).length;
+        if (count && !ctx.isPointInPath(face, x, y)) { outside++; if (firstOutside.length < 5) firstOutside.push({x, y}); }
+        if (count > 1) overlaps++;
+      }
+      return { outside, overlaps, firstOutside };
+    })()`);
+    if (faceGeometry.outside || faceGeometry.overlaps) throw new Error('Face regions escape/overlap: ' + JSON.stringify(faceGeometry));
+    console.log('Face geometry:', JSON.stringify(faceGeometry));
+    for (const width of [320, 375, 390, 430]) {
+      await capture('history', width);
+      const faceLayout = await evaluate(`(() => {
+        const canvas = document.querySelector('[data-testid="history-face-canvas"]');
+        const box = canvas.getBoundingClientRect();
+        const targets = Array.from(canvas.querySelectorAll('[aria-label]')).map(n => n.getBoundingClientRect());
+        return { ratioError: Math.abs(box.height - box.width * 366 / 340), count: targets.length,
+          tooSmall: targets.some(r => r.width < 43.9 || r.height < 43.9),
+          overlap: targets.some((a, i) => targets.slice(i + 1).some(b => Math.min(a.right, b.right) - Math.max(a.left, b.left) > 1 && Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top) > 1)) };
+      })()`);
+      if (faceLayout.ratioError > 1 || faceLayout.count !== 6 || faceLayout.tooSmall || faceLayout.overlap) throw new Error('Face target layout: ' + JSON.stringify(faceLayout));
+    }
+    if (!await evaluate(`document.querySelector('[role="tab"][aria-selected="true"]')?.textContent.includes('分区')`)) throw new Error('Region view is not selected');
+    await evaluate(`Array.from(document.querySelectorAll('[role="button"]')).find(n => n.getAttribute('aria-label')?.includes('左脸颊') && n.getAttribute('aria-label')?.includes('正在记录')).click()`);
+    await waitText('这一段记录'); await waitText('阿达帕林凝胶');
+    const checkSelectedPhoto = async (day, photoId) => {
+      const main = await evaluate(`(() => {
+        const panel = document.querySelector('[data-testid="selected-region-photo"]');
+        if (!panel) return null;
+        const image = panel.querySelector('img');
+        const viewport = panel.querySelector('[data-testid="region-photo-crop"]');
+        const box = viewport?.getBoundingClientRect();
+        return { text: panel.innerText, src: image?.src, loaded: image?.complete && image.naturalWidth > 0,
+          width: box?.width, height: box?.height, available: panel.getBoundingClientRect().width,
+          card: document.querySelector('[data-testid="timepoint-evidence-card"]')?.innerText };
+      })()`);
+      if (!main || !main.loaded || !main.src.endsWith('/journey-photo-' + photoId + '.png') || !main.text.includes(day) || !main.card.includes(day + '的记录')) throw new Error('Selected photo/date/evidence out of sync: ' + JSON.stringify(main));
+      if (main.width < main.available - 10 || main.width < 270 || Math.abs(main.width - main.height) > 1) throw new Error('Selected photo must be a full-width undistorted preview: ' + JSON.stringify(main));
+    };
+    for (const width of [320, 375, 390, 430]) { await capture('timeline', width); await checkSelectedPhoto('8月30日', 5); }
+    const card = await evaluate(`document.querySelector('[data-testid="timepoint-evidence-card"]').innerText`);
+    for (const heading of ['照片中可见','你的记录','产品使用记录','来源']) if (!card.includes(heading)) throw new Error('Missing record section: ' + heading);
+    await clickText('查看产品：阿达帕林凝胶'); await waitText('官方说明书');
+    await evaluate('history.back()'); await delay(700); await waitText('这一段记录');
+    await evaluate(`document.querySelector('[aria-label*="7月2日"][aria-label*="照片预览"][role="button"]').click()`);
+    await waitText('7月2日的记录');
+    await delay(300); await checkSelectedPhoto('7月2日', 1);
+    if (!await evaluate(`document.body.innerText.includes('当天没有产品使用记录')`)) throw new Error('Another day product usage leaked into selected record');
+    await capture('timeline-first', 390);
+    await evaluate(`document.querySelector('[aria-label*="8月30日"][aria-label*="照片预览"][role="button"]').click()`);
+    await waitText('8月30日的记录');
+    await delay(300); await checkSelectedPhoto('8月30日', 5);
+    await evaluate(`(() => {
+      const find = day => document.querySelector('[aria-label*="' + day + '"][aria-label*="照片预览"][role="button"]');
+      find('7月12日').click(); find('7月2日').click(); find('8月30日').click();
+    })()`);
+    await delay(300); await checkSelectedPhoto('8月30日', 5);
+    await clickText('对比观察 ‹ ›'); await waitText('选择两个时间点');
+    for (const width of [320, 375, 390, 430]) await capture('compare', width);
+    if (!await evaluate(`Array.from(document.querySelectorAll('[aria-label="返回这一段记录"]')).some(n => n.getBoundingClientRect().width >= 44 && getComputedStyle(n).visibility === 'visible')`)) throw new Error('Compare back control is missing');
+    await clickText('返回这一段记录'); await delay(700); await waitText('这一段记录');
+    if (!await evaluate(`document.body.innerText.includes('8月30日的记录')`)) throw new Error('Comparison lost selected record');
+    await checkSelectedPhoto('8月30日', 5);
+    await evaluate('history.back()'); await delay(700); await waitText('从你关心的区域');
+    await clickText('全脸'); await waitText('按照片回看'); await capture('full-face', 390);
+    await clickText('分区'); await waitText('从你关心的区域');
+    await clickText('设置'); await waitText('退出当前账号');
+    if (fullFaceMutationRequests.length) throw new Error('Journey views wrote business data: ' + fullFaceMutationRequests.join(', '));
+  } else if (observeReview) {
     await waitText('记录产品使用');
     const scrollBottom = () => evaluate(`document.querySelectorAll('div').forEach(n => { if (/auto|scroll/.test(getComputedStyle(n).overflowY)) n.scrollTop = n.scrollHeight; })`);
     const scrollTop = () => evaluate(`document.querySelectorAll('div').forEach(n => { if(n.scrollTop) n.scrollTop = 0; })`);
@@ -389,7 +494,7 @@ try {
       if (scenario === 'text') await waitText('这次没有照片');
       if (scenario === 'long') {
         const card = await evaluate(`(() => { const card = document.querySelector('[data-testid="timepoint-evidence-card"]'); return {height: card.getBoundingClientRect().height, icons: card.querySelectorAll('img').length, details: !!card.querySelector('[aria-label="查看原图与完整记录"]')}; })()`);
-        if (card.height > 440 || card.icons !== 3 || !card.details) throw new Error(`Two-row evidence card failed: ${JSON.stringify(card)}`);
+        if (card.height <= 440 || card.icons !== 4 || !card.details) throw new Error(`Complete four-section evidence card failed: ${JSON.stringify(card)}`);
       }
       await capture(`region-${scenario}`, 320);
     }
@@ -483,26 +588,32 @@ try {
     await clickText('产品'); await waitText('按使用频次排列'); await waitImages();
     const backdropCheck = await evaluate(`(() => {
       const layer = document.querySelector('[data-testid="product-archive-backdrop"]');
-      if (!layer) return { valid: false, reason: 'Missing page-wide illustration layer' };
+      if (!layer) return { valid: false, reason: 'Missing page-wide photograph layer' };
       const main = layer.querySelector('[data-testid="product-backdrop-main"]');
-      const echoes = Array.from(layer.querySelectorAll('[data-testid="product-backdrop-echo"]'));
-      return { valid: !!main && main.getBoundingClientRect().width >= innerWidth * .65
-        && Number(getComputedStyle(main).opacity) <= .24
-        && echoes.length === 2 && echoes.every(n => Number(getComputedStyle(n).opacity) <= .1)
+      const veil = layer.querySelector('[data-testid="product-backdrop-veil"]');
+      return { valid: !!main && main.getBoundingClientRect().width >= innerWidth
+        && main.getBoundingClientRect().height >= innerHeight - 100
+        && !!veil && Number(getComputedStyle(veil).opacity) >= .2 && Number(getComputedStyle(veil).opacity) <= .35
+        && getComputedStyle(veil).backgroundColor === 'rgb(239, 232, 214)'
         && getComputedStyle(layer).pointerEvents === 'none', reason: 'Backdrop scale, layering or touch safety regressed' };
     })()`);
     if (!backdropCheck.valid) throw new Error(backdropCheck.reason);
     for (const width of [320, 375, 390, 430]) await capture('products', width);
+    productScenario = 'reference';
+    await returnToProducts(); await waitImages();
+    await capture('products-reference', 430, 764);
+    productScenario = 'normal';
+    await returnToProducts(); await waitImages();
+    await send('Emulation.setDeviceMetricsOverride', { width: 390, height: 844, deviceScaleFactor: 1, mobile: true });
     const scrollCheck = await evaluate(`(() => {
       const layer = document.querySelector('[data-testid="product-archive-backdrop"]');
       const before = layer.getBoundingClientRect().top;
-      let scroller = layer.parentElement;
-      while (scroller && !(scroller.scrollHeight > scroller.clientHeight && /auto|scroll/.test(getComputedStyle(scroller).overflowY))) scroller = scroller.parentElement;
+      const scroller = Array.from(document.querySelectorAll('div')).find(n => n.scrollHeight > n.clientHeight && /auto|scroll/.test(getComputedStyle(n).overflowY));
       if (!scroller) return false;
       scroller.scrollTop = 160;
-      return Math.abs((before - layer.getBoundingClientRect().top) - scroller.scrollTop) < 2 && scroller.scrollTop > 0;
+      return Math.abs(before - layer.getBoundingClientRect().top) < 2 && scroller.scrollTop > 0;
     })()`);
-    if (!scrollCheck) throw new Error('Product decoration must scroll with content, not float over it');
+    if (!scrollCheck) throw new Error('The ambient photograph must remain behind the scrolling archive');
     await capture('products-scrolled', 390);
     await evaluate(`document.querySelectorAll('div').forEach(n => { if(n.scrollTop) n.scrollTop = 0; })`);
     const swipeTarget = await evaluate(`(() => { const n = document.querySelector('[aria-label="过氧苯甲酰凝胶 5%，已记录 3 次使用"]'); const b = n.getBoundingClientRect(); return { x: b.right - 32, y: b.top + b.height / 2 }; })()`);
@@ -527,6 +638,13 @@ try {
     await evaluate(`document.querySelector('[aria-label="过氧苯甲酰凝胶 5%，已记录 3 次使用"]').click()`);
     await waitText('官方说明书');
     await capture('product-detail', 390); await capture('product-detail', 320);
+    await clickText('编辑'); await waitText('编辑自建产品');
+    await capture('product-edit', 390);
+    await clickText('移除图片');
+    await evaluate(`(() => { const field = document.querySelector('[aria-label="自建产品名称"]'); const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set; setter.call(field, '视觉验收已修改'); field.dispatchEvent(new Event('input', {bubbles: true})); })()`);
+    await clickText('保存修改'); await waitText('视觉验收已修改');
+    if (await evaluate(`document.body.innerText.includes('编辑自建产品')`)) throw new Error('Product edit sheet did not close after saving');
+    await capture('product-detail-edited', 390);
     await evaluate('history.back()'); await delay(500);
     await returnToProducts();
     productScenario = 'long';
@@ -606,7 +724,7 @@ try {
   throw error;
 } finally {
   const reportFile = colorReview ? (productReview ? 'product-review.json' : 'result-review.json') : 'review-results.json';
-  await writeFile(path.join(output, reportFile), JSON.stringify({ kind: 'VISUAL FIXTURES ONLY — not backend or native-device verification', status: errors.length ? 'failed' : (observeReview || productReview || productUseReview || fullFaceReview || resultReview || historyReview) ? 'passed-web-native-review-pending' : 'partial-native-review-pending', results, errors, skipped }, null, 2));
+  await writeFile(path.join(output, reportFile), JSON.stringify({ kind: 'VISUAL FIXTURES ONLY — not backend or native-device verification', status: errors.length ? 'failed' : (journeyReview || observeReview || productReview || productUseReview || fullFaceReview || resultReview || historyReview) ? 'passed-web-native-review-pending' : 'partial-native-review-pending', results, errors, skipped }, null, 2));
   socket?.close(); edge.kill();
   // Only this script's unique temporary browser profile is removed.
   if (path.basename(profile).startsWith('skin-ui-review-') && path.dirname(profile) === tmpdir()) await rm(profile, { recursive: true, force: true, maxRetries: 5, retryDelay: 250 }).catch(() => {});

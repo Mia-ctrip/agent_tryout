@@ -1,8 +1,9 @@
 import { Stack, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { AppScreen } from '@/components/app-screen';
+import { CustomProductForm } from '@/components/custom-product-form';
 import { EditorialText } from '@/components/editorial-text';
 import { InlineNotice } from '@/components/inline-notice';
 import { ProductImage } from '@/components/product-image';
@@ -23,6 +24,8 @@ export default function ProductDetailScreen() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [documentError, setDocumentError] = useState<string | null>(null);
+  const [editing, setEditing] = useState(false);
+  const [savingEdit, setSavingEdit] = useState(false);
 
   useFocusEffect(
     useCallback(() => {
@@ -77,8 +80,26 @@ export default function ProductDetailScreen() {
           headerStyle: { backgroundColor: productColors.background },
           headerTintColor: productColors.actionPrimary,
           title: '产品详情',
+          headerRight: () => product?.source_type === 'custom' ? (
+            <Pressable accessibilityRole="button" accessibilityLabel="编辑自建产品" onPress={() => setEditing(true)} style={styles.editButton}>
+              <Text style={styles.editLabel}>编辑</Text>
+            </Pressable>
+          ) : null,
         }}
       />
+      <Modal visible={editing} animationType="slide" onRequestClose={() => { if (!savingEdit) setEditing(false); }}>
+        <AppScreen variant="form" backgroundColor={productColors.background}>
+          {editing && product ? <CustomProductForm
+            editingProduct={product}
+            onSavingChange={setSavingEdit}
+            onCancel={() => setEditing(false)}
+            onSaved={(saved) => {
+              setProduct({ ...product, ...saved });
+              setEditing(false);
+            }}
+          /> : null}
+        </AppScreen>
+      </Modal>
       {loading && !product ? <ActivityIndicator color={productColors.actionPrimary} /> : null}
       {error ? <InlineNotice tone="error" message={error} /> : null}
       {product ? (
@@ -89,6 +110,7 @@ export default function ProductDetailScreen() {
               category={standard?.product_category ?? null}
               radius={radii.sm}
               size={120}
+              variant="archive"
               uri={product.image_url}
               expiresAt={product.image_expires_at}
               onRefresh={() => getPersonalProduct(request, product.product_id)}
@@ -161,6 +183,8 @@ export default function ProductDetailScreen() {
 }
 
 const styles = StyleSheet.create({
+  editButton: { minWidth: 44, minHeight: 44, alignItems: 'center', justifyContent: 'center' },
+  editLabel: { color: colors.mossDeep, fontSize: 15, fontWeight: '500' },
   screenContent: { paddingHorizontal: 20, paddingTop: spacing.md, paddingBottom: 56 },
   content: { gap: 24 },
   heroCard: { flexDirection: 'row', alignItems: 'center', gap: spacing.lg, paddingVertical: spacing.lg },

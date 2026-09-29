@@ -1,28 +1,29 @@
 import { router, Stack, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import type { Href } from 'expo-router';
 import { useCallback, useMemo, useState } from 'react';
-import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { AppButton } from '@/components/app-button';
 import { AppScreen } from '@/components/app-screen';
 import { EditorialText } from '@/components/editorial-text';
 import { InlineNotice } from '@/components/inline-notice';
+import { PrivacyPhotoThumbnail } from '@/components/privacy-photo-thumbnail';
 import { RegionTimechain } from '@/components/region-timechain';
+import { RegionComparison } from '@/components/region-comparison';
+import { journeyColors as palette } from '@/constants/journey-theme';
 import { TimepointEvidenceCard } from '@/components/timepoint-evidence-card';
-import { colors, radii, spacing } from '@/constants/theme';
+import { spacing } from '@/constants/theme';
 import { createClientRequestId } from '@/lib/client-request-id';
 import { userFacingError } from '@/lib/errors';
 import {
   chooseDefaultTimepointId,
   formatHistoryShortDate,
-  productContextsForEvent,
 } from '@/lib/history-flow';
 import { lifeContextLabel } from '@/lib/life-context';
 import { createObservationGenerationGuard } from '@/lib/observation-flow';
 import { productUseHref } from '@/lib/observation-navigation';
 import { listAllProductUses } from '@/lib/product-api';
 import type { ProductUse } from '@/lib/product-api';
-import { formatProductUseDate } from '@/lib/product-ui';
 import { endRegionEvent, getRegionEvent } from '@/lib/region-event-api';
 import type { RegionEventDetail } from '@/lib/region-event-api';
 import { regionById } from '@/lib/region-catalog';
@@ -34,12 +35,13 @@ function parseEventId(value: string | undefined): number | null {
 }
 
 export default function RegionEventDetailScreen() {
-  const params = useLocalSearchParams<{ eventId: string }>();
+  const params = useLocalSearchParams<{ eventId: string; mode?: string; earlier?: string; later?: string }>();
   const eventId = parseEventId(params.eventId);
   const { request } = useSession();
   const [event, setEvent] = useState<RegionEventDetail | null>(null);
   const [productUses, setProductUses] = useState<ProductUse[]>([]);
   const [selectedTargetId, setSelectedTargetId] = useState<number | null>(null);
+  const [photoWidth, setPhotoWidth] = useState(0);
   const [loading, setLoading] = useState(true);
   const [ending, setEnding] = useState(false);
   const [confirmEnding, setConfirmEnding] = useState(false);
@@ -129,233 +131,91 @@ export default function RegionEventDetailScreen() {
       ) ?? null,
     [event, selectedTargetId],
   );
-  const productContexts = useMemo(
-    () => (event ? productContextsForEvent(event.timepoints, productUses) : []),
-    [event, productUses],
-  );
+  const productContexts = useMemo(() => productUses.filter(use => {
+    if (!selectedTimepoint) return false;
+    const date = new Date(Date.parse(use.used_at) + use.used_timezone_offset_minutes * 60_000);
+    return Number.isFinite(date.getTime()) && date.toISOString().slice(0, 10) === selectedTimepoint.recorded_local_date;
+  }), [selectedTimepoint, productUses]);
+  const comparing = params.mode === 'compare';
+  const photos = event?.timepoints.filter(point => point.photo).slice().sort((a, b) => a.recorded_at.localeCompare(b.recorded_at)) ?? [];
+  const earlier = photos.find(point => point.target.target_id === Number(params.earlier)) ?? photos[0];
+  const later = photos.find(point => point.target.target_id === Number(params.later)) ?? photos.at(-1);
+  const openComparison = () => {
+    if (photos.length < 2) return;
+    const firstIndex = Math.floor(Math.random() * photos.length);
+    const remaining = photos.filter((_, index) => index !== firstIndex);
+    const pair = [photos[firstIndex], remaining[Math.floor(Math.random() * remaining.length)]]
+      .sort((a, b) => a.recorded_at.localeCompare(b.recorded_at));
+    router.push({ pathname: '/region-event/[eventId]', params: { eventId: String(eventId), mode: 'compare', earlier: pair[0].target.target_id, later: pair[1].target.target_id } });
+  };
 
   return (
-    <AppScreen safeAreaEdges={['left', 'right', 'bottom']}>
-      <Stack.Screen
-        options={{
-          headerShown: true,
-          headerShadowVisible: false,
-          headerStyle: { backgroundColor: colors.background },
-          headerTintColor: colors.actionPrimary,
-          title: region?.label ?? '区域记录',
-        }}
-      />
-
-      {loading && !event ? (
-        <View style={styles.loading}>
-          <ActivityIndicator color={colors.actionPrimary} />
-          <Text style={styles.muted}>正在读取区域时间链</Text>
-        </View>
-      ) : null}
-
-      {error ? (
-        <View style={styles.noticeGroup}>
-          <InlineNotice tone="error" message={error} />
-          <AppButton
-            label="重新读取"
-            onPress={() => setReloadKey((key) => key + 1)}
-            variant="text"
+    <AppScreen backgroundColor={palette.background} contentStyle={styles.content}>
+      <Stack.Screen options={{ headerShown: false }} />
+      <View style={styles.header}>
+        <Pressable accessibilityRole="button" accessibilityLabel={comparing ? '返回这一段记录' : '返回历程'} onPress={() => router.canGoBack() ? router.back() : router.replace('/history')} style={styles.back}><Text style={styles.backGlyph}>‹</Text></Pressable>
+        <EditorialText role="pageTitle" style={styles.title}>{region?.label ?? '区域'} · {comparing ? '对比观察' : '这一段记录'}</EditorialText>
+        <Text style={styles.meta}>{comparing ? '选择两个时间点，对比肌肤变化' : event ? formatHistoryShortDate(event.started_local_date) + '—' + formatHistoryShortDate(event.last_valid_local_date) + ' · ' + event.timepoints.length + ' 个时间点' : '正在读取区域记录'}</Text>
+        {event?.status === 'ended' ? <Text style={styles.meta}>这段记录已结束</Text> : null}
+      </View>
+      {loading && !event ? <ActivityIndicator color={palette.moss} /> : null}
+      {error ? <View><InlineNotice tone="error" message={error} /><AppButton label="重新读取" onPress={() => setReloadKey(key => key + 1)} variant="text" /></View> : null}
+      {event && region ? comparing ? (
+        earlier && later && earlier !== later ? <RegionComparison earlier={earlier} later={later} request={request} regionLabel={region.label} /> :
+          <Text style={styles.muted}>需要两个有照片的时间点才能对比。</Text>
+      ) : <>
+        {event.timepoints.length ? <RegionTimechain onSelect={setSelectedTargetId} regionLabel={region.label} request={request} selectedTargetId={selectedTargetId} timepoints={event.timepoints} /> :
+          <Text style={styles.muted}>这段记录还没有有效时间点。</Text>}
+        {selectedTimepoint ? <View
+          testID="selected-region-photo"
+          onLayout={({ nativeEvent }) => setPhotoWidth(nativeEvent.layout.width)}
+          style={styles.selectedPhoto}>
+          <Text style={styles.photoCaption}>{formatHistoryShortDate(selectedTimepoint.recorded_local_date)} · {region.label}</Text>
+          {selectedTimepoint.photo ? photoWidth > 0 && <PrivacyPhotoThumbnail
+            key={`${selectedTimepoint.target.target_id}-${selectedTimepoint.photo.photo_id}-${selectedTimepoint.photo.url}`}
+            accessibilityLabel={`${region.label}，${formatHistoryShortDate(selectedTimepoint.recorded_local_date)}，区域大图`}
+            photo={selectedTimepoint.photo}
+            regionId={selectedTimepoint.target.region_id}
+            request={request}
+            selected={false}
+            size={photoWidth}
+          /> : <Text style={styles.muted}>这一天没有照片，以下保留文字记录。</Text>}
+        </View> : null}
+        {photos.length >= 2 ? <Pressable accessibilityRole="button" onPress={openComparison} style={styles.compareLink}><Text style={styles.compareLinkText}>对比观察 ‹ ›</Text></Pressable> : null}
+        {selectedTimepoint ? <View style={styles.evidenceSection}>
+          <TimepointEvidenceCard
+            onOpenObservation={() => router.push(`/observation/${selectedTimepoint.observation_id}`)}
+            regionLabel={region.label} timepoint={selectedTimepoint} productUses={productContexts}
+            productStatus={contextError ? 'error' : contextLoading ? 'loading' : undefined}
+            onRetryProducts={() => setContextReloadKey(key => key + 1)}
           />
-        </View>
-      ) : null}
-
-      {event && region ? (
-        <>
-          <View style={styles.header}>
-            <EditorialText role="pageTitle" style={styles.title}>{region.label} · 这一段记录</EditorialText>
-            <Text style={styles.meta}>
-              {formatHistoryShortDate(event.started_local_date)}—
-              {formatHistoryShortDate(event.last_valid_local_date)} · {event.timepoints.length} 个时间点
-            </Text>
-            {event.status === 'ended' ? <Text style={styles.status}>这段记录已结束</Text> : null}
-          </View>
-
-          {event.timepoints.length ? (
-            <View style={styles.timelineSection}>
-              <RegionTimechain
-                onSelect={setSelectedTargetId}
-                regionLabel={region.label}
-                request={request}
-                selectedTargetId={selectedTargetId}
-                timepoints={event.timepoints}
-              />
-            </View>
-          ) : (
-            <View style={styles.emptyState}>
-              <Text style={styles.emptyTitle}>这段记录还没有有效时间点</Text>
-              <Text style={styles.muted}>
-                处理中或需要补充文字的观察不会提前成为区域证据。
-              </Text>
-            </View>
-          )}
-
-          {productContexts.length || selectedTimepoint?.life_context_completed_at ? (
-            <View style={styles.contextSection}>
-              <View style={styles.contextRows}>
-                {productContexts.map((use) => (
-                  <View key={use.product_use_id} style={styles.contextRow}>
-                    <Text style={styles.contextLabel}>
-                      产品使用 ·{' '}
-                      {use.products.length
-                        ? use.products.map(({ name }) => name).join('、')
-                        : '未注明产品'}
-                    </Text>
-                    <Text style={styles.contextDate}>
-                      {formatProductUseDate(
-                        use.used_at,
-                        use.used_timezone_offset_minutes,
-                      )}
-                    </Text>
-                  </View>
-                ))}
-                {selectedTimepoint?.life_context_completed_at ? (
-                  selectedTimepoint.life_context_ids.length ? (
-                    selectedTimepoint.life_context_ids.map((contextId) => (
-                      <View key={contextId} style={styles.contextRow}>
-                        <Text style={styles.contextLabel}>
-                          生活背景 · {lifeContextLabel(contextId)}
-                        </Text>
-                        <Text style={styles.contextDate}>
-                          {formatHistoryShortDate(selectedTimepoint.recorded_local_date)}
-                        </Text>
-                      </View>
-                    ))
-                  ) : (
-                    <Text style={styles.contextSkipped}>生活背景 · 当天已跳过</Text>
-                  )
-                ) : null}
-              </View>
-            </View>
-          ) : null}
-
-          {contextLoading && !productUses.length ? (
-            <Text style={styles.contextUnavailable}>正在读取产品使用上下文。</Text>
-          ) : null}
-          {contextError ? (
-            <View style={styles.contextErrorRow}>
-              <Text style={styles.contextUnavailable}>
-                产品使用上下文暂未加载。已保留上次读取到的内容。
-              </Text>
-              <AppButton
-                label="重新读取时间上下文"
-                onPress={() => setContextReloadKey((key) => key + 1)}
-                variant="text"
-              />
-            </View>
-          ) : null}
-          {selectedTimepoint ? (
-            <View style={styles.evidenceSection}>
-              <TimepointEvidenceCard
-                onOpenObservation={() =>
-                  router.push(`/observation/${selectedTimepoint.observation_id}`)
-                }
-                regionLabel={region.label}
-                timepoint={selectedTimepoint}
-              />
-              <AppButton
-                label="继续记录产品使用"
-                onPress={() =>
-                  router.push(
-                    productUseHref({
-                      source: 'region_event',
-                      flowId: createClientRequestId(),
-                      observationId: selectedTimepoint.observation_id,
-                      eventId: event.event_id,
-                    }) as Href,
-                  )
-                }
-                variant="secondary"
-              />
-            </View>
-          ) : null}
-
-          <Text style={styles.contextBoundary}>
-            相邻记录只作时间上下文，不表示关联或疗效。
-          </Text>
-
-          {event.status === 'current' ? (
-            <View style={styles.endSection}>
-              {confirmEnding ? (
-                <InlineNotice
-                  tone="info"
-                  message="结束只会关闭这段记录，不代表皮肤状态已经恢复或问题已经解决。"
-                />
-              ) : null}
-              <AppButton
-                label={confirmEnding ? '确认结束这段记录' : '结束这段记录'}
-                loading={ending}
-                onPress={() =>
-                  confirmEnding ? void endCurrentEvent() : setConfirmEnding(true)
-                }
-                variant="text"
-              />
-              {confirmEnding ? (
-                <AppButton
-                  label="暂不结束"
-                  onPress={() => setConfirmEnding(false)}
-                  variant="text"
-                />
-              ) : null}
-            </View>
-          ) : null}
-        </>
-      ) : null}
+        </View> : null}
+        <Text style={styles.contextBoundary}>相邻记录只作时间上下文，不表示关联或疗效。</Text>
+        {selectedTimepoint?.life_context_completed_at && selectedTimepoint.life_context_ids.length ? <Text style={styles.muted}>生活背景 · {selectedTimepoint.life_context_ids.map(lifeContextLabel).join('、')}</Text> : null}
+        {selectedTimepoint ? <AppButton label="继续记录产品使用" variant="text" onPress={() => router.push(productUseHref({ source: 'region_event', flowId: createClientRequestId(), observationId: selectedTimepoint.observation_id, eventId: event.event_id }) as Href)} /> : null}
+        {event.status === 'current' ? <View style={styles.endSection}>
+          {confirmEnding ? <InlineNotice tone="info" message="结束只会关闭这段记录，不代表皮肤状态已经恢复或问题已经解决。" /> : null}
+          <AppButton label={confirmEnding ? '确认结束这段记录' : '结束这段记录'} loading={ending} onPress={() => confirmEnding ? void endCurrentEvent() : setConfirmEnding(true)} variant="text" />
+          {confirmEnding ? <AppButton label="暂不结束" onPress={() => setConfirmEnding(false)} variant="text" /> : null}
+        </View> : null}
+      </> : null}
     </AppScreen>
   );
 }
 
 const styles = StyleSheet.create({
-  loading: { alignItems: 'center', gap: spacing.md, paddingVertical: spacing.xxl },
-  muted: { color: colors.textMuted, fontSize: 14, lineHeight: 21 },
-  noticeGroup: { gap: spacing.xs },
-  header: { alignItems: 'center', gap: spacing.sm, marginBottom: spacing.xl },
-  title: {
-    color: colors.ink,
-    fontSize: 26,
-    lineHeight: 36,
-    fontWeight: '400',
-    textAlign: 'center',
-  },
-  meta: { color: colors.textMuted, fontSize: 14, lineHeight: 22 },
-  status: { color: colors.actionPrimary, fontSize: 12, fontWeight: '500' },
-  timelineSection: { gap: spacing.xs },
-  emptyState: {
-    gap: spacing.sm,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: radii.lg,
-    backgroundColor: colors.surface,
-    padding: spacing.xl,
-  },
-  emptyTitle: { color: colors.text, fontSize: 17, fontWeight: '700' },
-  contextSection: { gap: spacing.sm, marginTop: spacing.xl },
-  contextRows: { gap: spacing.xs },
-  contextRow: {
-    minHeight: 44,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderColor: colors.border,
-    paddingVertical: spacing.sm,
-  },
-  contextLabel: { flex: 1, color: colors.moss, fontSize: 14, lineHeight: 22 },
-  contextDate: { flexShrink: 1, maxWidth: '40%', color: colors.textMuted, fontSize: 11, lineHeight: 18 },
-  contextSkipped: { color: colors.textMuted, fontSize: 12, paddingVertical: spacing.sm },
-  contextUnavailable: { marginTop: spacing.md, color: colors.textMuted, fontSize: 12 },
-  contextErrorRow: { alignItems: 'flex-start', gap: spacing.xs },
-  contextBoundary: {
-    marginTop: spacing.md,
-    color: colors.textMuted,
-    fontSize: 12,
-    lineHeight: 19,
-    textAlign: 'center',
-  },
-  evidenceSection: { gap: spacing.md, marginTop: spacing.xl },
-  endSection: { gap: spacing.sm, marginTop: spacing.xxl },
+  content: { paddingHorizontal: 20, paddingTop: 28 },
+  header: { alignItems: 'center', gap: spacing.sm, marginBottom: spacing.xl, paddingTop: spacing.xs, paddingHorizontal: spacing.xl },
+  back: { position: 'absolute', left: -8, top: -4, width: 44, height: 44, justifyContent: 'center', alignItems: 'center' },
+  backGlyph: { color: palette.ink, fontSize: 34, lineHeight: 40 },
+  title: { color: palette.ink, fontSize: 24, fontWeight: '600', lineHeight: 34, textAlign: 'center' },
+  meta: { color: palette.muted, fontSize: 13, lineHeight: 21, textAlign: 'center' },
+  muted: { color: palette.muted, fontSize: 13, lineHeight: 22, marginTop: spacing.lg },
+  compareLink: { alignSelf: 'flex-end', minHeight: 36, justifyContent: 'center', paddingHorizontal: spacing.sm },
+  compareLinkText: { color: palette.moss, fontSize: 12 },
+  selectedPhoto: { width: '100%', marginTop: spacing.lg, marginBottom: spacing.sm, gap: spacing.sm },
+  photoCaption: { color: palette.muted, fontSize: 13, lineHeight: 21 },
+  evidenceSection: { marginTop: spacing.sm },
+  contextBoundary: { color: palette.muted, fontSize: 11, lineHeight: 19, textAlign: 'center', marginTop: spacing.md, marginBottom: spacing.md },
+  endSection: { marginTop: spacing.md },
 });

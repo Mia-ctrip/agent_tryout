@@ -3,6 +3,7 @@ import { useCallback, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { colors, radii, spacing } from '@/constants/theme';
+import { journeyColors } from '@/constants/journey-theme';
 import { API_BASE_URL } from '@/lib/api';
 import { resolveMediaUrl } from '@/lib/media-url';
 import { regionPhotoCrop } from '@/lib/region-photo-crop';
@@ -26,7 +27,9 @@ type PrivacyPhotoThumbnailProps = {
   request: AuthenticatedRequest;
   selected: boolean;
   accessibilityLabel: string;
-  onPress: () => void;
+  onPress?: () => void;
+  size?: number;
+  height?: number;
 };
 
 export function PrivacyPhotoThumbnail({
@@ -36,6 +39,8 @@ export function PrivacyPhotoThumbnail({
   selected,
   accessibilityLabel,
   onPress,
+  size = 88,
+  height = size,
 }: PrivacyPhotoThumbnailProps) {
   const [photoState, setPhotoState] = useState(() =>
     createPrivacyPhotoState(photo.photo_id, photo.url),
@@ -43,7 +48,7 @@ export function PrivacyPhotoThumbnail({
   const [phase, setPhase] = useState<'loading' | 'ready' | 'error'>('loading');
   const [refreshVersion, setRefreshVersion] = useState(0);
   const refreshingRef = useRef(false);
-  const crop = regionPhotoCrop(photo, regionId, 80);
+  const crop = regionPhotoCrop(photo, regionId, Math.max(size, height) - 8);
 
   const resolvedUrl = useMemo(
     () => resolveMediaUrl(photoState.displayUrl, API_BASE_URL),
@@ -66,7 +71,7 @@ export function PrivacyPhotoThumbnail({
   }, [photo.photo_id, request]);
 
   const handlePress = () => {
-    onPress();
+    onPress?.();
     if (phase === 'error') {
       setPhotoState((current) => beginPrivacyPhotoManualRefresh(current));
       void refresh();
@@ -86,18 +91,19 @@ export function PrivacyPhotoThumbnail({
   return (
     <Pressable
       accessibilityHint={
-        phase === 'error' ? '选择此时间点并重新加载照片' : '选择此时间点'
+        phase === 'error' ? '重新加载照片' : onPress ? '选择此时间点' : '查看此时间点的照片'
       }
       accessibilityLabel={`${accessibilityLabel}，${crop ? '区域局部' : '原图预览，缺少区域定位'}`}
-      accessibilityRole="button"
+      accessibilityRole={onPress || phase === 'error' ? 'button' : 'image'}
       accessibilityState={{ selected }}
       onPress={handlePress}
       style={({ pressed }) => [
         styles.frame,
+        { width: size, height },
         selected && styles.selected,
         pressed && styles.pressed,
       ]}>
-      <View style={styles.viewport} testID={crop ? 'region-photo-crop' : 'region-photo-original'}>
+      <View style={[styles.viewport, { width: size - 8, height: height - 8 }]} testID={crop ? 'region-photo-crop' : 'region-photo-original'}>
         <Image
           accessibilityElementsHidden
           blurRadius={crop ? 0 : 10}
@@ -111,7 +117,7 @@ export function PrivacyPhotoThumbnail({
           onLoadStart={() => setPhase('loading')}
           recyclingKey={`${photo.photo_id}-${refreshVersion}-${photoState.sourceUrl}`}
           source={{ uri: resolvedUrl }}
-          style={crop ? [styles.croppedImage, crop] : styles.image}
+          style={crop ? [styles.croppedImage, crop, { left: crop.left - Math.max(0, height - size) / 2, top: crop.top - Math.max(0, size - height) / 2 }] : styles.image}
           transition={0}
         />
         {!crop ? (
@@ -142,9 +148,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 2,
-    borderColor: colors.background,
+    borderColor: journeyColors.background,
     borderRadius: radii.md,
-    backgroundColor: colors.background,
+    backgroundColor: journeyColors.background,
   },
   selected: {
     borderColor: colors.actionPrimary,

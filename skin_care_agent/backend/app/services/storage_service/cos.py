@@ -16,12 +16,14 @@ class CosStorage(StorageBackend):
         secret_id: str = "",
         secret_key: str = "",
         client: Any | None = None,
+        local_fallback: StorageBackend | None = None,
     ) -> None:
         if not bucket or not region:
             raise ValueError("COS_BUCKET and COS_REGION are required")
         self.bucket = bucket
         self.region = region
         self.client = client or self._create_client(secret_id, secret_key)
+        self.local_fallback = local_fallback
 
     def _create_client(self, secret_id: str, secret_key: str) -> Any:
         if not secret_id or not secret_key:
@@ -45,6 +47,8 @@ class CosStorage(StorageBackend):
         )
 
     def get(self, key: str) -> bytes:
+        if self.local_fallback and self.local_fallback.exists(key):
+            return self.local_fallback.get(key)
         try:
             response = self.client.get_object(Bucket=self.bucket, Key=key)
         except Exception as exc:
@@ -59,6 +63,8 @@ class CosStorage(StorageBackend):
         return stream.read()
 
     def exists(self, key: str) -> bool:
+        if self.local_fallback and self.local_fallback.exists(key):
+            return True
         try:
             self.client.head_object(Bucket=self.bucket, Key=key)
         except Exception as exc:
@@ -69,8 +75,14 @@ class CosStorage(StorageBackend):
 
     def delete(self, key: str) -> None:
         self.client.delete_object(Bucket=self.bucket, Key=key)
+        if self.local_fallback:
+            self.local_fallback.delete(key)
 
     def signed_url(self, key: str, ttl_seconds: int | None = None) -> SignedURL:
+        # Storage keys are immutable; legacy files stay local after switching to COS.
+        # Signing and reading must agree on where the bytes actually live.
+        if self.local_fallback and self.local_fallback.exists(key):
+            return self.local_fallback.signed_url(key, ttl_seconds)
         from app.config import get_settings
 
         ttl = ttl_seconds or get_settings().storage_url_ttl_seconds

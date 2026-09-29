@@ -17,6 +17,8 @@ import { FullFaceHistoryCard } from '@/components/full-face-history-card';
 import { HistoryEventRow } from '@/components/history-event-row';
 import { HistoryFaceOverview } from '@/components/history-face-overview';
 import { InlineNotice } from '@/components/inline-notice';
+import { EvidenceIcon } from '@/components/timepoint-evidence-card';
+import { journeyColors } from '@/constants/journey-theme';
 import { colors, radii, spacing } from '@/constants/theme';
 import { userFacingError } from '@/lib/errors';
 import {
@@ -144,11 +146,16 @@ export default function HistoryScreen() {
 
   return (
     <AppScreen
+      backgroundColor={journeyColors.background}
+      contentStyle={{ paddingHorizontal: 20, paddingTop: 24 }}
       scrollViewRef={scrollViewRef}
       onScroll={(event) => {
         currentScrollOffset.current = event.nativeEvent.contentOffset.y;
       }}>
       <View style={styles.header}>
+        <Pressable accessibilityRole="button" accessibilityLabel="设置" onPress={() => router.push('/me')} style={styles.settings}>
+          <EvidenceIcon kind="settings" />
+        </Pressable>
         <EditorialText role="pageTitle" style={styles.title}>历程</EditorialText>
         <Text style={styles.description}>
           {historyView === 'full_face'
@@ -259,9 +266,8 @@ export default function HistoryScreen() {
           ) : null}
 
           {overview.currentEvents.length ? (
-            <View style={styles.section}>
-              <Text style={styles.sectionTitle}>正在记录</Text>
-              <Text style={styles.sectionHint}>已有有效时间点的区域事件</Text>
+            <View style={styles.trackingCard}>
+              <EditorialText role="sectionTitle" style={styles.sectionTitle}>正在记录</EditorialText>
               <View style={styles.rows}>
                 {overview.currentEvents.map((event) => {
                   const region = overview.byRegion[event.region_id];
@@ -394,19 +400,21 @@ export default function HistoryScreen() {
 }
 
 const styles = StyleSheet.create({
-  header: { alignItems: 'center', gap: spacing.sm, marginBottom: spacing.lg },
+  header: { alignItems: 'flex-start', gap: spacing.xs, marginBottom: spacing.sm, paddingHorizontal: spacing.sm },
+  settings: { position: 'absolute', right: 0, top: 0, minWidth: 44, minHeight: 44, alignItems: 'center', justifyContent: 'center' },
+  trackingCard: { marginTop: spacing.sm, paddingHorizontal: spacing.lg, paddingTop: spacing.md, paddingBottom: spacing.xs, borderRadius: radii.md, borderWidth: 1, borderColor: journeyColors.line, backgroundColor: journeyColors.surface },
   title: {
     color: colors.ink,
     fontSize: 34,
     lineHeight: 42,
     fontWeight: '400',
   },
-  description: { color: colors.textMuted, fontSize: 14, lineHeight: 24, textAlign: 'center' },
+  description: { color: journeyColors.muted, fontSize: 13, lineHeight: 22 },
   historyViewSwitch: {
     flexDirection: 'row',
-    marginBottom: spacing.lg,
+    marginBottom: 0,
     borderBottomWidth: 1,
-    borderBottomColor: colors.border,
+    borderBottomColor: journeyColors.line,
   },
   historyViewOption: { minHeight: 44, flex: 1, alignItems: 'center', justifyContent: 'center' },
   historyViewOptionSelected: { borderBottomWidth: 2, borderBottomColor: colors.actionPrimary },
@@ -426,7 +434,7 @@ const styles = StyleSheet.create({
   section: { marginTop: spacing.xxl },
   sectionHeadingRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
   sectionHeadingCopy: { flex: 1, gap: spacing.xs },
-  sectionTitle: { color: colors.earth, fontSize: 18, fontWeight: '500' },
+  sectionTitle: { color: colors.earth, fontSize: 20, fontWeight: '600' },
   sectionHint: { marginTop: spacing.xs, color: colors.textMuted, fontSize: 13, lineHeight: 19 },
   dismiss: { color: colors.actionPrimary, fontSize: 14, fontWeight: '700', padding: spacing.sm },
   rows: { marginTop: spacing.sm },

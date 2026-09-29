@@ -4,6 +4,7 @@ import test from 'node:test';
 import {
   addStandardProductToCabinet,
   buildCustomProductForm,
+  buildCustomProductUpdateForm,
   createCustomProduct,
   createPersonalProduct,
   createProductUse,
@@ -14,6 +15,7 @@ import {
   listAllProductUses,
   listProductUses,
   searchProducts,
+  updateCustomProduct,
 } from '../src/lib/product-api.ts';
 
 
@@ -78,6 +80,21 @@ test('product creation sends the stable client request and trimmed name', async 
     client_request_id: '11111111-1111-4111-8111-111111111111',
     name: '温和洁面',
   });
+});
+
+
+test('custom product update sends the edited name and explicit image action', async () => {
+  const values = [];
+  const form = { append: (name, value) => values.push([name, value]) };
+  buildCustomProductUpdateForm({ name: '  新名字  ', removeImage: true }, form);
+  const client = recorder({ product_id: 3, name: '新名字' });
+
+  await updateCustomProduct(client.request, 3, form);
+
+  assert.deepEqual(values, [['name', '新名字'], ['remove_image', 'true']]);
+  assert.equal(client.calls[0].path, '/products/3/custom');
+  assert.equal(client.calls[0].init.method, 'PATCH');
+  assert.equal(client.calls[0].init.body, form);
 });
 
 

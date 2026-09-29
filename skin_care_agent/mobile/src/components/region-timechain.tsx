@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { PrivacyPhotoThumbnail } from '@/components/privacy-photo-thumbnail';
@@ -22,6 +22,8 @@ export function RegionTimechain({
   request,
   onSelect,
 }: RegionTimechainProps) {
+  const [width, setWidth] = useState(350);
+  const nodeSize = Math.max(52, Math.min(76, (width - 8) / 5));
   const scrollRef = useRef<ScrollView>(null);
   const scrollToSelected = useCallback(
     (animated: boolean) => {
@@ -30,11 +32,11 @@ export function RegionTimechain({
       );
       if (selectedIndex < 0) return;
       scrollRef.current?.scrollTo({
-        x: Math.max(0, selectedIndex * 120 - spacing.sm),
+        x: Math.max(0, (selectedIndex - 4) * nodeSize),
         animated,
       });
     },
-    [selectedTargetId, timepoints],
+    [selectedTargetId, timepoints, nodeSize],
   );
 
   useEffect(() => {
@@ -46,6 +48,7 @@ export function RegionTimechain({
       accessibilityLabel={`${regionLabel}图片时间链，共 ${timepoints.length} 个时间点`}
       contentContainerStyle={styles.content}
       horizontal
+      onLayout={event => setWidth(event.nativeEvent.layout.width)}
       onContentSizeChange={() => scrollToSelected(false)}
       ref={scrollRef}
       showsHorizontalScrollIndicator={false}>
@@ -54,7 +57,7 @@ export function RegionTimechain({
           pointerEvents="none"
           style={[
             styles.line,
-            { width: (timepoints.length - 1) * (96 + spacing.xl) },
+            { width: (timepoints.length - 1) * nodeSize, left: 4 + nodeSize / 2, top: 8 + nodeSize + 24 },
           ]}
         />
       ) : null}
@@ -65,7 +68,7 @@ export function RegionTimechain({
           timepoint.photo ? '照片预览' : '文字记录'
         }`;
         return (
-          <View key={targetId} style={styles.node}>
+          <View key={targetId} style={[styles.node, { width: nodeSize }]}>
             {timepoint.photo ? (
               <PrivacyPhotoThumbnail
                 accessibilityLabel={label}
@@ -75,6 +78,7 @@ export function RegionTimechain({
                 regionId={timepoint.target.region_id}
                 request={request}
                 selected={selected}
+                size={nodeSize}
               />
             ) : (
               <Pressable
@@ -84,6 +88,7 @@ export function RegionTimechain({
                 onPress={() => onSelect(targetId)}
                 style={({ pressed }) => [
                   styles.textNode,
+                  { width: nodeSize, height: nodeSize },
                   selected && styles.textNodeSelected,
                   pressed && styles.pressed,
                 ]}>
@@ -111,7 +116,7 @@ const styles = StyleSheet.create({
   content: {
     minWidth: '100%',
     position: 'relative',
-    gap: spacing.xl,
+    gap: 0,
     paddingHorizontal: spacing.xs,
     paddingVertical: spacing.sm,
   },

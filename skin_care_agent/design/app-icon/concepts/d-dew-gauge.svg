@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-label="Skin Care Agent">
+<defs><linearGradient id="dg" x1="0.2" y1="0" x2="0.8" y2="1"><stop offset="0" stop-color="#C8CFAF"/><stop offset="0.55" stop-color="#A9B58F"/><stop offset="1" stop-color="#6D7A54"/></linearGradient><radialGradient id="ebg" cx="50%" cy="40%" r="78%"><stop offset="0" stop-color="#3E362B"/><stop offset="1" stop-color="#2E2A21"/></radialGradient><clipPath id="dclip"><path d="M 256 92 L 353.17 233.06 A 118 118 0 1 1 158.83 233.06 Z"/></clipPath></defs>
+<rect width="512" height="512" fill="url(#ebg)"/>
+  <path d="M 256 92 L 353.17 233.06 A 118 118 0 1 1 158.83 233.06 Z" fill="url(#dg)"/>
+  <g clip-path="url(#dclip)">
+    <path d="M 219 356 L 293 356" stroke="#F7F1E1" stroke-width="11" stroke-linecap="round" opacity="0.5"/>
+    <path d="M 208 316 L 304 316" stroke="#F7F1E1" stroke-width="11" stroke-linecap="round" opacity="0.7"/>
+    <path d="M 213 268 L 299 268" stroke="#C89A45" stroke-width="11" stroke-linecap="round" opacity="1"/>
+  </g>
+</svg>

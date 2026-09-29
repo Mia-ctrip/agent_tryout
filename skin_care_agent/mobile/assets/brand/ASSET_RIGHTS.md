@@ -8,7 +8,8 @@
 | natural-light-v1.png | 本会话 imagegen 原创生成 | 首页主图：自然光、亚麻、手持绿枝 | 无文字、商标或可识别人脸 |
 | leaf-water-v1.png | 本会话 imagegen 原创生成 | 首页圆形辅图：叶片与水面 | 无文字或商标 |
 | product-glass-still-life-v1.png | 2026-09-11 内置 imagegen 原创生成 | 首轮摄影底纹，已被 v2 插画替换，保留供比较 | 无文字、商标或真实产品 |
-| product-still-life-illustration-v2.png | 2026-09-11 内置 imagegen 原创生成 | 当前产品页：右上大幅主底纹与列表两侧局部淡纹 | 无标签或品牌；PNG 透明角点已验证，不含矩形背景 |
+| product-still-life-illustration-v2.png | 2026-09-11 内置 imagegen 原创生成 | 历史产品页插画底纹，保留供比较 | 无标签或品牌；PNG 透明角点已验证，不含矩形背景 |
+| product-archive-background.png | 用户于 2026-09-22 提供，原文件 `design/ui-rebuild/products/reference/background/image.png` | 产品档案全屏背景，直接复制原图，叠加 Ground 色遮罩 | 未生成、重绘或修改图片；外部权利未独立核验 |
 
 授权来源：本次用户要求按交接包实施 UI，交接包允许为本产品生成原创品牌素材；未引入第三方摄影许可。
 素材随 UI 一起由用户作上线前视觉审核，不宣称第三方版权审查或商标清查已完成。
