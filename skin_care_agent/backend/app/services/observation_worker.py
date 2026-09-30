@@ -63,6 +63,7 @@ async def run_observation_target(
         db.commit()
 
         target = db.get(ObservationTarget, target_id)
+        claimed_started_at = target.processing_started_at if target is not None else None
         record = db.get(ObservationRecord, target.record_id) if target is not None else None
         photo = db.get(Photo, record.photo_id) if record is not None and record.photo_id else None
         try:
@@ -89,6 +90,12 @@ async def run_observation_target(
                 success=False,
                 failure_code="all_providers_failed",
             )
+
+        # 超时回收后该目标可能已被新的 worker 领取；只有仍持有本次领取时才写回结果。
+        db.refresh(target, with_for_update=True)
+        if target.status != "processing" or target.processing_started_at != claimed_started_at:
+            db.rollback()
+            return False
 
         completed_at = datetime.now(tz=timezone.utc)
         target.trace_id = outcome.trace_id

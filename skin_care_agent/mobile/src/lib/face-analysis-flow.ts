@@ -154,6 +154,7 @@ export function faceAnalysisReducer(
       return {
         ...state,
         status: 'quality_failed',
+        quality: null,
         qualityIssue: event.issue,
         errorMessage: event.issue.message,
       };

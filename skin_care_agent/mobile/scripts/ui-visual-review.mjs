@@ -3,6 +3,7 @@
  * Every API request is intercepted; no test account or record is persisted.
  */
 import { spawn } from 'node:child_process';
+import { createServer } from 'node:http';
 import { mkdtemp, readFile, writeFile, mkdir, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
@@ -11,6 +12,10 @@ import { buildHistoryFaceSvg, HISTORY_FACE_BOUNDARY } from '../src/lib/history-f
 
 const root = fileURLToPath(new URL('../../', import.meta.url));
 const observeReview = process.argv.includes('--observe-only');
+const meReview = process.argv.includes('--me-only');
+const qualityReview = process.argv.includes('--quality-only');
+let meExportFailure = false;
+const meMutations = [];
 const observeBaseline = process.argv.includes('--observe-baseline');
 let observeScenario = 'normal';
 const productReview = process.argv.includes('--products-only');
@@ -19,8 +24,10 @@ const fullFaceReview = process.argv.includes('--full-face-only');
 const resultReview = process.argv.includes('--results-only');
 const historyReview = process.argv.includes('--history-only');
 const journeyReview = process.argv.includes('--journey-only');
+let journeyEmpty = false;
 const colorReview = process.argv.includes('--color-review');
-const output = path.join(root, journeyReview ? 'artifacts/journey-final-review' : observeReview ? 'artifacts/observe-lower-review' : fullFaceReview ? 'artifacts/full-face-overview-history-review' : historyReview ? 'artifacts/history-refresh-review' : colorReview ? 'artifacts/color-refresh-review' : resultReview ? 'artifacts/result-refresh-review' : productUseReview ? 'artifacts/product-use-flow-review' : productReview ? 'artifacts/product-archive-reference-review' : 'artifacts/ui-rebuild-review');
+const outputOverride = process.argv.includes('--output-dir') ? process.argv[process.argv.indexOf('--output-dir') + 1] : null;
+const output = path.join(root, outputOverride ?? (qualityReview ? 'artifacts/photo-quality-review' : meReview ? 'artifacts/me-refresh-review' : journeyReview ? 'artifacts/journey-final-review' : observeReview ? 'artifacts/observe-lower-review' : fullFaceReview ? 'artifacts/full-face-overview-history-review' : historyReview ? 'artifacts/history-refresh-review' : colorReview ? 'artifacts/color-refresh-review' : resultReview ? 'artifacts/result-refresh-review' : productUseReview ? 'artifacts/product-use-flow-review' : productReview ? 'artifacts/product-archive-reference-review' : 'artifacts/ui-rebuild-review'));
 const assets = path.join(root, 'design/skin-care-ui-rebuild-handoff-v1/golden-screens/assets');
 const profile = await mkdtemp(path.join(tmpdir(), 'skin-ui-review-'));
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -122,6 +129,7 @@ function productFixtures() {
 }
 function fixture(url) {
   const pathname = new URL(url).pathname.replace(/^\/api\/v1/, '');
+  if (journeyReview && journeyEmpty && ['/region-events', '/timeline', '/observations'].includes(pathname)) return [];
   if (journeyReview) {
     const days = ['2026-07-02', '2026-07-12', '2026-07-29', '2026-08-14', '2026-08-30'];
     const events = [{ ...event, started_local_date: days[0], last_valid_local_date: days[4] }, { ...event, event_id: 2, region_id: 'chin', started_local_date: days[0], last_valid_local_date: '2026-08-25' }];
@@ -133,8 +141,43 @@ function fixture(url) {
       target: { ...target, target_id: i + 1, user_note: '这几天有些不稳定。', facts: { ...target.facts, unknowns: [], summary: i === 4 ? '局部泛红较淡，肤色较均匀。' : '左脸颊局部泛红，分布较集中。', daily_appearance: [i === 4 ? '局部泛红较淡' : '局部泛红可见'] } },
     })) };
     if (pathname === '/product-uses') return [{ ...use, used_at: days[4] + 'T09:00:00Z', note: null, products: [{ ...product, name: '阿达帕林凝胶' }] }];
+    const refs = days.map((day, i) => ({ timepoint_id: 'T' + (i + 1), target_id: i + 1, observation_id: observation.observation_id, local_date: day, image_index: i % 2 ? null : i / 2 + 1, crop: 'region_crop' }));
+    if (/^\/region-events\/\d+\/(insights|trend\/refresh)$/.test(pathname)) return {
+      event_id: Number(pathname.split('/')[2]), region_id: 'left_face', photo_timepoint_count: 5,
+      comparison_eligible: true, default_pair: [1, 5],
+      trend_progress: { days: 5, span_days: 59, eligible: true, missing_days: 0, missing_span_days: 0, window_start_date: days[0], window_end_date: days[4] },
+      trend_status: 'ready', trend_is_current: true,
+      trend: { trend_id: 1, status: 'completed', timepoints: refs, failure_code: null, prompt_version: 'region-timeline-trend-2.0.0', schema_version: 'region-timeline-trend-2.0.0', model: 'fixture', completed_at: date, result: {
+        series_reliability: { level: '有限', reasons: [], usable_timepoints: ['T1', 'T3', 'T5'], limited_timepoints: ['T2', 'T4'] },
+        dimension_trends: {
+          visible_amount: { trend: '总体减少', evidence: ['T1[图]：约 6 处', 'T3[图]：约 4 处', 'T5[图]：约 2 处'] },
+          distribution: { trend: '大致稳定', evidence: ['T2[记录]：集中于脸颊中部'] },
+          coverage: { trend: '无法可靠判断', evidence: [] }, color_prominence: { trend: '无法可靠判断', evidence: [] },
+          elevation_and_surface: { trend: '无法可靠判断', evidence: [] }, location_pattern: { trend: '大致稳定', evidence: ['T5[图]：脸颊中部'] },
+        },
+        phases: [{ start_timepoint: 'T1', end_timepoint: 'T5', pattern: '清晰可见数量总体减少', evidence: '约 6 → 2 处' }],
+        notable_timepoints: [{ timepoint_id: 'T5', reason: '可见数量较少' }],
+        overall_trend: '相关可见表现总体减少', headline: '这段时间可见数量总体减少', unknowns: ['部分照片色温不同，不建立颜色趋势'], summary: '…',
+      } },
+    };
+    if (/^\/region-events\/\d+\/comparisons(\/\d+)?$/.test(pathname)) return {
+      comparison_id: 1, event_id: 1, region_id: 'left_face', status: 'completed', earlier_target_id: 1, later_target_id: 5,
+      timepoints: [refs[0], { ...refs[4], timepoint_id: 'T2', image_index: 2 }], failure_code: null,
+      prompt_version: 'region-comparison-1.1.0', schema_version: 'region-comparison-1.1.0', model: 'fixture', completed_at: date,
+      result: {
+        comparison_reliability: { level: '有限', reasons: ['两张照片曝光略有差异'], comparable_dimensions: ['visible_amount'], limited_dimensions: ['color_prominence'] },
+        photo_a: { main_locations: ['脸颊中部'], estimated_amount: '约 6 处', distribution: '集中', coverage: '较小', key_appearance: ['局部泛红'] },
+        photo_b: { main_locations: ['脸颊中部'], estimated_amount: '约 2 处', distribution: '集中', coverage: '较小', key_appearance: ['局部泛红较淡'] },
+        changes: [
+          { dimension: 'visible_amount', location: '脸颊中部', photo_a: '约 6 处', photo_b: '约 2 处', change: '较近一次清晰可见的隆起样变化较少', evidence_strength: '较明确' },
+          { dimension: 'color_prominence', location: '脸颊中部', photo_a: '局部泛红', photo_b: '局部泛红较淡', change: '较近一次偏红外观不如较早一次明显', evidence_strength: '有限' },
+        ],
+        overall_change: '相关可见表现总体减少', headline: '局部泛红较淡，可见数量较少', unknowns: [], summary: '…',
+      },
+    };
   }
   if (pathname.startsWith('/auth/')) return auth;
+  if (meReview && pathname === '/me/export') return { generated_at: date, user: auth.user, consents: [], observations: [], region_events: [], personal_products: [], product_uses: [] };
   if (pathname === '/me/consents') return ['terms', 'privacy', 'health_disclaimer', 'ai_processing'].map((consent_type) => ({ consent_type, accepted: true, accepted_at: date, version: 'fixture' }));
   if (pathname === '/observations') return fullFaceReview ? fullFaceObservations : [observation];
   if (/^\/observations\/\d+$/.test(pathname)) {
@@ -180,6 +223,7 @@ await mkdir(output, { recursive: true });
 const debugPort = 9400 + Math.floor(Math.random() * 500);
 const edge = spawn('C:/Program Files/Google/Chrome/Application/chrome.exe', ['--headless=new', '--disable-gpu', '--disable-extensions', '--disable-background-networking', '--no-first-run', '--no-default-browser-check', `--remote-debugging-port=${debugPort}`, `--user-data-dir=${profile}`, 'about:blank'], { windowsHide: true, stdio: 'ignore' });
 let socket;
+let qualityServer;
 const errors = [];
 const results = [];
 const skipped = [];
@@ -209,14 +253,21 @@ try {
       if (message.error) job.reject(new Error(JSON.stringify(message.error))); else job.resolve(message.result);
     }
     if (message.method === 'Runtime.exceptionThrown') errors.push(message.params.exceptionDetails.text + ': ' + (message.params.exceptionDetails.exception?.description ?? ''));
-    if ((journeyReview || observeReview || productReview || resultReview || historyReview || fullFaceReview) && message.method === 'Runtime.consoleAPICalled' && message.params.type === 'error') {
+    if ((qualityReview || meReview || journeyReview || observeReview || productReview || resultReview || historyReview || fullFaceReview) && message.method === 'Runtime.consoleAPICalled' && message.params.type === 'error') {
       errors.push(message.params.args.map(value => value.value ?? value.description ?? '').join(' '));
     }
     if (message.method === 'Fetch.requestPaused') {
       const { requestId, request } = message.params;
       try {
+        if (meReview && !['GET', 'OPTIONS'].includes(request.method) && new URL(request.url).pathname.includes('/api/v1/me')) meMutations.push(request.method + ' ' + new URL(request.url).pathname);
+        if (meReview && meExportFailure && new URL(request.url).pathname === '/api/v1/me/export' && request.method === 'GET') {
+          await send('Fetch.fulfillRequest', { requestId, responseCode: 503, responseHeaders: [{ name: 'Content-Type', value: 'application/json' }, { name: 'Access-Control-Allow-Origin', value: '*' }], body: Buffer.from(JSON.stringify({ detail: '导出暂时不可用，请重试。' })).toString('base64') });
+          return;
+        }
         if (new URL(request.url).pathname.startsWith('/api/v1/')) requestedApiHosts.add(new URL(request.url).hostname);
-        if ((fullFaceReview || journeyReview) && !['GET', 'OPTIONS'].includes(request.method) && !new URL(request.url).pathname.startsWith('/api/v1/auth/')) fullFaceMutationRequests.push(`${request.method} ${new URL(request.url).pathname}`);
+        // Comparison / trend refresh POSTs only create derived, regenerable cache rows.
+        const derivedInsight = /^\/api\/v1\/region-events\/\d+\/(comparisons|trend\/refresh)$/.test(new URL(request.url).pathname);
+        if ((fullFaceReview || journeyReview) && !derivedInsight && !['GET', 'OPTIONS'].includes(request.method) && !new URL(request.url).pathname.startsWith('/api/v1/auth/')) fullFaceMutationRequests.push(`${request.method} ${new URL(request.url).pathname}`);
         if (journeyReview && /\/files\/journey-photo-\d+\.png$/.test(new URL(request.url).pathname)) {
           await send('Fetch.fulfillRequest', { requestId, responseCode: 200, responseHeaders: [{ name: 'Content-Type', value: 'image/png' }, { name: 'Access-Control-Allow-Origin', value: '*' }], body: photoData.split(',')[1] });
           return;
@@ -265,15 +316,87 @@ try {
       if (bounds.headingTop < bounds.photoBottom) errors.push(`Stacked result overlaps its photo: ${JSON.stringify(bounds)}`);
     }
   }
+  if (qualityReview) {
+    qualityServer = createServer((req, res) => {
+      if (req.url === '/photo') {
+        res.writeHead(200, { 'Content-Type': 'image/png' });
+        res.end(Buffer.from(photoData.split(',')[1], 'base64'));
+      } else {
+        res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+        res.end('<!doctype html><html><head><meta name="viewport" content="width=device-width, initial-scale=1"><style>html,body,#root{height:100%;margin:0}#root{display:flex}</style></head><body><div id="root"></div><script src="http://localhost:8082/scripts/photo-quality-review-entry.bundle?platform=web&dev=true&hot=false"></script></body></html>');
+      }
+    });
+    await new Promise(resolve => qualityServer.listen(0, '127.0.0.1', resolve));
+    const previewUrl = `http://127.0.0.1:${qualityServer.address().port}`;
+    for (const state of ['needs_adjustment', 'checking', 'unavailable']) {
+      await send('Page.navigate', { url: `${previewUrl}/?state=${state}` });
+      await waitText(state === 'checking' ? '正在检查照片' : state === 'unavailable' ? '暂时无法检查' : '照片有些模糊');
+      for (const width of [320, 375, 390, 430]) {
+        await capture(`quality-${state}`, width, width === 320 ? 640 : 844);
+        const bad = await evaluate(`Array.from(document.querySelectorAll('[role="button"]')).some(n => { const r = n.getBoundingClientRect(); return r.height < 44 || r.left < 0 || r.right > innerWidth || r.bottom > innerHeight; })`);
+        if (bad) throw new Error('Quality actions too small or outside viewport');
+      }
+      if (state !== 'checking') {
+        if (state === 'needs_adjustment') {
+          await clickText('重新拍摄');
+          if (await evaluate(`document.body.dataset.action`) !== 'replace') throw new Error('Camera replacement handler missing');
+        }
+        await clickText(state === 'unavailable' ? '重新检查' : '重新检查这张照片');
+        await waitText('正在检查照片');
+        if (await evaluate(`document.body.dataset.action`) !== 'retry') throw new Error('Wrong quality retry handler');
+      }
+    }
+    await send('Page.navigate', { url: `${previewUrl}/?source=library` });
+    await waitText('重新选择照片'); await clickText('重新选择照片');
+    if (await evaluate(`document.body.dataset.action`) !== 'replace') throw new Error('Library replacement handler missing');
+    await capture('quality-library', 320, 640);
+    await clickText('返回');
+    if (await evaluate(`document.body.dataset.action`) !== 'back') throw new Error('Quality back handler missing');
+    await send('Page.navigate', { url: `${previewUrl}/?source=library&busy=1` });
+    await waitText('照片有些模糊');
+    if (!await evaluate(`Array.from(document.querySelectorAll('[role="button"]')).every(n => n.disabled || n.getAttribute('aria-disabled') === 'true')`)) throw new Error('Photo selection must lock conflicting actions');
+    console.log('Photo quality component review passed; isolated fixtures, not a camera/API acceptance test.');
+  } else {
   await send('Page.navigate', { url: 'http://localhost:8082/login' });
   await waitText('登录');
-  if (!observeReview && !productReview && !productUseReview && !historyReview && !fullFaceReview && !journeyReview) {
+  if (!meReview && !observeReview && !productReview && !productUseReview && !historyReview && !fullFaceReview && !journeyReview) {
     await capture('login');
     await clickText('登录'); await waitText('请输入邮箱和密码'); await capture('form-error', 320);
   }
   await evaluate(`(() => { const fields = document.querySelectorAll('input'); const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set; setter.call(fields[0], 'visual-fixture@example.test'); fields[0].dispatchEvent(new Event('input', {bubbles: true})); setter.call(fields[1], 'fixture-password'); fields[1].dispatchEvent(new Event('input', {bubbles: true})); })()`);
   await clickText('登录'); await waitText('开始今天的观察');
-  if (journeyReview) {
+  if (meReview) {
+    await clickText('我的'); await waitText('已完成全部授权');
+    const clickRow = async title => {
+      await evaluate(`document.querySelector('[role="button"][aria-label^="${title}，"]').click()`);
+      await delay(200);
+    };
+    if (await evaluate(`document.body.innerText.includes('确认永久注销账号') || document.body.innerText.includes('健康免责声明')`)) throw new Error('Sensitive details must start collapsed');
+    for (const width of [320, 375, 390, 430]) await capture('me', width);
+    await clickRow('协议与授权'); await waitText('健康免责声明');
+    await capture('me-consents', 320);
+    await clickText('撤回授权'); await waitText('确认撤回');
+    if (meMutations.length) throw new Error('Opening withdrawal confirmation changed consent');
+    await clickText('保留授权');
+    if (await evaluate(`document.body.innerText.includes('确认撤回')`)) throw new Error('Withdrawal cancellation failed');
+    await clickRow('协议与授权');
+    await clickRow('数据导出'); await waitText('不包含原始照片文件');
+    meExportFailure = true;
+    await clickText('导出我的数据'); await waitText('导出暂时不可用');
+    meExportFailure = false;
+    await send('Browser.setDownloadBehavior', { behavior: 'deny' });
+    await clickText('导出我的数据'); await waitText('已导出');
+    await capture('me-export', 320);
+    await clickRow('数据导出');
+    await clickRow('注销账号'); await waitText('输入密码以确认');
+    if (!await evaluate(`document.querySelector('[aria-label="确认永久注销账号"]').disabled`)) throw new Error('Empty password must disable deletion');
+    await capture('me-delete', 320);
+    await clickText('取消');
+    if (await evaluate(`document.body.innerText.includes('输入密码以确认')`)) throw new Error('Account deletion cancellation failed');
+    if (meMutations.length) throw new Error('Review unexpectedly mutated account/consents');
+    if (errors.length || results.some(item => item.overflow)) throw new Error('Me review found runtime errors or overflow');
+    console.log('Me review passed: four widths, disclosure, withdrawal cancellation, export error/retry, deletion guard/cancel.');
+  } else if (journeyReview) {
     await clickText('历程'); await waitText('从你关心的区域');
     const faceGeometry = await evaluate(`(() => {
       const svg = new DOMParser().parseFromString(${JSON.stringify(buildHistoryFaceSvg([]))}, 'image/svg+xml');
@@ -303,7 +426,7 @@ try {
       })()`);
       if (faceLayout.ratioError > 1 || faceLayout.count !== 6 || faceLayout.tooSmall || faceLayout.overlap) throw new Error('Face target layout: ' + JSON.stringify(faceLayout));
     }
-    if (!await evaluate(`document.querySelector('[role="tab"][aria-selected="true"]')?.textContent.includes('分区')`)) throw new Error('Region view is not selected');
+    if (await evaluate(`Boolean(document.querySelector('[aria-label="历程视图"]'))`)) throw new Error('History still renders the removed full-face/region view-switch tablist');
     await evaluate(`Array.from(document.querySelectorAll('[role="button"]')).find(n => n.getAttribute('aria-label')?.includes('左脸颊') && n.getAttribute('aria-label')?.includes('正在记录')).click()`);
     await waitText('这一段记录'); await waitText('阿达帕林凝胶');
     const checkSelectedPhoto = async (day, photoId) => {
@@ -338,15 +461,41 @@ try {
       find('7月12日').click(); find('7月2日').click(); find('8月30日').click();
     })()`);
     await delay(300); await checkSelectedPhoto('8月30日', 5);
-    await clickText('对比观察 ‹ ›'); await waitText('选择两个时间点');
+    await waitText('这段时间可见数量总体减少');
+    const trendCard = await evaluate(`document.querySelector('[data-testid="region-trend-card"]')?.innerText ?? ''`);
+    for (const text of ['阶段趋势', '7月2日 · 照片：约 6 处', '7月12日 · 记录显示：集中于脸颊中部', '值得回看', '不代表改善、恶化或疗效'])
+      if (!trendCard.includes(text)) throw new Error('Trend card missing: ' + text);
+    if (/(^|\n)颜色\n/.test(trendCard)) throw new Error('Unreliable colour trend must not be listed as a dimension row');
+    await capture('trend', 390);
+    await clickText('对比观察 ‹ ›'); await waitText('选择两个时间点'); await waitText('局部泛红较淡，可见数量较少');
+    const compareCard = await evaluate(`document.querySelector('[data-testid="region-comparison-card"]')?.innerText ?? ''`);
+    for (const text of ['照片可比性：有限', '可见数量', '证据较明确', '无法判断的部分'])
+      if (!compareCard.includes(text)) throw new Error('Comparison card missing: ' + text);
+    const chips = await evaluate(`Array.from(document.querySelectorAll('[role="button"]')).filter(n => /^\\d+月\\d+日/.test(n.getAttribute('aria-label') ?? '')).map(n => ({ label: n.getAttribute('aria-label'), w: n.getBoundingClientRect().width, h: n.getBoundingClientRect().height }))`);
+    if (chips.length !== 5 || chips.some(chip => chip.h < 43.9) || chips.filter(chip => chip.label.includes('已选')).length !== 2) throw new Error('Comparison date chips: ' + JSON.stringify(chips));
     for (const width of [320, 375, 390, 430]) await capture('compare', width);
     if (!await evaluate(`Array.from(document.querySelectorAll('[aria-label="返回这一段记录"]')).some(n => n.getBoundingClientRect().width >= 44 && getComputedStyle(n).visibility === 'visible')`)) throw new Error('Compare back control is missing');
     await clickText('返回这一段记录'); await delay(700); await waitText('这一段记录');
     if (!await evaluate(`document.body.innerText.includes('8月30日的记录')`)) throw new Error('Comparison lost selected record');
     await checkSelectedPhoto('8月30日', 5);
     await evaluate('history.back()'); await delay(700); await waitText('从你关心的区域');
-    await clickText('全脸'); await waitText('按照片回看'); await capture('full-face', 390);
-    await clickText('分区'); await waitText('从你关心的区域');
+    await capture('journey-history', 390);
+    await clickText('额头'); await waitText('额头还没有记录');
+    await capture('face-selected-mixed', 390);
+    journeyEmpty = true;
+    await send('Page.navigate', { url: 'http://localhost:8082/history' });
+    // The isolated web session keeps its access token in memory across SPA navigation only.
+    await waitText('登录');
+    await evaluate(`(() => { const fields = document.querySelectorAll('input'); const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set; setter.call(fields[0], 'visual-fixture@example.test'); fields[0].dispatchEvent(new Event('input', {bubbles: true})); setter.call(fields[1], 'fixture-password'); fields[1].dispatchEvent(new Event('input', {bubbles: true})); })()`);
+    await clickText('登录'); await waitText('开始今天的观察'); await clickText('历程');
+    await waitText('还没有历程');
+    for (const width of [320, 375, 390, 430]) await capture('face-empty', width);
+    for (const label of ['额头', '右脸颊', '鼻周', '左脸颊', '口周', '下巴']) {
+      await clickText(label); await waitText(`${label}还没有记录`);
+      const selected = await evaluate(`Array.from(document.querySelectorAll('[data-testid="history-face-canvas"] [aria-selected="true"]')).map(n => n.textContent.trim())`);
+      if (selected.length !== 1 || selected[0] !== label) throw new Error('Face selection mismatch: ' + JSON.stringify(selected));
+    }
+    await capture('face-empty-selected', 320);
     await clickText('设置'); await waitText('退出当前账号');
     if (fullFaceMutationRequests.length) throw new Error('Journey views wrote business data: ' + fullFaceMutationRequests.join(', '));
   } else if (observeReview) {
@@ -381,7 +530,9 @@ try {
         await delay(500); await scrollBottom();
         await capture(`observe-${scenario}`, 320);
         const text = await evaluate('document.body.innerText');
-        if (scenario === 'empty' && /CURRENT|正在观察|区域正在记录/.test(text)) throw new Error('Empty current context should be hidden');
+        if (scenario === 'empty' && !text.includes('正在观察')) throw new Error('Current context title must stay visible when empty');
+        if (scenario === 'empty' && !text.includes('暂无正在观察的区域')) throw new Error('Empty current context should show placeholder row with icon, not hide');
+        if (scenario === 'empty' && !await evaluate(`!!document.querySelector('[aria-label="暂无正在观察的区域"] img')`)) throw new Error('Empty current context must still show its icon');
         if (scenario === 'all' && !text.includes('6 个区域正在记录')) throw new Error('Six-region metadata missing');
         if (!text.includes('记录产品使用')) throw new Error('Secondary logging action missing');
       }
@@ -714,9 +865,10 @@ try {
   await send('DOM.setFileInputFiles', { nodeId: fileInput, files: [path.join(assets, 'demo-cheek-observation.png')] });
   // SDK 57's File calls validatePath(), which its web implementation does not provide.
   // Do not patch the app/SDK just to force a native-only flow through this review.
-  await waitText('重试照片检查');
+  await waitText('重新检查');
   await capture('photo-recovery'); await capture('photo-recovery', 320);
   skipped.push({ name: 'confirmation-and-live-camera', reason: 'Requires native device: expo-file-system File.validatePath is unavailable on web; no real camera is attached to the isolated browser.' });
+  }
   }
   if (errors.length || results.some((item) => item.overflow)) throw new Error('Visual review found runtime errors or document overflow; inspect review-results.json');
 } catch (error) {
@@ -724,7 +876,9 @@ try {
   throw error;
 } finally {
   const reportFile = colorReview ? (productReview ? 'product-review.json' : 'result-review.json') : 'review-results.json';
-  await writeFile(path.join(output, reportFile), JSON.stringify({ kind: 'VISUAL FIXTURES ONLY — not backend or native-device verification', status: errors.length ? 'failed' : (journeyReview || observeReview || productReview || productUseReview || fullFaceReview || resultReview || historyReview) ? 'passed-web-native-review-pending' : 'partial-native-review-pending', results, errors, skipped }, null, 2));
+  await writeFile(path.join(output, reportFile), JSON.stringify({ kind: 'VISUAL FIXTURES ONLY — not backend or native-device verification', status: errors.length ? 'failed' : (qualityReview || meReview || journeyReview || observeReview || productReview || productUseReview || fullFaceReview || resultReview || historyReview) ? 'passed-web-native-review-pending' : 'partial-native-review-pending', results, errors, skipped }, null, 2));
+  qualityServer?.closeAllConnections();
+  qualityServer?.close();
   socket?.close(); edge.kill();
   // Only this script's unique temporary browser profile is removed.
   if (path.basename(profile).startsWith('skin-ui-review-') && path.dirname(profile) === tmpdir()) await rm(profile, { recursive: true, force: true, maxRetries: 5, retryDelay: 250 }).catch(() => {});

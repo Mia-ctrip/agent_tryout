@@ -134,7 +134,7 @@ async def test_region_analysis_uses_stable_region_prompt_and_log_boundary(monkey
     outcome = await analyze_region_photo(db, target=target, record=record, photo=photo)
 
     assert outcome.success is True
-    assert outcome.prompt_version == "region-observation-1.1.0"
+    assert outcome.prompt_version == "region-observation-2.0.0"
     assert "region_id: left_face" in gateway.requests[0].messages[0].content
     log = next(row for row in db.added if isinstance(row, AICallLog))
     assert log.kind == "region_observation"
@@ -390,6 +390,33 @@ class _WorkerSession:
 
     def rollback(self) -> None:
         pass
+
+    def refresh(self, _row: Any, **_kwargs: Any) -> None:
+        pass
+
+
+@pytest.mark.asyncio
+async def test_worker_does_not_overwrite_a_target_reclaimed_while_it_was_analyzing() -> None:
+    photo, record, target = _photo_and_target()
+    session = _WorkerSession(photo, record, target)
+
+    async def analyze(**_kwargs: Any) -> FullFaceAnalysisOutcome:
+        # 模拟分析耗时过长：读取路径已回收并由新的 worker 重新领取。
+        target.processing_started_at = datetime(2030, 1, 1, tzinfo=timezone.utc)
+        return FullFaceAnalysisOutcome(
+            success=True,
+            trace_id="late",
+            facts=dict(FULL_FACE_OBSERVATION_MOCK),
+            provider="mock",
+            model="mock-v1",
+        )
+
+    processed = await run_observation_target(target.id, lambda: session, analyze)
+
+    assert processed is False
+    assert target.status == "processing"
+    assert target.facts is None
+    assert target.trace_id is None
 
 
 @pytest.mark.asyncio

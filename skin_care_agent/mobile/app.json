@@ -15,6 +15,7 @@
       }
     },
     "android": {
+      "package": "com.mia.skincareagent",
       "adaptiveIcon": {
         "backgroundColor": "#F7F1E1",
         "foregroundImage": "./assets/images/android-icon-foreground.png",

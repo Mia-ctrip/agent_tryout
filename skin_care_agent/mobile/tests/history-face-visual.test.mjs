@@ -28,3 +28,14 @@ test('face labels keep true-user sides and have separate nose, mouth and chin ta
     assert.ok(item.y >= 0 && item.y + item.height <= 366);
   }
 });
+
+test('touch feedback highlights a region without changing its record state', () => {
+  const svg = buildHistoryFaceSvg([
+    { regionId: 'left_face', visualState: 'active' },
+    { regionId: 'nose_area', visualState: 'pending' },
+  ], 'nose_area');
+  assert.match(svg, /data-highlight="nose_area"/);
+  assert.match(svg, /data-region="nose_area"[^>]*stroke-dasharray="4 3"/);
+  assert.match(svg, new RegExp(`data-region="left_face"[^>]*fill="${journeyColors.sage}"`));
+  assert.doesNotMatch(buildHistoryFaceSvg([]), /data-highlight=/);
+});

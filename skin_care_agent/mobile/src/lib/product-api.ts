@@ -294,3 +294,12 @@ export async function getProductUse(
 ): Promise<ProductUse> {
   return request<ProductUse>(`/product-uses/${useId}`);
 }
+
+export async function archiveProduct(
+  request: AuthenticatedRequest,
+  productId: number,
+): Promise<PersonalProduct> {
+  return request<PersonalProduct>(`/products/${productId}/archive`, {
+    method: 'POST',
+  });
+}

@@ -1,6 +1,6 @@
 import { router, Stack, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import type { Href } from 'expo-router';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { AppButton } from '@/components/app-button';
@@ -10,6 +10,7 @@ import { InlineNotice } from '@/components/inline-notice';
 import { PrivacyPhotoThumbnail } from '@/components/privacy-photo-thumbnail';
 import { RegionTimechain } from '@/components/region-timechain';
 import { RegionComparison } from '@/components/region-comparison';
+import { RegionTrendCard } from '@/components/region-trend-card';
 import { journeyColors as palette } from '@/constants/journey-theme';
 import { TimepointEvidenceCard } from '@/components/timepoint-evidence-card';
 import { spacing } from '@/constants/theme';
@@ -24,10 +25,30 @@ import { createObservationGenerationGuard } from '@/lib/observation-flow';
 import { productUseHref } from '@/lib/observation-navigation';
 import { listAllProductUses } from '@/lib/product-api';
 import type { ProductUse } from '@/lib/product-api';
-import { endRegionEvent, getRegionEvent } from '@/lib/region-event-api';
-import type { RegionEventDetail } from '@/lib/region-event-api';
+import {
+  createRegionComparison,
+  endRegionEvent,
+  getRegionComparison,
+  getRegionEvent,
+  getRegionInsights,
+  refreshRegionTrend,
+} from '@/lib/region-event-api';
+import type {
+  RegionComparison as RegionComparisonRecord,
+  RegionEventDetail,
+  RegionInsights,
+} from '@/lib/region-event-api';
+import {
+  assignComparisonSlot,
+  buildTrendProgressText,
+  comparisonCandidates,
+  defaultComparisonPair,
+} from '@/lib/region-insight-flow';
 import { regionById } from '@/lib/region-catalog';
 import { useSession } from '@/providers/session-provider';
+
+const INSIGHT_POLL_MS = 2500;
+const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 function parseEventId(value: string | undefined): number | null {
   const parsed = Number(value);
@@ -137,17 +158,100 @@ export default function RegionEventDetailScreen() {
     return Number.isFinite(date.getTime()) && date.toISOString().slice(0, 10) === selectedTimepoint.recorded_local_date;
   }), [selectedTimepoint, productUses]);
   const comparing = params.mode === 'compare';
-  const photos = event?.timepoints.filter(point => point.photo).slice().sort((a, b) => a.recorded_at.localeCompare(b.recorded_at)) ?? [];
-  const earlier = photos.find(point => point.target.target_id === Number(params.earlier)) ?? photos[0];
-  const later = photos.find(point => point.target.target_id === Number(params.later)) ?? photos.at(-1);
-  const openComparison = () => {
-    if (photos.length < 2) return;
-    const firstIndex = Math.floor(Math.random() * photos.length);
-    const remaining = photos.filter((_, index) => index !== firstIndex);
-    const pair = [photos[firstIndex], remaining[Math.floor(Math.random() * remaining.length)]]
-      .sort((a, b) => a.recorded_at.localeCompare(b.recorded_at));
-    router.push({ pathname: '/region-event/[eventId]', params: { eventId: String(eventId), mode: 'compare', earlier: pair[0].target.target_id, later: pair[1].target.target_id } });
+  const photos = useMemo(() => comparisonCandidates(event?.timepoints ?? []), [event]);
+  const [pairOverride, setPair] = useState<[number, number] | null>(null);
+  const [activeSlot, setActiveSlot] = useState<'earlier' | 'later'>('later');
+  const [comparisonReload, setComparisonReload] = useState(0);
+  // Results are keyed by pair + reload so a new pair never shows the previous pair's result.
+  const [comparisonState, setComparisonState] = useState<{
+    key: string; comparison: RegionComparisonRecord | null; error: string | null;
+  } | null>(null);
+  const [insights, setInsights] = useState<RegionInsights | null>(null);
+  const [insightsError, setInsightsError] = useState<string | null>(null);
+  const [insightsReload, setInsightsReload] = useState(0);
+
+  // Compare mode: honour an explicit pair from the route, else earliest vs latest.
+  // Re-assigning the earlier slot validates both ids, rejects same-day pairs and sorts them.
+  const routePair = useMemo(() => {
+    const requested: [number, number] = [Number(params.earlier), Number(params.later)];
+    return assignComparisonSlot(photos, requested, 'earlier', requested[0]) ?? defaultComparisonPair(photos);
+  }, [params.earlier, params.later, photos]);
+  const pair = pairOverride ?? routePair;
+  const comparisonKey = pair ? `${pair[0]}-${pair[1]}-${comparisonReload}` : '';
+  const comparison = comparisonState?.key === comparisonKey ? comparisonState.comparison : null;
+  const comparisonError = comparisonState?.key === comparisonKey ? comparisonState.error : null;
+
+  // One POST per pair (the backend caches by pair), then poll while it is processing.
+  useEffect(() => {
+    if (!comparing || !eventId || !pair) return;
+    let cancelled = false;
+    const publish = (next: RegionComparisonRecord | null, error: string | null = null) => {
+      if (!cancelled) setComparisonState({ key: comparisonKey, comparison: next, error });
+    };
+    void (async () => {
+      try {
+        let current = await createRegionComparison(request, eventId, { earlierTargetId: pair[0], laterTargetId: pair[1] });
+        while (!cancelled && current.status === 'processing') {
+          publish(current);
+          await delay(INSIGHT_POLL_MS);
+          if (cancelled) return;
+          current = await getRegionComparison(request, eventId, current.comparison_id);
+        }
+        publish(current);
+      } catch (loadError) {
+        publish(null, userFacingError(loadError));
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [comparing, eventId, pair, comparisonKey, request]);
+
+  // Event view: read insights; start a refresh if the window changed; poll until published.
+  useFocusEffect(
+    useCallback(() => {
+      void insightsReload;
+      if (comparing || !eventId) return undefined;
+      let cancelled = false;
+      void (async () => {
+        try {
+          let current = await getRegionInsights(request, eventId);
+          if (!cancelled) setInsightsError(null);
+          if (current.trend_status === 'stale') current = await refreshRegionTrend(request, eventId);
+          while (!cancelled && current.trend_status === 'processing') {
+            setInsights(current);
+            await delay(INSIGHT_POLL_MS);
+            if (cancelled) return;
+            current = await getRegionInsights(request, eventId);
+          }
+          if (!cancelled) setInsights(current);
+        } catch (loadError) {
+          if (!cancelled) setInsightsError(userFacingError(loadError));
+        }
+      })();
+      return () => { cancelled = true; };
+    }, [comparing, eventId, insightsReload, request]),
+  );
+
+  const retryTrend = () => {
+    if (!eventId) return;
+    if (insights?.trend_status !== 'failed') { setInsightsReload(key => key + 1); return; }
+    void refreshRegionTrend(request, eventId)
+      .then(setInsights)
+      .then(() => setInsightsReload(key => key + 1))
+      .catch(loadError => setInsightsError(userFacingError(loadError)));
   };
+  const earlier = photos.find(point => point.target.target_id === pair?.[0]) ?? null;
+  const later = photos.find(point => point.target.target_id === pair?.[1]) ?? null;
+  const pickForSlot = (targetId: number) => {
+    if (!pair) return;
+    const next = assignComparisonSlot(photos, pair, activeSlot, targetId);
+    if (next) setPair(next);
+  };
+  const openComparison = () => {
+    const initial = defaultComparisonPair(photos, insights?.default_pair);
+    if (!initial) return;
+    router.push({ pathname: '/region-event/[eventId]', params: { eventId: String(eventId), mode: 'compare', earlier: initial[0], later: initial[1] } });
+  };
+  const canCompare = insights ? insights.comparison_eligible : defaultComparisonPair(photos) !== null;
 
   return (
     <AppScreen backgroundColor={palette.background} contentStyle={styles.content}>
@@ -161,8 +265,12 @@ export default function RegionEventDetailScreen() {
       {loading && !event ? <ActivityIndicator color={palette.moss} /> : null}
       {error ? <View><InlineNotice tone="error" message={error} /><AppButton label="重新读取" onPress={() => setReloadKey(key => key + 1)} variant="text" /></View> : null}
       {event && region ? comparing ? (
-        earlier && later && earlier !== later ? <RegionComparison earlier={earlier} later={later} request={request} regionLabel={region.label} /> :
-          <Text style={styles.muted}>需要两个有照片的时间点才能对比。</Text>
+        earlier && later && earlier !== later ? <RegionComparison
+          earlier={earlier} later={later} candidates={photos} activeSlot={activeSlot}
+          comparison={comparison} loadError={comparisonError} request={request} regionLabel={region.label}
+          onActivateSlot={setActiveSlot} onPick={pickForSlot}
+          onRetry={() => setComparisonReload(key => key + 1)} /> :
+          <Text style={styles.muted}>需要两个不同日期、有照片的时间点才能对比。</Text>
       ) : <>
         {event.timepoints.length ? <RegionTimechain onSelect={setSelectedTargetId} regionLabel={region.label} request={request} selectedTargetId={selectedTargetId} timepoints={event.timepoints} /> :
           <Text style={styles.muted}>这段记录还没有有效时间点。</Text>}
@@ -181,7 +289,10 @@ export default function RegionEventDetailScreen() {
             size={photoWidth}
           /> : <Text style={styles.muted}>这一天没有照片，以下保留文字记录。</Text>}
         </View> : null}
-        {photos.length >= 2 ? <Pressable accessibilityRole="button" onPress={openComparison} style={styles.compareLink}><Text style={styles.compareLinkText}>对比观察 ‹ ›</Text></Pressable> : null}
+        {canCompare ? <Pressable accessibilityRole="button" onPress={openComparison} style={styles.compareLink}><Text style={styles.compareLinkText}>对比观察 ‹ ›</Text></Pressable> :
+          insights ? <Text style={styles.progressHint}>{buildTrendProgressText(insights.trend_progress)}</Text> : null}
+        <RegionTrendCard insights={insights} loadError={insightsError} onRetry={retryTrend}
+          onSelectTimepoint={setSelectedTargetId} />
         {selectedTimepoint ? <View style={styles.evidenceSection}>
           <TimepointEvidenceCard
             onOpenObservation={() => router.push(`/observation/${selectedTimepoint.observation_id}`)}
@@ -213,6 +324,7 @@ const styles = StyleSheet.create({
   muted: { color: palette.muted, fontSize: 13, lineHeight: 22, marginTop: spacing.lg },
   compareLink: { alignSelf: 'flex-end', minHeight: 36, justifyContent: 'center', paddingHorizontal: spacing.sm },
   compareLinkText: { color: palette.moss, fontSize: 12 },
+  progressHint: { color: palette.muted, fontSize: 12, lineHeight: 19, textAlign: 'right', marginTop: spacing.sm },
   selectedPhoto: { width: '100%', marginTop: spacing.lg, marginBottom: spacing.sm, gap: spacing.sm },
   photoCaption: { color: palette.muted, fontSize: 13, lineHeight: 21 },
   evidenceSection: { marginTop: spacing.sm },

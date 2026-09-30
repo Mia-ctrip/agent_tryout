@@ -12,13 +12,14 @@ from dataclasses import dataclass
 from datetime import date, datetime, timezone
 from typing import Literal
 
+from fastapi import HTTPException
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
 from app.config import get_settings
 
 
-UsageKind = Literal["analyze", "chat"]
+UsageKind = Literal["analyze", "chat", "observation", "insight", "photo_quality"]
 
 
 @dataclass(frozen=True)
@@ -78,6 +79,12 @@ def _limit_for(kind: UsageKind) -> int:
         return s.ai_analyze_daily_limit
     if kind == "chat":
         return s.ai_chat_daily_limit
+    if kind == "observation":
+        return s.ai_observation_daily_limit
+    if kind == "insight":
+        return s.ai_insight_daily_limit
+    if kind == "photo_quality":
+        return s.photo_quality_daily_limit
     raise ValueError(f"unknown kind: {kind}")
 
 
@@ -130,3 +137,24 @@ def require(db: Session, user_id: int, kind: UsageKind) -> QuotaResult:
     if not result.allowed:
         raise QuotaExceeded(result)
     return result
+
+
+def require_available(db: Session, user_id: int, kind: UsageKind) -> QuotaResult:
+    """只检查、不占额；用于先确认有余量，真正排入 AI 任务后再 try_consume。"""
+    result = peek(db, user_id, kind)
+    if not result.allowed:
+        raise QuotaExceeded(result)
+    return result
+
+
+def quota_http_error(error: QuotaExceeded) -> HTTPException:
+    """统一的 429 响应；detail.message 供移动端兜底展示。"""
+    return HTTPException(
+        status_code=429,
+        detail={
+            "message": "daily quota exceeded",
+            "kind": error.result.kind,
+            "used": error.result.used,
+            "limit": error.result.limit,
+        },
+    )

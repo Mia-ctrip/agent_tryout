@@ -1,8 +1,4 @@
-export type ObservationDetailSource = 'history_full_face';
-export type ObservationDetailBackTarget =
-  | 'native'
-  | '/(tabs)/history'
-  | '/(tabs)/history?view=full_face';
+export type ObservationDetailBackTarget = 'native' | '/(tabs)/history';
 export type ObservationCaptureEntry = 'camera' | 'library';
 export type ProductUseSource =
   | 'after_observation'
@@ -23,22 +19,8 @@ export function observationCaptureHref(entry: ObservationCaptureEntry): string {
 
 export function observationDetailBackTarget(
   canGoBack: boolean,
-  source?: string,
 ): ObservationDetailBackTarget {
-  if (canGoBack) return 'native';
-  return source === 'history_full_face'
-    ? '/(tabs)/history?view=full_face'
-    : '/(tabs)/history';
-}
-
-export function observationDetailHref(
-  observationId: number,
-  source?: ObservationDetailSource,
-): string {
-  if (source === 'history_full_face') {
-    return `/observation/${observationId}?view=overview&source=history_full_face`;
-  }
-  return `/observation/${observationId}`;
+  return canGoBack ? 'native' : '/(tabs)/history';
 }
 
 export function productUseHref({

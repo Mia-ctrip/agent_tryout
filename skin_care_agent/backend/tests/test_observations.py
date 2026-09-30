@@ -374,7 +374,7 @@ def test_photo_creation_persists_quality_metadata(monkeypatch) -> None:
     assert photo.processed_storage_key is None
 
 
-def test_text_creation_trims_note_and_completes_from_user_record(monkeypatch) -> None:
+def test_creation_without_photo_is_rejected_even_with_a_note(monkeypatch) -> None:
     db, storage = _FakeDB(), _FakeStorage()
     with _client(monkeypatch, db, storage) as client:
         response = client.post(
@@ -384,12 +384,27 @@ def test_text_creation_trims_note_and_completes_from_user_record(monkeypatch) ->
             ),
         )
 
+    assert response.status_code == 422
+    assert response.json()["detail"] == "photo is required"
+    assert storage.puts == []
+    assert db.rows == []
+
+
+def test_photo_creation_trims_region_note_and_queues_ai(monkeypatch) -> None:
+    db, storage = _FakeDB(), _FakeStorage()
+    with _client(monkeypatch, db, storage) as client:
+        response = client.post(
+            "/api/v1/observations",
+            data=_region_form(
+                [{"region_id": "left_face", "user_note": "  今天两颊有些泛红  "}]
+            ),
+            files={"file": ("face.jpg", _image_bytes(), "image/jpeg")},
+        )
+
     assert response.status_code == 201
     assert response.json()["targets"][0]["user_note"] == "今天两颊有些泛红"
-    assert response.json()["targets"][0]["status"] == "completed"
-    assert response.json()["targets"][0]["result_source"] == "user_record"
-    assert response.json()["photo"] is None
-    assert storage.puts == []
+    assert response.json()["targets"][0]["status"] == "queued"
+    assert response.json()["targets"][0]["result_source"] is None
 
 
 def test_only_new_photo_observation_schedules_worker_after_commit(monkeypatch) -> None:
@@ -412,30 +427,56 @@ def test_only_new_photo_observation_schedules_worker_after_commit(monkeypatch) -
     ]
 
 
-def test_text_observation_does_not_schedule_worker(monkeypatch) -> None:
+def test_quota_exhausted_keeps_photo_record_and_skips_ai(monkeypatch) -> None:
+    db, storage = _FakeDB(), _FakeStorage()
     calls: list[int] = []
 
     async def worker(target_id: int) -> None:
         calls.append(target_id)
 
-    with _client(monkeypatch, _FakeDB(), _FakeStorage(), worker) as client:
+    monkeypatch.setattr(
+        observations.rl,
+        "try_consume",
+        lambda *_args, **_kwargs: SimpleNamespace(allowed=False),
+    )
+    with _client(monkeypatch, db, storage, worker) as client:
         response = client.post(
             "/api/v1/observations",
-            data=_region_form([{"region_id": "forehead", "user_note": "记录"}]),
+            data=_region_form([{"region_id": "forehead"}, {"region_id": "chin"}]),
+            files={"file": ("face.jpg", _image_bytes(), "image/jpeg")},
         )
 
     assert response.status_code == 201
+    assert response.json()["photo"] is not None
+    assert [target["status"] for target in response.json()["targets"]] == [
+        "needs_input",
+        "needs_input",
+    ]
     assert calls == []
+    assert len(storage.puts) == 1
 
 
-def test_creation_requires_a_photo_or_non_blank_note(monkeypatch) -> None:
-    with _client(monkeypatch, _FakeDB(), _FakeStorage()) as client:
-        response = client.post(
-            "/api/v1/observations",
-            data=_region_form([{"region_id": "forehead", "user_note": "   "}]),
+def test_retry_is_rejected_with_429_when_quota_is_exhausted(monkeypatch) -> None:
+    record, failed, photo = _history_row(9, target_status="needs_input")
+    calls: list[int] = []
+
+    async def worker(target_id: int) -> None:
+        calls.append(target_id)
+
+    def exhausted(*_args: Any, **_kwargs: Any) -> None:
+        raise observations.rl.QuotaExceeded(
+            observations.rl.QuotaResult(
+                allowed=False, used=20, limit=20, kind="observation", usage_date=date(2026, 8, 21)
+            )
         )
 
-    assert response.status_code == 422
+    monkeypatch.setattr(observations.rl, "require_available", exhausted)
+    with _client(monkeypatch, _HistoryDB([(record, failed, photo)]), _FakeStorage(), worker) as client:
+        response = client.post(f"/api/v1/observations/{record.id}/targets/{failed.id}/retry")
+
+    assert response.status_code == 429
+    assert failed.status == "needs_input"
+    assert calls == []
 
 
 def test_duplicate_request_returns_existing_record_and_stores_once(monkeypatch) -> None:
@@ -556,6 +597,7 @@ def test_request_uuid_is_preserved_in_record(monkeypatch) -> None:
             data=_region_form(
                 [{"region_id": "forehead", "user_note": "记录"}], request_id
             ),
+            files={"file": ("face.jpg", _image_bytes(), "image/jpeg")},
         )
 
     assert response.status_code == 201

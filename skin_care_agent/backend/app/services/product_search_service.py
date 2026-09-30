@@ -331,6 +331,7 @@ personal_candidates AS (
      AND linked_standard.deleted_at IS NULL
     WHERE personal.user_id = :user_id
       AND personal.deleted_at IS NULL
+      AND personal.archived_at IS NULL
       AND (
         personal.normalized_name = :normalized_query
         OR personal.normalized_name LIKE :prefix_pattern

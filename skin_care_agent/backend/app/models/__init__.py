@@ -11,6 +11,7 @@ from app.models.check_in import CheckIn  # noqa: F401
 from app.models.photo import Photo  # noqa: F401
 from app.models.observation import ObservationRecord, ObservationTarget  # noqa: F401
 from app.models.region_event import RegionEvent  # noqa: F401
+from app.models.region_insight import RegionInsight  # noqa: F401
 from app.models.product import PersonalProduct, ProductUse, ProductUseProduct  # noqa: F401
 from app.models.product_catalog import (  # noqa: F401
     CatalogImportBatch,
@@ -42,6 +43,7 @@ __all__ = [
     "ObservationRecord",
     "ObservationTarget",
     "RegionEvent",
+    "RegionInsight",
     "PersonalProduct",
     "ProductUse",
     "ProductUseProduct",

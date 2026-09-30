@@ -31,6 +31,9 @@ function RootNavigator() {
           <Stack.Screen name="region-event/[eventId]" />
           <Stack.Screen name="product/[productId]" />
           <Stack.Screen name="product-use/new" />
+        </Stack.Protected>
+        {/* Legacy 三视角、医学分析与旧趋势只在开发包可达；正式包的深链会回到可用首页。 */}
+        <Stack.Protected guard={signedIn && hasRequiredConsents && __DEV__}>
           <Stack.Screen name="home" />
           <Stack.Screen name="check-in" />
           <Stack.Screen name="analysis/[checkInId]" />

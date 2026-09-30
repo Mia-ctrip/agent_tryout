@@ -26,17 +26,6 @@ test('observation detail falls back to the history tab without stack history', (
   );
 });
 
-test('full-face history drill-down keeps overview and fallback return context', () => {
-  assert.equal(
-    observationNavigation.observationDetailHref(42, 'history_full_face'),
-    '/observation/42?view=overview&source=history_full_face',
-  );
-  assert.equal(
-    observationDetailBackTarget(false, 'history_full_face'),
-    '/(tabs)/history?view=full_face',
-  );
-});
-
 test('product-use routes preserve their source and stable flow identity', () => {
   assert.equal(typeof observationNavigation.productUseHref, 'function');
   assert.equal(

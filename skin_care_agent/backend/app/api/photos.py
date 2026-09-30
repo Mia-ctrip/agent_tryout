@@ -26,6 +26,8 @@ from app.services.vision.quality import (
 
 
 router = APIRouter(prefix="/photos", tags=["photos"])
+# Legacy 三视角上传入口；当前 MVP 通过 POST /observations 上传照片，只在开发环境挂载。
+legacy_upload_router = APIRouter(prefix="/photos", tags=["photos"])
 logger = logging.getLogger(__name__)
 
 _MIME_TO_EXT = {
@@ -101,7 +103,7 @@ def _to_upload_response(photo: Photo) -> PhotoUploadResponse:
     )
 
 
-@router.post(
+@legacy_upload_router.post(
     "",
     response_model=PhotoUploadResponse,
     status_code=status.HTTP_201_CREATED,

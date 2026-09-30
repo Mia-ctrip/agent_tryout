@@ -49,6 +49,7 @@ import {
 } from '@/lib/observation-flow';
 import type { ObservationResultView } from '@/lib/observation-flow';
 import {
+  observationCaptureHref,
   observationDetailBackTarget,
   productUseHref,
 } from '@/lib/observation-navigation';
@@ -72,9 +73,9 @@ function recordedAtLabel(recordedAt: string): string {
 }
 
 export default function ObservationDetailScreen() {
-  const params = useLocalSearchParams<{ observationId: string; view?: string; source?: string }>();
+  const params = useLocalSearchParams<{ observationId: string; view?: string }>();
   const navigation = useNavigation();
-  const backTarget = observationDetailBackTarget(navigation.canGoBack(), params.source);
+  const backTarget = observationDetailBackTarget(navigation.canGoBack());
   const observationId = parseObservationId(params.observationId);
   const { request } = useSession();
   const [observation, setObservation] = useState<Observation | null>(null);
@@ -217,7 +218,7 @@ export default function ObservationDetailScreen() {
         showResultActions ? (
           <ObservationActionBar
             onPrimaryPress={complete}
-            onSecondaryPress={() => router.push('/observation/new')}
+            onSecondaryPress={() => router.push(observationCaptureHref('camera') as Href)}
             primaryLabel="完成"
             secondaryLabel="重新拍摄"
           />

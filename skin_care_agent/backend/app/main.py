@@ -41,6 +41,10 @@ logger = logging.getLogger("skin_care_agent")
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     logger.info("App starting up. env=%s", settings.app_env)
+    config_errors = settings.deployment_config_errors()
+    if config_errors:
+        # 拒绝以开发默认值对外服务（伪造照片签名、Mock AI、容器本地照片等）。
+        raise RuntimeError("invalid deployment config: " + "; ".join(config_errors))
     try:
         yield
     finally:
@@ -77,12 +81,14 @@ def create_app() -> FastAPI:
     api_v1.include_router(products.product_uses_router)
     api_v1.include_router(timeline.router)
     api_v1.include_router(photos.router)
-    api_v1.include_router(check_ins.router)
-    api_v1.include_router(analyses.router)
-    api_v1.include_router(chat.router)
-    api_v1.include_router(lineages.router)
-    api_v1.include_router(trends.router)
     if settings.app_env == "dev":
+        # Legacy 三视角、医学分析、聊天与旧趋势只留给开发环境回看，不对外暴露。
+        api_v1.include_router(photos.legacy_upload_router)
+        api_v1.include_router(check_ins.router)
+        api_v1.include_router(analyses.router)
+        api_v1.include_router(chat.router)
+        api_v1.include_router(lineages.router)
+        api_v1.include_router(trends.router)
         api_v1.include_router(ai_debug.router)
         api_v1.include_router(dev_product_catalog.dev_catalog_router)
     app.include_router(api_v1)

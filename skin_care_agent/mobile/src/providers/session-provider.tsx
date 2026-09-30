@@ -16,6 +16,7 @@ import { ApiError, apiRequest } from '@/lib/api';
 import {
   AuthResponse,
   ConsentStatus,
+  ConsentType,
   REQUIRED_CONSENT_TYPES,
   User,
   hasAllRequiredConsents,
@@ -43,6 +44,8 @@ type SessionContextValue = {
   signOut: () => Promise<void>;
   refreshConsents: () => Promise<ConsentStatus[]>;
   acceptRequiredConsents: () => Promise<void>;
+  updateConsent: (consentType: ConsentType, accepted: boolean) => Promise<void>;
+  deleteAccount: (password: string) => Promise<void>;
   request: <T>(path: string, init?: RequestInit) => Promise<T>;
 };
 
@@ -226,6 +229,39 @@ export function SessionProvider({ children }: PropsWithChildren) {
     setConsents(updated);
   }, [consents, refreshConsents, request]);
 
+  const updateConsent = useCallback(
+    async (consentType: ConsentType, accepted: boolean) => {
+      let currentConsents = consents;
+      if (currentConsents.length === 0) {
+        currentConsents = await refreshConsents();
+      }
+      const status = currentConsents.find((item) => item.consent_type === consentType);
+      if (!status) {
+        throw new ApiError(422, '服务器没有返回这项协议的版本。');
+      }
+      const updated = await request<ConsentStatus[]>('/me/consents', {
+        method: 'PUT',
+        body: JSON.stringify({
+          consents: [{ consent_type: consentType, version: status.version, accepted }],
+          app_version: Constants.expoConfig?.version ?? 'dev',
+        }),
+      });
+      setConsents(updated);
+    },
+    [consents, refreshConsents, request],
+  );
+
+  const deleteAccount = useCallback(
+    async (password: string) => {
+      await request<void>('/me', {
+        method: 'DELETE',
+        body: JSON.stringify({ password }),
+      });
+      await resetSession();
+    },
+    [request, resetSession],
+  );
+
   useEffect(() => {
     let active = true;
     async function bootstrap() {
@@ -280,18 +316,22 @@ export function SessionProvider({ children }: PropsWithChildren) {
       signOut,
       refreshConsents,
       acceptRequiredConsents,
+      updateConsent,
+      deleteAccount,
       request,
     }),
     [
       acceptRequiredConsents,
       auth?.user,
       consents,
+      deleteAccount,
       phase,
       refreshConsents,
       register,
       request,
       signIn,
       signOut,
+      updateConsent,
     ],
   );
 

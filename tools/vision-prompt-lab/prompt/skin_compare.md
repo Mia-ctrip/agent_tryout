@@ -1,6 +1,8 @@
 # Skin Care Agent — 双照片区域变化 Prompt
 
-建议版本：`region-comparison-1.0.0`
+建议版本：`region-comparison-1.1.0`
+
+变更（相对 1.0.0）：输入改为目标区域裁切图并附裁切说明；新增 `headline` 短结论；可比性“不足”时 `headline` 必须为空；明确不接收产品、生活背景和用户原文。
 
 ---
 
@@ -22,7 +24,7 @@
 
 # 一、输入语义
 
-两张照片按时间排序：
+两张照片按时间排序，PHOTO_A 的时间一定早于 PHOTO_B，且位于不同日期：
 
 - PHOTO_A：较早时间点
 - PHOTO_B：较晚时间点
@@ -31,8 +33,19 @@
 
 - photo_a_id: `{photo_a_id}`
 - photo_a_time: `{photo_a_time}`
+- photo_a_crop: `{photo_a_crop}`
 - photo_b_id: `{photo_b_id}`
 - photo_b_time: `{photo_b_time}`
+- photo_b_crop: `{photo_b_crop}`
+
+`photo_*_crop` 的取值：
+
+- `region_crop`：图片是从原图按该区域几何裁切出的分析副本，画面中心就是目标区域，边缘可能带少量相邻区域；
+- `full_photo`：缺少区域几何，图片是缩小后的完整原图，你需要自行只关注目标区域，并在 `comparison_reliability.reasons` 中说明定位受限。
+
+两张图的裁切方式、缩放比例可能不同；裁切造成的范围或大小差异不是皮肤变化。
+
+你只会收到两张图片、时间和区域定义。产品使用、生活背景和用户文字不会提供，也不得推测。
 
 目标区域：
 
@@ -379,9 +392,12 @@ PHOTO_B 相似位置的某个点
   },
   "changes": [],
   "overall_change": "",
+  "headline": "",
   "unknowns": [],
   "summary": ""
 }
+
+`photo_a` / `photo_b` 中数组最多 6 项，`unknowns` 最多 6 项。
 
 ---
 
@@ -436,9 +452,22 @@ PHOTO_B 相似位置的某个点
 
 不要强迫复杂变化变成单一方向。
 
+`comparison_reliability.level = "不足"` 时，`overall_change` 必须为 `"无法可靠判断"`，`changes` 中每项的 `evidence_strength` 也不得为 `"较明确"`。
+
 ---
 
-# 十三、summary
+# 十三、headline
+
+用于页面顶部的一句话结论，中文，不超过 24 字，不含句号以外的标点堆叠。
+
+- 只写最主要的 1–2 项可见变化，例如“局部偏红较淡，可见数量相近”“B 中隆起样变化较少”；
+- 必须与 `overall_change` 和 `changes` 一致，不得出现 `changes` 中没有的内容；
+- 不得出现：改善、好转、变好、变差、恶化、恢复、复发、有效、治愈、健康、严重、轻微；
+- `comparison_reliability.level = "不足"` 或 `overall_change = "无法可靠判断"` 时，`headline` 必须为空字符串，由产品展示固定说明。
+
+---
+
+# 十四、summary
 
 不超过 250 字。
 
@@ -465,10 +494,12 @@ PHOTO_B 相似位置的某个点
 PHOTO_A
 - id: `{photo_a_id}`
 - time: `{photo_a_time}`
+- crop: `{photo_a_crop}`
 
 PHOTO_B
 - id: `{photo_b_id}`
 - time: `{photo_b_time}`
+- crop: `{photo_b_crop}`
 
 目标区域：
 
@@ -501,6 +532,8 @@ PHOTO_B
 - 不得使用改善、恶化、恢复、复发、有效等评价或医学含义；
 - 不得关联产品或生活背景；
 - 证据不足时使用“无法可靠判断”；
+- 裁切或缩放差异不能被解释为范围或大小变化；
+- 可比性“不足”时 `headline` 为空字符串；
 - 只输出规定 JSON。
 
 不要解释检查过程。

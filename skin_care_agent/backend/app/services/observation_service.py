@@ -2,12 +2,14 @@ from __future__ import annotations
 
 import io
 import uuid
+from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import date, datetime, timedelta, timezone
+from typing import Final
 
 from fastapi import HTTPException, status
 from PIL import Image, ImageOps, UnidentifiedImageError
-from sqlalchemy import Select, and_, delete, or_, select
+from sqlalchemy import Select, and_, delete, or_, select, update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
@@ -64,11 +66,7 @@ def local_date_for_offset(recorded_at: datetime, offset_minutes: int) -> date:
     return (normalize_utc(recorded_at) + timedelta(minutes=offset_minutes)).date()
 
 
-def normalize_region_targets(
-    values: list[RegionTargetCreate],
-    *,
-    photo_present: bool,
-) -> list[RegionTargetCreate]:
+def normalize_region_targets(values: list[RegionTargetCreate]) -> list[RegionTargetCreate]:
     try:
         region_ids = normalize_region_ids(value.region_id for value in values)
     except ValueError as exc:
@@ -78,11 +76,6 @@ def normalize_region_targets(
     for region_id in region_ids:
         value = by_region[region_id]
         note = normalize_user_note(value.user_note)
-        if not photo_present and note is None:
-            raise HTTPException(
-                status_code=422,
-                detail=f"user_note is required for region: {region_id}",
-            )
         normalized.append(
             RegionTargetCreate(
                 region_id=region_id,
@@ -175,10 +168,10 @@ def create_observation(
     if existing is not None:
         return existing, load_observation_targets(db, existing.id), False
 
-    normalized_targets = normalize_region_targets(
-        target_inputs,
-        photo_present=photo_input is not None,
-    )
+    # MVP 12.1：每条新观察必须有照片；已有无照片记录只作历史回看。
+    if photo_input is None:
+        raise HTTPException(status_code=422, detail="photo is required")
+    normalized_targets = normalize_region_targets(target_inputs)
     normalized_recorded_at = normalize_utc(recorded_at)
     normalized_local_date = local_date_for_offset(
         normalized_recorded_at,
@@ -186,51 +179,45 @@ def create_observation(
     )
 
     now = datetime.now(tz=timezone.utc)
-    photo: Photo | None = None
     storage_key: str | None = None
     storage = get_storage()
     try:
-        if photo_input is not None:
-            width, height, ext = validate_photo_input(photo_input)
-            quality = observation_quality_service.assess_observation_photo(
-                photo_input.data
+        width, height, ext = validate_photo_input(photo_input)
+        quality = observation_quality_service.assess_observation_photo(photo_input.data)
+        if quality.status == "failed":
+            raise HTTPException(
+                status_code=422,
+                detail={
+                    "message": "photo quality check failed",
+                    "primary_issue": (
+                        quality.primary_issue.model_dump(mode="json")
+                        if quality.primary_issue is not None
+                        else None
+                    ),
+                    "issues": [issue.model_dump(mode="json") for issue in quality.issues],
+                },
             )
-            if quality.status == "failed":
-                raise HTTPException(
-                    status_code=422,
-                    detail={
-                        "message": "photo quality check failed",
-                        "primary_issue": (
-                            quality.primary_issue.model_dump(mode="json")
-                            if quality.primary_issue is not None
-                            else None
-                        ),
-                        "issues": [
-                            issue.model_dump(mode="json") for issue in quality.issues
-                        ],
-                    },
-                )
-            storage_key = _build_storage_key(user_id, ext, now)
-            storage.put(storage_key, photo_input.data, photo_input.mime_type)
-            photo = Photo(
-                user_id=user_id,
-                check_in_id=None,
-                view_type=None,
-                client_request_id=None,
-                storage_key=storage_key,
-                processed_storage_key=None,
-                mime_type=photo_input.mime_type,
-                size_bytes=len(photo_input.data),
-                width=width,
-                height=height,
-                taken_at=(
-                    normalize_utc(photo_input.taken_at) if photo_input.taken_at is not None else None
-                ),
-                quality_status=quality.status,
-                quality_meta=quality.model_dump(mode="json"),
-            )
-            db.add(photo)
-            db.flush()
+        storage_key = _build_storage_key(user_id, ext, now)
+        storage.put(storage_key, photo_input.data, photo_input.mime_type)
+        photo = Photo(
+            user_id=user_id,
+            check_in_id=None,
+            view_type=None,
+            client_request_id=None,
+            storage_key=storage_key,
+            processed_storage_key=None,
+            mime_type=photo_input.mime_type,
+            size_bytes=len(photo_input.data),
+            width=width,
+            height=height,
+            taken_at=(
+                normalize_utc(photo_input.taken_at) if photo_input.taken_at is not None else None
+            ),
+            quality_status=quality.status,
+            quality_meta=quality.model_dump(mode="json"),
+        )
+        db.add(photo)
+        db.flush()
 
         record = ObservationRecord(
             user_id=user_id,
@@ -238,7 +225,7 @@ def create_observation(
             recorded_at=normalized_recorded_at,
             recorded_timezone_offset_minutes=recorded_timezone_offset_minutes,
             recorded_local_date=normalized_local_date,
-            photo_id=photo.id if photo is not None else None,
+            photo_id=photo.id,
             user_note=None,
             status="saved",
         )
@@ -258,10 +245,10 @@ def create_observation(
                 region_id=target_input.region_id,
                 region_event_id=events_by_region[target_input.region_id].id,
                 user_note=target_input.user_note,
-                status="queued" if photo is not None else "completed",
-                result_source=None if photo is not None else "user_record",
+                status="queued",
+                result_source=None,
                 facts=None,
-                completed_at=None if photo is not None else now,
+                completed_at=None,
             )
             for target_input in normalized_targets
         ]
@@ -283,12 +270,118 @@ def create_observation(
             storage.delete(storage_key)
         raise
 
-    if photo is not None:
-        db.refresh(photo)
+    db.refresh(photo)
     db.refresh(record)
     for target in targets:
         db.refresh(target)
     return record, targets, True
+
+
+def mark_targets_quota_exceeded(db: Session, targets: list[ObservationTarget]) -> None:
+    """当日 AI 次数用完：原图与记录已保存，区域直接进入可重试/可补文字的 needs_input。"""
+    for target in targets:
+        if target.status != "queued":
+            continue
+        target.status = "needs_input"
+        target.failure_code = "quota_exceeded"
+    db.commit()
+
+
+# 超过此时长仍在 processing（或从未被领取的 queued），视为进程重启/重新部署丢失的任务。
+# 单区分析最坏约 2 次 × 90 秒 + 一次展示校验重试，另留余量。
+OBSERVATION_STALE_AFTER: Final = timedelta(minutes=10)
+
+
+def _as_utc(value: datetime | None) -> datetime | None:
+    if value is None:
+        return None
+    return value if value.tzinfo is not None else value.replace(tzinfo=timezone.utc)
+
+
+def stale_target_ids(
+    targets: list[ObservationTarget],
+    *,
+    now: datetime,
+    has_photo: bool,
+) -> list[int]:
+    if not has_photo:
+        return []
+    cutoff = now - OBSERVATION_STALE_AFTER
+    stale: list[int] = []
+    for target in targets:
+        if target.status == "processing":
+            started = _as_utc(target.processing_started_at)
+        elif target.status == "queued":
+            started = _as_utc(target.processing_started_at or target.created_at)
+        else:
+            continue
+        # 无法判断开始时间时不回收，避免误把刚写入的任务重复排队。
+        if started is not None and started < cutoff:
+            stale.append(target.id)
+    return stale
+
+
+def reclaim_stale_targets(
+    db: Session,
+    *,
+    user_id: int,
+    target_ids: list[int],
+    now: datetime,
+) -> list[int]:
+    """把超时目标原子改回 queued；返回需要重新排入 worker 的目标 ID。"""
+    if not target_ids:
+        return []
+    cutoff = now - OBSERVATION_STALE_AFTER
+    reclaimed = list(
+        db.scalars(
+            update(ObservationTarget)
+            .where(
+                ObservationTarget.id.in_(target_ids),
+                ObservationTarget.user_id == user_id,
+                ObservationTarget.deleted_at.is_(None),
+                or_(
+                    and_(
+                        ObservationTarget.status == "processing",
+                        or_(
+                            ObservationTarget.processing_started_at.is_(None),
+                            ObservationTarget.processing_started_at < cutoff,
+                        ),
+                    ),
+                    ObservationTarget.status == "queued",
+                ),
+            )
+            .values(status="queued", processing_started_at=None)
+            .returning(ObservationTarget.id)
+            .execution_options(synchronize_session=False)
+        ).all()
+    )
+    db.commit()
+    return reclaimed
+
+
+def _recover_stale(
+    db: Session,
+    *,
+    user_id: int,
+    bundles: list[tuple[list[ObservationTarget], Photo | None]],
+    schedule: Callable[[int], None] | None,
+) -> None:
+    if schedule is None:
+        return
+    now = datetime.now(tz=timezone.utc)
+    candidates = [
+        target_id
+        for targets, photo in bundles
+        for target_id in stale_target_ids(targets, now=now, has_photo=photo is not None)
+    ]
+    reclaimed = set(reclaim_stale_targets(db, user_id=user_id, target_ids=candidates, now=now))
+    for targets, _photo in bundles:
+        for target in targets:
+            if target.id in reclaimed:
+                target.status = "queued"
+                target.processing_started_at = None
+    for target_id in sorted(reclaimed):
+        schedule(target_id)
 
 
 def to_observation_out(
@@ -418,6 +511,7 @@ def list_observations(
     user_id: int,
     limit: int,
     before_id: int | None,
+    schedule: Callable[[int], None] | None = None,
 ) -> list[ObservationOut]:
     record_ids = _observation_page_ids(user_id=user_id, limit=limit, before_id=before_id)
     statement = _bundle_statement(user_id).where(ObservationRecord.id.in_(record_ids))
@@ -435,6 +529,12 @@ def list_observations(
         if record.id not in grouped:
             grouped[record.id] = (record, [], photo)
         grouped[record.id][1].append(target)
+    _recover_stale(
+        db,
+        user_id=user_id,
+        bundles=[(targets, photo) for _record, targets, photo in grouped.values()],
+        schedule=schedule,
+    )
     return [
         _build_observation_out(db, record, targets, photo)
         for record, targets, photo in grouped.values()
@@ -462,12 +562,14 @@ def get_observation_out(
     *,
     user_id: int,
     observation_id: int,
+    schedule: Callable[[int], None] | None = None,
 ) -> ObservationOut:
     record, targets, photo = get_observation(
         db,
         user_id=user_id,
         observation_id=observation_id,
     )
+    _recover_stale(db, user_id=user_id, bundles=[(targets, photo)], schedule=schedule)
     return _build_observation_out(db, record, targets, photo)
 
 

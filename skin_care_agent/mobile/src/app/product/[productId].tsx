@@ -87,7 +87,12 @@ export default function ProductDetailScreen() {
           ) : null,
         }}
       />
-      <Modal visible={editing} animationType="slide" onRequestClose={() => { if (!savingEdit) setEditing(false); }}>
+      <Modal
+        visible={editing}
+        animationType="slide"
+        navigationBarTranslucent
+        statusBarTranslucent
+        onRequestClose={() => { if (!savingEdit) setEditing(false); }}>
         <AppScreen variant="form" backgroundColor={productColors.background}>
           {editing && product ? <CustomProductForm
             editingProduct={product}

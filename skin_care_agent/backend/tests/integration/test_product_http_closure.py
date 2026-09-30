@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import json
 from datetime import datetime, timezone
 from io import BytesIO
 from uuid import uuid4
@@ -12,6 +11,10 @@ from app.config import get_settings
 from app.main import app
 from app.services import product_service
 from app.services.storage_service.base import SignedURL
+from tests.integration.observation_http_support import (
+    create_region_timepoint,
+    patch_photo_pipeline,
+)
 
 
 def _register(client: TestClient, label: str) -> tuple[dict[str, str], str]:
@@ -300,12 +303,14 @@ def test_product_use_http_flow_is_idempotent_and_account_isolated(
 
 def test_products_contexts_and_timeline_survive_a_new_http_client(
     migrated_database_url: str | None,
+    monkeypatch,
 ) -> None:
     if migrated_database_url is None:
         import pytest
 
         pytest.skip("use --local-postgres for the combined Slice 4-5 HTTP closure")
 
+    patch_photo_pipeline(monkeypatch)
     with TestClient(app) as first_client:
         owner_headers, owner_password = _register(first_client, "combined-owner")
         other_headers, other_password = _register(first_client, "combined-other")
@@ -356,38 +361,26 @@ def test_products_contexts_and_timeline_survive_a_new_http_client(
             == product_use_id
         )
 
-        selected_observation = first_client.post(
-            "/api/v1/observations",
-            headers=owner_headers,
-            data={
-                "client_request_id": str(uuid4()),
-                "recorded_at": "2026-08-24T10:00:00+08:00",
-                "recorded_timezone_offset_minutes": "480",
-                "targets_json": json.dumps(
-                    [{"region_id": "forehead", "user_note": "额头原始观察"}]
-                ),
-            },
-        )
-        assert selected_observation.status_code == 201
-        selected_id = selected_observation.json()["observation_id"]
+        selected_id = create_region_timepoint(
+            first_client,
+            owner_headers,
+            region_id="forehead",
+            note="额头原始观察",
+            recorded_at="2026-08-24T10:00:00+08:00",
+        )["observation_id"]
         assert first_client.put(
             f"/api/v1/observations/{selected_id}/life-contexts",
             headers=owner_headers,
             json={"context_ids": ["care_change", "sleep"]},
         ).json()["life_context_ids"] == ["sleep", "care_change"]
 
-        skipped_observation = first_client.post(
-            "/api/v1/observations",
-            headers=owner_headers,
-            data={
-                "client_request_id": str(uuid4()),
-                "recorded_at": "2026-08-24T11:00:00+08:00",
-                "recorded_timezone_offset_minutes": "480",
-                "targets_json": json.dumps([{"region_id": "chin", "user_note": "下巴原始观察"}]),
-            },
-        )
-        assert skipped_observation.status_code == 201
-        skipped_id = skipped_observation.json()["observation_id"]
+        skipped_id = create_region_timepoint(
+            first_client,
+            owner_headers,
+            region_id="chin",
+            note="下巴原始观察",
+            recorded_at="2026-08-24T11:00:00+08:00",
+        )["observation_id"]
         skipped = first_client.put(
             f"/api/v1/observations/{skipped_id}/life-contexts",
             headers=owner_headers,

@@ -8,6 +8,8 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 BACKEND_ROOT = Path(__file__).resolve().parents[1]
+_DEFAULT_DATABASE_URL = "postgresql+psycopg://skin:skin@localhost:5432/skin_care"
+_DEFAULT_SIGN_SECRET = "dev-only-change-me"
 
 
 class Settings(BaseSettings):
@@ -27,13 +29,13 @@ class Settings(BaseSettings):
     cors_allowed_origins: str = ""
 
     # db
-    database_url: str = "postgresql+psycopg://skin:skin@localhost:5432/skin_care"
+    database_url: str = _DEFAULT_DATABASE_URL
 
     # storage
     storage_backend: str = "local"
     storage_local_dir: str = "./storage_local"
     storage_local_base_url: str = "http://localhost:8000/files"
-    storage_url_sign_secret: str = "dev-only-change-me"
+    storage_url_sign_secret: str = _DEFAULT_SIGN_SECRET
     storage_url_ttl_seconds: int = 900  # 15 minutes
     cos_secret_id: str = ""
     cos_secret_key: str = ""
@@ -48,6 +50,12 @@ class Settings(BaseSettings):
     # ai rate limit
     ai_analyze_daily_limit: int = 10
     ai_chat_daily_limit: int = 50
+    # 当前 MVP 入口：一次观察（含 1–6 区）或一次失败区域重试计 1 次
+    ai_observation_daily_limit: int = 20
+    # 区域对比与阶段趋势的每次新生成计 1 次；缓存命中不计
+    ai_insight_daily_limit: int = 30
+    # 本地 MediaPipe 质量检查；实时取景约每 2.4 秒一次，只防脚本滥用
+    photo_quality_daily_limit: int = 600
     ai_ratelimit_enforce_in_dev: bool = False  # dev 环境默认豁免；true 时强制开启
 
     # auth
@@ -108,6 +116,31 @@ class Settings(BaseSettings):
     @property
     def cors_origin_list(self) -> list[str]:
         return [item.strip() for item in self.cors_allowed_origins.split(",") if item.strip()]
+
+    def deployment_config_errors(self) -> list[str]:
+        """非 dev 环境启动前必须满足的配置；dev 环境始终返回空列表。"""
+        if self.app_env == "dev":
+            return []
+        errors: list[str] = []
+        if self.database_url == _DEFAULT_DATABASE_URL:
+            errors.append("DATABASE_URL must be configured")
+        if (
+            self.storage_url_sign_secret == _DEFAULT_SIGN_SECRET
+            or len(self.storage_url_sign_secret) < 32
+        ):
+            errors.append("STORAGE_URL_SIGN_SECRET must be a random value of at least 32 chars")
+        if self.ai_provider_primary == "mock":
+            errors.append("AI_PROVIDER_PRIMARY must not be mock")
+        for provider in [self.ai_provider_primary, *self.fallback_providers]:
+            if provider != "mock" and not getattr(self, f"{provider}_api_key", ""):
+                errors.append(f"{provider.upper()}_API_KEY is required")
+        if self.storage_backend == "cos" and not all(
+            (self.cos_secret_id, self.cos_secret_key, self.cos_region, self.cos_bucket)
+        ):
+            errors.append("COS_SECRET_ID, COS_SECRET_KEY, COS_REGION and COS_BUCKET are required")
+        if self.app_env in {"prod", "production"} and self.storage_backend != "cos":
+            errors.append("production requires STORAGE_BACKEND=cos")
+        return errors
 
     @property
     def required_consents(self) -> dict[str, str]:

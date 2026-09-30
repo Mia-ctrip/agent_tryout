@@ -137,6 +137,28 @@ test('photo source survives quality failure and selects the matching recovery ac
   assert.equal(state.photoSource, null);
 });
 
+test('a rejected photo invalidates prior quality and retry preserves the original and region choices', () => {
+  let state = {
+    ...createFaceAnalysisState('quality-retry'),
+    photoUri: 'file://original.jpg',
+    photoSource: 'library',
+    selectedRegions: ['chin'],
+    quality: { status: 'passed', primary_issue: null, issues: [], metrics: {}, regions: [] },
+  };
+  state = faceAnalysisReducer(state, { type: 'quality_failed', issue: { code: 'blurry', message: '照片有些模糊' } });
+  assert.equal(state.quality, null);
+  state = faceAnalysisReducer(state, { type: 'quality_check_started' });
+  assert.equal(state.status, 'quality_checking');
+  assert.equal(faceAnalysisReducer(state, { type: 'quality_check_started' }), state);
+  state = faceAnalysisReducer(state, { type: 'analysis_failed', message: '网络异常，请重试' });
+  assert.equal(state.status, 'error');
+  assert.equal(state.quality, null); // Recovery must retry checking, not attempt to save with stale quality.
+  assert.equal(state.photoUri, 'file://original.jpg');
+  assert.equal(state.photoSource, 'library');
+  assert.deepEqual(state.selectedRegions, ['chin']);
+  assert.equal(state.clientRequestId, 'quality-retry');
+});
+
 test('required regions stay selected while every supported region remains selectable', () => {
   let state = createFaceAnalysisState('request-id', ['forehead']);
   state = faceAnalysisReducer(state, {

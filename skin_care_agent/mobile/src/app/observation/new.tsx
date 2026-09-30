@@ -24,6 +24,7 @@ import { CameraStartPanel } from '@/components/camera-start-panel';
 import { FaceRegionMap } from '@/components/face-region-map';
 import { InlineNotice } from '@/components/inline-notice';
 import { ObservationActionBar } from '@/components/observation-action-bar';
+import { PhotoQualityReview } from '@/components/photo-quality-review';
 import { RegionChoiceBar } from '@/components/region-choice-bar';
 import {
   observationColors,
@@ -42,7 +43,6 @@ import {
   createFaceAnalysisState,
   faceAnalysisReducer,
   liveGuidanceFromQuality,
-  photoRecoveryPrimaryLabel,
 } from '@/lib/face-analysis-flow';
 import type { CaptureGuidanceStatus, FacePhotoSource } from '@/lib/face-analysis-flow';
 import { buildObservationForm, createObservation } from '@/lib/observation-api';
@@ -136,6 +136,7 @@ export default function NewObservationScreen() {
   const captureGuard = useRef(false);
   const liveSampleGuard = useRef(false);
   const submitGuard = useRef(false);
+  const qualityGuard = useRef(false);
   const entryHandled = useRef(false);
   const permissionState = cameraPermissionState(permission);
   const useSystemCamera = shouldUseSystemCamera({
@@ -254,6 +255,8 @@ export default function NewObservationScreen() {
   }
 
   async function runQualityCheck(photoUri: string) {
+    if (qualityGuard.current) return;
+    qualityGuard.current = true;
     dispatch({ type: 'quality_check_started' });
     setNotice(null);
     try {
@@ -277,6 +280,8 @@ export default function NewObservationScreen() {
       dispatch({ type: 'quality_passed', quality });
     } catch (error) {
       dispatch({ type: 'analysis_failed', message: userFacingError(error) });
+    } finally {
+      qualityGuard.current = false;
     }
   }
 
@@ -598,54 +603,24 @@ export default function NewObservationScreen() {
     );
   }
 
-  if (flow.status === 'photo_captured' || flow.status === 'quality_checking') {
+  if (
+    flow.status === 'photo_captured' || flow.status === 'quality_checking' ||
+    flow.status === 'quality_failed' || (flow.status === 'error' && flow.quality === null)
+  ) {
     return (
-      <AppScreen backgroundColor={observationColors.background}>
-        <View style={styles.pageHeader}>
-          <Text accessibilityRole="header" style={styles.title}>正在检查照片</Text>
-          <Text style={styles.description}>会先确认脸部完整、距离、角度、光线和清晰度。</Text>
-        </View>
-        {flow.photoUri ? (
-          <Image contentFit="cover" source={{ uri: flow.photoUri }} style={styles.qualityPhoto} />
-        ) : null}
-        <View accessibilityLiveRegion="polite" style={styles.progressBar}>
-          <ActivityIndicator color={observationColors.sage} />
-          <Text style={styles.progressText}>正在检查照片质量</Text>
-        </View>
-      </AppScreen>
-    );
-  }
-
-  if (flow.status === 'quality_failed') {
-    return (
-      <AppScreen
-        backgroundColor={observationColors.background}
-        footer={
-          <ObservationActionBar
-            onPrimaryPress={
-              flow.photoSource === 'library'
-                ? () => void choosePhotoFromLibrary()
-                : retake
-            }
-            onSecondaryPress={() => flow.photoUri && void runQualityCheck(flow.photoUri)}
-            primaryLabel={photoRecoveryPrimaryLabel(flow.photoSource)}
-            secondaryLabel="重新检查这张照片"
-          />
-        }>
-        <View style={styles.pageHeader}>
-          <Text accessibilityRole="header" style={styles.title}>这张照片需要调整</Text>
-          <Text style={styles.description}>
-            照片尚未保存，你可以按提示重新获取，或再次检查这张照片。
-          </Text>
-        </View>
-        {flow.photoUri ? (
-          <Image contentFit="cover" source={{ uri: flow.photoUri }} style={styles.qualityPhoto} />
-        ) : null}
-        <InlineNotice
-          tone="error"
-          message={flow.qualityIssue?.message ?? '照片质量未达到分析要求，请重新拍摄。'}
-        />
-      </AppScreen>
+      <PhotoQualityReview
+        key={flow.photoUri}
+        state={flow.status === 'quality_failed' ? 'needs_adjustment' : flow.status === 'error' ? 'unavailable' : 'checking'}
+        photoUri={flow.photoUri}
+        source={flow.photoSource}
+        issue={flow.qualityIssue}
+        error={flow.errorMessage}
+        notice={notice}
+        choosingPhoto={choosingPhoto}
+        onRetry={() => { if (flow.photoUri) void runQualityCheck(flow.photoUri); }}
+        onReplace={flow.photoSource === 'library' ? () => void choosePhotoFromLibrary() : retake}
+        onBack={() => router.back()}
+      />
     );
   }
 
@@ -800,21 +775,14 @@ export default function NewObservationScreen() {
   }
 
   if (flow.status === 'error') {
-    const retryQuality = flow.quality === null;
     return (
       <AppScreen
         backgroundColor={observationColors.background}
         footer={
           <ObservationActionBar
-            onPrimaryPress={() => {
-              if (retryQuality && flow.photoUri) {
-                void runQualityCheck(flow.photoUri);
-              } else {
-                startAnalysis();
-              }
-            }}
+            onPrimaryPress={startAnalysis}
             onSecondaryPress={retake}
-            primaryLabel={retryQuality ? '重试照片检查' : '重试 AI 分析'}
+            primaryLabel="重试 AI 分析"
             secondaryLabel="重新拍摄"
           />
         }>
@@ -944,18 +912,6 @@ const styles = StyleSheet.create({
     borderRadius: observationRadii.camera,
     backgroundColor: observationColors.forest,
   },
-  progressBar: {
-    minHeight: 52,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: observationSpacing.sm,
-    marginTop: observationSpacing.lg,
-    borderRadius: observationRadii.md,
-    backgroundColor: observationColors.surfaceMuted,
-    paddingHorizontal: observationSpacing.lg,
-  },
-  progressText: { color: observationColors.text, fontSize: 14, fontWeight: '600' },
   confirmPhotoFrame: { position: 'relative' },
   rawPhotoBadge: {
     position: 'absolute',

@@ -19,7 +19,8 @@ from app.schemas.auth import (
     DeleteAccountRequest,
     UserOut,
 )
-from app.services import auth_service, consent_service
+from app.schemas.export import DataExportOut
+from app.services import auth_service, consent_service, export_service
 from app.services.auth_service import AuthContext
 from app.services.storage_service import get_storage
 
@@ -77,6 +78,14 @@ def update_consents(
         ) from exc
     db.commit()
     return get_consents(current_user=current_user, db=db)
+
+
+@router.get("/export", response_model=DataExportOut)
+def export_my_data(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+) -> DataExportOut:
+    return export_service.build_data_export(db, current_user)
 
 
 @router.delete("", status_code=status.HTTP_204_NO_CONTENT)

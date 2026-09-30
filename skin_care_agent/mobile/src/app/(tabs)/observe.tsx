@@ -81,33 +81,35 @@ export default function ObserveScreen() {
       </View>
       {error ? <InlineNotice tone="error" message={error} /> : null}
       <View style={styles.currentSection}>
-        {events.length > 0 ? (
-          <SectionHeader eyebrow="CURRENT" title="正在观察" titleStyle={styles.currentTitle} />
-        ) : null}
-        {events.length > 0 ? (
-          <Pressable
-            accessibilityLabel="查看正在观察的区域"
-            accessibilityHint={`${events.map((event) => regionById(event.region_id).label).join('、')}，进入历程查看`}
-            accessibilityRole="button"
-            onPress={() => router.navigate('/(tabs)/history')}
-            style={({ pressed }) => [styles.entryRow, pressed && styles.pressed]}>
-            <View accessibilityElementsHidden importantForAccessibility="no-hide-descendants" style={styles.entryIcon}>
-              <Image
-                source={{ uri: `data:image/svg+xml;base64,${btoa(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="${colors.paperElevated}" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 9V7a7 7 0 0 1 14 0v2m-14 0c0 7 3 12 7 12s7-5 7-12M8 10h1m6 0h1m-4 1v4h1m-4 2c2 1 4 1 6 0"/></svg>`)}` }}
-                style={styles.entryIconDrawing}
-              />
-            </View>
-            <View style={styles.rowCopy}>
-              <EditorialText role="body" style={styles.rowTitle}>
-                {events.map((event) => regionById(event.region_id).label).join(' · ')}
-              </EditorialText>
-              <EditorialText role="caption" style={styles.rowMeta}>
-                {events.length} 个区域正在记录
-              </EditorialText>
-            </View>
-            <EditorialText role="sectionTitle" accessibilityElementsHidden importantForAccessibility="no" style={styles.chevron}>›</EditorialText>
-          </Pressable>
-        ) : null}
+        <SectionHeader eyebrow="CURRENT" title="正在观察" titleStyle={styles.currentTitle} />
+        <Pressable
+          accessibilityLabel={events.length > 0 ? '查看正在观察的区域' : '暂无正在观察的区域'}
+          accessibilityHint={
+            events.length > 0
+              ? `${events.map((event) => regionById(event.region_id).label).join('、')}，进入历程查看`
+              : '开始一次观察后可在历程查看'
+          }
+          accessibilityRole="button"
+          onPress={() => router.navigate('/(tabs)/history')}
+          style={({ pressed }) => [styles.entryRow, pressed && styles.pressed]}>
+          <View accessibilityElementsHidden importantForAccessibility="no-hide-descendants" style={styles.entryIcon}>
+            <Image
+              source={{ uri: `data:image/svg+xml;base64,${btoa(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="${colors.paperElevated}" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 9V7a7 7 0 0 1 14 0v2m-14 0c0 7 3 12 7 12s7-5 7-12M8 10h1m6 0h1m-4 1v4h1m-4 2c2 1 4 1 6 0"/></svg>`)}` }}
+              style={styles.entryIconDrawing}
+            />
+          </View>
+          <View style={styles.rowCopy}>
+            <EditorialText role="body" style={styles.rowTitle}>
+              {events.length > 0
+                ? events.map((event) => regionById(event.region_id).label).join(' · ')
+                : '暂无正在观察的区域'}
+            </EditorialText>
+            <EditorialText role="caption" style={styles.rowMeta}>
+              {events.length > 0 ? `${events.length} 个区域正在记录` : '开始一次观察后可在此查看'}
+            </EditorialText>
+          </View>
+          <EditorialText role="sectionTitle" accessibilityElementsHidden importantForAccessibility="no" style={styles.chevron}>›</EditorialText>
+        </Pressable>
         <Pressable
           accessibilityLabel="记录产品使用"
           accessibilityHint="进入产品栏查看产品与使用记录"

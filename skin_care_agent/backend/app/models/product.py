@@ -70,6 +70,11 @@ class PersonalProduct(Base, IdMixin, TimestampMixin):
         ForeignKey("product_image_assets.id", ondelete="RESTRICT"),
         nullable=True,
     )
+    archived_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True),
+        nullable=True,
+        index=True,
+    )
 
 
 class ProductUse(Base, IdMixin, TimestampMixin):

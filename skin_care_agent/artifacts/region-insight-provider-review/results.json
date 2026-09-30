@@ -1,0 +1,66 @@
+[
+  {
+    "step": "comparison",
+    "insight_id": 1,
+    "kind": "comparison",
+    "event_id": 19,
+    "region_id": "nose_area",
+    "status": "failed",
+    "failure_code": "invalid_schema",
+    "timepoints": [
+      {
+        "timepoint_id": "T1",
+        "local_date": "2026-08-30",
+        "image_index": 1,
+        "crop": "region_crop"
+      },
+      {
+        "timepoint_id": "T2",
+        "local_date": "2026-09-14",
+        "image_index": 2,
+        "crop": "region_crop"
+      }
+    ],
+    "wall_seconds": 50.2,
+    "calls": [
+      {
+        "status": "schema_failed",
+        "provider": "glm",
+        "model": "glm-4.6v",
+        "input_tokens": 2939,
+        "output_tokens": 793,
+        "latency_ms": 23844,
+        "error": "response does not match schema",
+        "encoded_bytes": [
+          6106,
+          30857
+        ],
+        "prompt_chars": null
+      },
+      {
+        "status": "schema_failed",
+        "provider": "glm",
+        "model": "glm-4.6v",
+        "input_tokens": 3100,
+        "output_tokens": 797,
+        "latency_ms": 26108,
+        "error": "response does not match schema",
+        "encoded_bytes": [
+          6106,
+          30857
+        ],
+        "prompt_chars": null
+      }
+    ],
+    "headline": null,
+    "overall": null,
+    "reliability": {},
+    "changes": null,
+    "dimension_trends": null,
+    "phases": null,
+    "notable_timepoints": null,
+    "unknowns": null,
+    "summary": null,
+    "cached": false
+  }
+]

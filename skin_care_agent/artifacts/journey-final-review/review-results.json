@@ -1,6 +1,6 @@
 {
   "kind": "VISUAL FIXTURES ONLY — not backend or native-device verification",
-  "status": "failed",
+  "status": "passed-web-native-review-pending",
   "results": [
     {
       "name": "history",
@@ -39,12 +39,82 @@
       "width": 320,
       "scrollWidth": 320,
       "path": "/region-event/1",
-      "text": "‹\n左脸颊 · 这一段记录\n7月2日—8月30日 · 5 个时间点\n7月2日\n7月12日\n7月29日\n8月14日\n8月30日\n对比观察 ‹ ›\n8月30日的记录\n照片中可见\n局部泛红较淡，肤色较均匀。",
+      "text": "‹\n左脸颊 · 这一段记录\n7月2日—8月30日 · 5 个时间点\n7月2日\n7月12日\n7月29日\n8月14日\n8月30日\n8月30日 · 左脸颊\n对比观察 ‹ ›\n8月30日的记录\n照片中可见\n局",
+      "overflow": false
+    },
+    {
+      "name": "timeline",
+      "width": 375,
+      "scrollWidth": 375,
+      "path": "/region-event/1",
+      "text": "‹\n左脸颊 · 这一段记录\n7月2日—8月30日 · 5 个时间点\n7月2日\n7月12日\n7月29日\n8月14日\n8月30日\n8月30日 · 左脸颊\n对比观察 ‹ ›\n8月30日的记录\n照片中可见\n局",
+      "overflow": false
+    },
+    {
+      "name": "timeline",
+      "width": 390,
+      "scrollWidth": 390,
+      "path": "/region-event/1",
+      "text": "‹\n左脸颊 · 这一段记录\n7月2日—8月30日 · 5 个时间点\n7月2日\n7月12日\n7月29日\n8月14日\n8月30日\n8月30日 · 左脸颊\n对比观察 ‹ ›\n8月30日的记录\n照片中可见\n局",
+      "overflow": false
+    },
+    {
+      "name": "timeline",
+      "width": 430,
+      "scrollWidth": 430,
+      "path": "/region-event/1",
+      "text": "‹\n左脸颊 · 这一段记录\n7月2日—8月30日 · 5 个时间点\n7月2日\n7月12日\n7月29日\n8月14日\n8月30日\n8月30日 · 左脸颊\n对比观察 ‹ ›\n8月30日的记录\n照片中可见\n局",
+      "overflow": false
+    },
+    {
+      "name": "timeline-first",
+      "width": 390,
+      "scrollWidth": 390,
+      "path": "/region-event/1",
+      "text": "‹\n左脸颊 · 这一段记录\n7月2日—8月30日 · 5 个时间点\n7月2日\n7月12日\n7月29日\n8月14日\n8月30日\n7月2日 · 左脸颊\n对比观察 ‹ ›\n7月2日的记录\n照片中可见\n左脸颊",
+      "overflow": false
+    },
+    {
+      "name": "compare",
+      "width": 320,
+      "scrollWidth": 320,
+      "path": "/region-event/1",
+      "text": "‹\n左脸颊 · 对比观察\n选择两个时间点，对比肌肤变化\n7月12日\n记录时的状态\n8月30日\n较近一次的状态\n‹ ›\n对比观察\n局部泛红较淡，肤色较均匀。\n较近一次的照片记录 · 8月30日\n可见外观",
+      "overflow": false
+    },
+    {
+      "name": "compare",
+      "width": 375,
+      "scrollWidth": 375,
+      "path": "/region-event/1",
+      "text": "‹\n左脸颊 · 对比观察\n选择两个时间点，对比肌肤变化\n7月12日\n记录时的状态\n8月30日\n较近一次的状态\n‹ ›\n对比观察\n局部泛红较淡，肤色较均匀。\n较近一次的照片记录 · 8月30日\n可见外观",
+      "overflow": false
+    },
+    {
+      "name": "compare",
+      "width": 390,
+      "scrollWidth": 390,
+      "path": "/region-event/1",
+      "text": "‹\n左脸颊 · 对比观察\n选择两个时间点，对比肌肤变化\n7月12日\n记录时的状态\n8月30日\n较近一次的状态\n‹ ›\n对比观察\n局部泛红较淡，肤色较均匀。\n较近一次的照片记录 · 8月30日\n可见外观",
+      "overflow": false
+    },
+    {
+      "name": "compare",
+      "width": 430,
+      "scrollWidth": 430,
+      "path": "/region-event/1",
+      "text": "‹\n左脸颊 · 对比观察\n选择两个时间点，对比肌肤变化\n7月12日\n记录时的状态\n8月30日\n较近一次的状态\n‹ ›\n对比观察\n局部泛红较淡，肤色较均匀。\n较近一次的照片记录 · 8月30日\n可见外观",
+      "overflow": false
+    },
+    {
+      "name": "journey-history",
+      "width": 390,
+      "scrollWidth": 390,
+      "path": "/history",
+      "text": "肌肤档案\nTODAY · 今天\n今天，也留下一次\n真实观察\n让皮肤的变化，被温和而诚实地保存。\nNATURAL LIGHT\nSLOW OBSERVATIONS\n开始今天的观察\n从相册导入原图\nCURR",
       "overflow": false
     }
   ],
-  "errors": [
-    "Selected photo/date/evidence out of sync: null"
-  ],
+  "errors": [],
   "skipped": []
 }

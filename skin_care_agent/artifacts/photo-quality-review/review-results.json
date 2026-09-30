@@ -1,0 +1,112 @@
+{
+  "kind": "VISUAL FIXTURES ONLY — not backend or native-device verification",
+  "status": "passed-web-native-review-pending",
+  "results": [
+    {
+      "name": "quality-needs_adjustment",
+      "width": 320,
+      "scrollWidth": 320,
+      "path": "/",
+      "text": "返回\n照片检查\n需要调整\n照片有些模糊\n请保持手机稳定，等画面清晰后再拍一张。\n原始照片 · 未修饰\n照片尚未保存到记录\n重新拍摄\n重新检查这张照片",
+      "overflow": false
+    },
+    {
+      "name": "quality-needs_adjustment",
+      "width": 375,
+      "scrollWidth": 375,
+      "path": "/",
+      "text": "返回\n照片检查\n需要调整\n照片有些模糊\n请保持手机稳定，等画面清晰后再拍一张。\n原始照片 · 未修饰\n照片尚未保存到记录\n重新拍摄\n重新检查这张照片",
+      "overflow": false
+    },
+    {
+      "name": "quality-needs_adjustment",
+      "width": 390,
+      "scrollWidth": 390,
+      "path": "/",
+      "text": "返回\n照片检查\n需要调整\n照片有些模糊\n请保持手机稳定，等画面清晰后再拍一张。\n原始照片 · 未修饰\n照片尚未保存到记录\n重新拍摄\n重新检查这张照片",
+      "overflow": false
+    },
+    {
+      "name": "quality-needs_adjustment",
+      "width": 430,
+      "scrollWidth": 430,
+      "path": "/",
+      "text": "返回\n照片检查\n需要调整\n照片有些模糊\n请保持手机稳定，等画面清晰后再拍一张。\n原始照片 · 未修饰\n照片尚未保存到记录\n重新拍摄\n重新检查这张照片",
+      "overflow": false
+    },
+    {
+      "name": "quality-checking",
+      "width": 320,
+      "scrollWidth": 320,
+      "path": "/",
+      "text": "返回\n照片检查\n检查中\n正在检查照片\n确认面部是否完整，以及光线与清晰度是否适合观察。\n原始照片 · 未修饰\n检查通过后，就可以选择这次观察的区域。",
+      "overflow": false
+    },
+    {
+      "name": "quality-checking",
+      "width": 375,
+      "scrollWidth": 375,
+      "path": "/",
+      "text": "返回\n照片检查\n检查中\n正在检查照片\n确认面部是否完整，以及光线与清晰度是否适合观察。\n原始照片 · 未修饰\n检查通过后，就可以选择这次观察的区域。",
+      "overflow": false
+    },
+    {
+      "name": "quality-checking",
+      "width": 390,
+      "scrollWidth": 390,
+      "path": "/",
+      "text": "返回\n照片检查\n检查中\n正在检查照片\n确认面部是否完整，以及光线与清晰度是否适合观察。\n原始照片 · 未修饰\n检查通过后，就可以选择这次观察的区域。",
+      "overflow": false
+    },
+    {
+      "name": "quality-checking",
+      "width": 430,
+      "scrollWidth": 430,
+      "path": "/",
+      "text": "返回\n照片检查\n检查中\n正在检查照片\n确认面部是否完整，以及光线与清晰度是否适合观察。\n原始照片 · 未修饰\n检查通过后，就可以选择这次观察的区域。",
+      "overflow": false
+    },
+    {
+      "name": "quality-unavailable",
+      "width": 320,
+      "scrollWidth": 320,
+      "path": "/",
+      "text": "返回\n照片检查\n检查未完成\n暂时无法检查\n连接暂时中断，请稍后重试。\n原始照片 · 未修饰\n这张照片仍在当前页面，可以直接重新检查。\n照片尚未保存到记录\n重新检查\n重新拍摄",
+      "overflow": false
+    },
+    {
+      "name": "quality-unavailable",
+      "width": 375,
+      "scrollWidth": 375,
+      "path": "/",
+      "text": "返回\n照片检查\n检查未完成\n暂时无法检查\n连接暂时中断，请稍后重试。\n原始照片 · 未修饰\n这张照片仍在当前页面，可以直接重新检查。\n照片尚未保存到记录\n重新检查\n重新拍摄",
+      "overflow": false
+    },
+    {
+      "name": "quality-unavailable",
+      "width": 390,
+      "scrollWidth": 390,
+      "path": "/",
+      "text": "返回\n照片检查\n检查未完成\n暂时无法检查\n连接暂时中断，请稍后重试。\n原始照片 · 未修饰\n这张照片仍在当前页面，可以直接重新检查。\n照片尚未保存到记录\n重新检查\n重新拍摄",
+      "overflow": false
+    },
+    {
+      "name": "quality-unavailable",
+      "width": 430,
+      "scrollWidth": 430,
+      "path": "/",
+      "text": "返回\n照片检查\n检查未完成\n暂时无法检查\n连接暂时中断，请稍后重试。\n原始照片 · 未修饰\n这张照片仍在当前页面，可以直接重新检查。\n照片尚未保存到记录\n重新检查\n重新拍摄",
+      "overflow": false
+    },
+    {
+      "name": "quality-library",
+      "width": 320,
+      "scrollWidth": 320,
+      "path": "/",
+      "text": "返回\n照片检查\n需要调整\n照片有些模糊\n请选择一张对焦清晰、能看清面部细节的原图。\n原始照片 · 未修饰\n照片尚未保存到记录\n重新选择照片\n重新检查这张照片",
+      "overflow": false
+    }
+  ],
+  "errors": [],
+  "skipped": []
+}

@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import json
 from datetime import datetime
 from uuid import uuid4
 
@@ -11,6 +10,10 @@ from app.db.session import SessionLocal
 from app.main import app
 from app.models.observation import ObservationRecord, ObservationTarget
 from app.services.full_face_prompt import FULL_FACE_OBSERVATION_MOCK
+from tests.integration.observation_http_support import (
+    create_region_timepoint,
+    patch_photo_pipeline,
+)
 
 
 def _register(client: TestClient, label: str) -> tuple[dict[str, str], str, int]:
@@ -72,28 +75,26 @@ def _seed_full_face(user_id: int) -> int:
 
 def test_timeline_orders_independent_facts_without_causal_fields(
     migrated_database_url: str | None,
+    monkeypatch,
 ) -> None:
     if migrated_database_url is None:
         import pytest
 
         pytest.skip("use --local-postgres for the timeline HTTP closure")
 
+    patch_photo_pipeline(monkeypatch)
     with TestClient(app) as client:
         owner_headers, owner_password, owner_id = _register(client, "owner")
         other_headers, other_password, _ = _register(client, "other")
         full_face_id = _seed_full_face(owner_id)
 
-        region = client.post(
-            "/api/v1/observations",
-            headers=owner_headers,
-            data={
-                "client_request_id": str(uuid4()),
-                "recorded_at": "2026-08-24T08:00:00+08:00",
-                "recorded_timezone_offset_minutes": "480",
-                "targets_json": json.dumps([{"region_id": "chin", "user_note": "下巴状态记录"}]),
-            },
+        create_region_timepoint(
+            client,
+            owner_headers,
+            region_id="chin",
+            note="下巴状态记录",
+            recorded_at="2026-08-24T08:00:00+08:00",
         )
-        assert region.status_code == 201
 
         product = client.post(
             "/api/v1/products",

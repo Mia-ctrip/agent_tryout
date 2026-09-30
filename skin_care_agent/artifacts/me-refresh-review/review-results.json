@@ -1,0 +1,64 @@
+{
+  "kind": "VISUAL FIXTURES ONLY — not backend or native-device verification",
+  "status": "passed-web-native-review-pending",
+  "results": [
+    {
+      "name": "me",
+      "width": 320,
+      "scrollWidth": 320,
+      "path": "/me",
+      "text": "肌肤档案\nTODAY · 今天\n今天，也留下一次\n真实观察\n让皮肤的变化，被温和而诚实地保存。\nNATURAL LIGHT\nSLOW OBSERVATIONS\n开始今天的观察\n从相册导入原图\nCURR",
+      "overflow": false
+    },
+    {
+      "name": "me",
+      "width": 375,
+      "scrollWidth": 375,
+      "path": "/me",
+      "text": "肌肤档案\nTODAY · 今天\n今天，也留下一次\n真实观察\n让皮肤的变化，被温和而诚实地保存。\nNATURAL LIGHT\nSLOW OBSERVATIONS\n开始今天的观察\n从相册导入原图\nCURR",
+      "overflow": false
+    },
+    {
+      "name": "me",
+      "width": 390,
+      "scrollWidth": 390,
+      "path": "/me",
+      "text": "肌肤档案\nTODAY · 今天\n今天，也留下一次\n真实观察\n让皮肤的变化，被温和而诚实地保存。\nNATURAL LIGHT\nSLOW OBSERVATIONS\n开始今天的观察\n从相册导入原图\nCURR",
+      "overflow": false
+    },
+    {
+      "name": "me",
+      "width": 430,
+      "scrollWidth": 430,
+      "path": "/me",
+      "text": "肌肤档案\nTODAY · 今天\n今天，也留下一次\n真实观察\n让皮肤的变化，被温和而诚实地保存。\nNATURAL LIGHT\nSLOW OBSERVATIONS\n开始今天的观察\n从相册导入原图\nCURR",
+      "overflow": false
+    },
+    {
+      "name": "me-consents",
+      "width": 320,
+      "scrollWidth": 320,
+      "path": "/me",
+      "text": "肌肤档案\nTODAY · 今天\n今天，也留下一次\n真实观察\n让皮肤的变化，被温和而诚实地保存。\nNATURAL LIGHT\nSLOW OBSERVATIONS\n开始今天的观察\n从相册导入原图\nCURR",
+      "overflow": false
+    },
+    {
+      "name": "me-export",
+      "width": 320,
+      "scrollWidth": 320,
+      "path": "/me",
+      "text": "肌肤档案\nTODAY · 今天\n今天，也留下一次\n真实观察\n让皮肤的变化，被温和而诚实地保存。\nNATURAL LIGHT\nSLOW OBSERVATIONS\n开始今天的观察\n从相册导入原图\nCURR",
+      "overflow": false
+    },
+    {
+      "name": "me-delete",
+      "width": 320,
+      "scrollWidth": 320,
+      "path": "/me",
+      "text": "肌肤档案\nTODAY · 今天\n今天，也留下一次\n真实观察\n让皮肤的变化，被温和而诚实地保存。\nNATURAL LIGHT\nSLOW OBSERVATIONS\n开始今天的观察\n从相册导入原图\nCURR",
+      "overflow": false
+    }
+  ],
+  "errors": [],
+  "skipped": []
+}

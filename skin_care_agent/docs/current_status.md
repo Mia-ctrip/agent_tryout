@@ -10,6 +10,73 @@
 
 ## 信息入口
 
+### 上架前 P0 纯代码项 · 2026-09-30
+
+- 任务可靠性：观察目标超过 10 分钟仍在 `processing`、或从未被领取的 `queued`，在读取观察列表/详情时原子改回 `queued` 并重新交给 worker；worker 写回前按领取时间加行锁复核，迟到结果不覆盖新一次领取。仍依赖用户读取触发，无独立定时扫描。
+- 照片必填：后端 `create_observation` 拒绝无照片新建（422 `photo is required`），落实 spec 12.1/12.3；幂等重放已有记录不受影响，旧无照片记录照常回看。
+- 启动配置校验：`APP_ENV` 非 dev 时，默认 `DATABASE_URL`、默认或短于 32 位的签名密钥、Mock AI、缺少对应 provider Key、COS 配置不全均拒绝启动；`prod/production` 另要求 `STORAGE_BACKEND=cos`，staging 允许单实例 local 联调。
+- 每用户每日额度：观察创建/失败重试 20、对比与趋势新生成 30、照片质量检查 600（均可配置）。观察额度用完时照片记录仍保存，区域进入 `needs_input`（`quota_exceeded`）；重试返回 429；对比/趋势只在需新调用 AI 时计数，超额按失败展示。移动端 429 与对比超额使用中文提示。
+- Legacy 隔离：check-ins、analyses、chat、lineages、trends 与 legacy `POST /photos` 只在 dev 挂载；移动端 home/check-in/analysis/diary/trends 路由只在 `__DEV__` 可达。
+- 迁移：`env.py` 在 PostgreSQL 上以 advisory lock 串行执行迁移，多副本同时启动只执行一次。修正 `0021_product_archive.py` 的 `down_revision`（`'0020'` → `'0020_region_insights'`，与其文档头一致），此前迁移链无法解析、`alembic upgrade head` 会失败。0021 本身未在任何库执行。
+- 发布配置：`app.json` 固定 `android.package=com.mia.skincareagent`；新增 `eas.json`（preview APK / production AAB、远端版本号自增）与 `app.config.js`（EAS 构建时 `EXPO_PUBLIC_API_URL` 必须为 https，否则构建失败）。
+- 验证：后端 299 通过、30 跳过、1 失败（既有 legacy `test_check_ins`）；新增超时回收、领取守卫、配置校验、生产路由、照片必填与额度测试；`test_standard_product_migration_roundtrip` 在本地 PostgreSQL 临时 schema 中经新 `env.py` 升降级通过；Ruff 通过。移动端 typecheck、lint、266 项单测通过；`expo config` 验证包名解析、EAS 构建无 https 地址时报错。
+- 未验证：三个 HTTP 闭环测试已改为“照片保存 → AI 失败 → 补文字”路径，需可丢弃 `TEST_DATABASE_URL` 才能运行；超时回收与额度未在真实 PostgreSQL HTTP 或设备上复现；尚未执行 EAS 构建。唯一 ACTIVE 计划不变。
+
+### 拍后照片检查页 UI / UX 重构 · 2026-09-30
+
+- `PhotoQualityReview` 统一检查中、照片需要调整、检查暂不可用三态，复用 AppScreen / AppButton / EditorialText 与 quiet-botanical-ui 色彩、间距。结果与行动提示放在照片上方，原图按比例完整预览；底部单一主操作、文字次操作与“尚未保存到记录”提示，消除原有两层操作栏边线与重复安全区间距。没有修改后端检测门槛或通过后的选区/保存流程。
+- 照片不可用时优先重拍或重新选图；服务异常时优先重试原图。补齐返回、图片预览失败提示、相册选择错误展示、选择期间禁用与检查请求防重入。质量失败会清空旧的通过结果，避免原图重试发生网络异常后误走保存重试；原图、来源、选区和幂等 ID 保留。
+- 验证：`npm run typecheck`、`npm run lint`、265 项单元测试通过；新增质量失败后重试回归先失败再修复通过。`node scripts/ui-visual-review.mjs --quality-only` 使用独立组件入口（非生产路由）验证三态 × 320/375/390/430 宽度、主/次操作、返回与忙碌禁用；无横向溢出、按钮越界或运行错误。320 宽度使用 640 高度，内容可滚动，操作区固定可见。
+- Pixel 8 / Expo Go 使用项目已有 `demo-cheek-observation.png` 实际走通相册选图、本地质量检查、面部不完整反馈与原图重试，检查未保存观察记录，也未进入 AI 分析。原生结果截图 `artifacts/photo-quality-review/android-result.png`；隔离三态截图与报告同目录。iPhone、物理相机及真实弱网场景未验收。
+- 唯一 ACTIVE 仍为切片 6 区域对比与阶段趋势，执行点及迁移门禁不变。
+
+### “我的”页极简 UI / UX 重构 · 2026-09-29
+
+- 复用 quiet-botanical-ui 的暖纸色、草木绿、字体与间距，将页面整理为账号信息、隐私与数据列表、底部账号操作；协议详情与导出说明按需展开，保留既有协议文案、接口、数据导出和密码注销流程。未增加依赖。
+- 撤回授权增加影响说明与确认/取消；授权读取失败可重试，缺失状态不再显示成已撤回；请求期间禁用冲突操作，空密码不能确认注销，取消后清空密码。
+- 验证：`npm run typecheck`、`npm run lint`、264 项单元测试通过；`node scripts/ui-visual-review.mjs --me-only --output-dir artifacts/me-refresh-review` 通过 320/375/390/430 四宽、展开/收起、撤回取消、导出失败重试、空密码禁用及注销取消，未发生账号或授权写请求。初次类型检查遇到区域对比页未定义变量，最终重跑已通过。
+- Pixel 8 / Expo Go 已只读核对真实账号的默认页及授权展开排版；预览 `artifacts/me-refresh-review/android.png`。Web 交互使用隔离夹具；真实撤回、注销、原生导出与 iPhone 尚未验收。唯一 ACTIVE 仍为区域对比与阶段趋势切片 6；本次不改变该计划执行点。
+
+### “我的”页补全协议、授权撤回、数据导出与账号注销 · 2026-09-29
+
+- 按 MVP 规格第 114 行“我的：账号、协议、照片与 AI 授权、数据导出和设置”补齐此前只有账号信息与退出登录的“我的”页，用户明确要求直接完善：
+  - 协议与授权：复用既有 `GET/PUT /me/consents` 接口，逐项展示 terms/privacy/health_disclaimer/ai_processing 的版本、同意状态与同意时间，支持逐项撤回或重新同意；撤回任意一项会触发既有 `hasRequiredConsents` 门禁并跳回协议确认页，行为与首次登录一致。
+  - 数据导出：后端新增只读 `GET /me/export`（`app/schemas/export.py`、`app/services/export_service.py`），按账号隔离汇总观察记录及其目标事实、生活背景、区域事件、个人产品和产品使用为结构化 JSON，不包含原始照片二进制。移动端新增 `lib/export-api.ts` 拉取数据、`lib/data-export-file.ts` 落盘（原生写入应用文档目录，Web 触发浏览器下载）。
+  - 注销账号：为既有 `DELETE /me`（需密码验证，已有存储对象清理与个人产品/图片资产级联删除）补齐前端二次密码确认流程，未输入密码或密码错误均不提交。
+- 抽取 `mobile/src/lib/consent-copy.ts` 供登录后协议页与“我的”页共用协议文案，避免重复定义。
+- 验证：后端新增 `tests/integration/test_me_export_http.py`（真实 PostgreSQL HTTP 闭环，本次无 `TEST_DATABASE_URL` 按配置跳过）；后端默认回归 165 项通过、29 项按配置跳过，Ruff 通过。移动端新增 2 项单测共 253 项通过，`npm run typecheck`、`npm run lint` 通过。
+- 未验证：Android/iPhone 原生设备上协议撤回后的门禁跳转、数据导出文件落盘位置与注销账号的真实闭环；未接可丢弃 PostgreSQL 运行数据导出 HTTP 闭环测试。本次为用户明确要求的新增功能，不改变唯一 ACTIVE 计划（Slice 4A Task 12）及其出口门禁。
+
+### 切片 6 范围变更：区域对比与阶段趋势 · 2026-09-29
+
+- 经用户确认，同区域对比与阶段趋势从后续切片 8 前移进入 MVP，取代原切片 6 的旧全脸趋势。门槛：同一区域事件两个不同日期的有效照片时间点可对比；最近 30 天内至少三个不同日期且跨度不少于 7 天可生成趋势。趋势输入为“全部代表点已存文字事实 + 最多 6 张区域裁切关键帧”。已同步修订 `design/product/skin_care_app_mvp_spec.md`（2、4.1、4.2、5、6.9、7.4.3、切片 3/6/8、10、12、14）。
+- Prompt 源稿已更新：`tools/vision-prompt-lab/prompt/skin_compare.md` → `region-comparison-1.1.0`（裁切输入、`headline`、不足时不给结论）；`skin_trend.md` → `region-timeline-trend-2.0.0`（文字事实 + 关键帧混合输入、证据 `[图]/[记录]` 来源标注、颜色趋势必须有图）。lab 现有组装器仍按“每图一时间点”拼接，调试 2.0.0 时需手动在 User Prompt 中填入 `timepoint_metadata`。
+- 新 ACTIVE 计划：`docs/superpowers/plans/2026-09-29-region-comparison-trend-slice-6.md`。
+- 代码（Task 1–9，2026-09-29）：后端新增选点纯函数（`region_insight_selection.py`）、内存区域裁切（`image_prep.prepare_region_crop_for_llm`，先 EXIF 旋转再按保存几何外扩 15%，缺几何回退 1024px 原图）、Prompt 加载（从 `app/services/prompt/*.md` 读取，已同步为 lab 新版）、结构/引用/合规三道校验、`region_insights` 模型与迁移 `0020_region_insights`、对比与趋势服务/worker/API（`GET /region-events/{id}/insights`、`POST .../trend/refresh`、`POST/GET .../comparisons`）。对比按照片对 + 提示版本缓存；趋势按窗口指纹缓存，新时间点使其过期，新版发布前继续展示旧版；失败重试一次，attempt 守卫防止迟到结果覆盖。移动端：对比页去掉随机选点，默认最早/最近，可按“较早/较近”槽位改选日期，同日不可组对；事件详情显示积累进度或阶段趋势卡，stale 时后台刷新并轮询。
+- 验证：后端 `pytest` 289 通过、30 跳过、1 失败（`test_check_ins::test_empty_diary_binds_as_sql_null_instead_of_json_null`，改动前即失败，属 legacy check-in，与本次无关）；新增 85 项（选点 19、裁切 13、校验 26、模型 8、对比 12、趋势 7），Ruff 通过。本机需加 `--basetemp=.pytest_tmp`，否则 26 项因沙箱临时目录权限报错。新增 `tests/sqlite_support.py` 用内存 SQLite 跑服务层，不能替代 PostgreSQL 验收；迁移往返测试缺 `TEST_DATABASE_URL` 跳过。移动端 264 项单测、typecheck、lint 通过；`node scripts/ui-visual-review.mjs --journey-only --output-dir artifacts/region-insight-review` 通过 320/375/390/430，含趋势卡证据日期映射、颜色不可靠维度不展示、对比卡可比性/证据强度、日期选择 44px 与已选状态；截图在 `artifacts/region-insight-review/`，为隔离夹具与假 AI 结果。
+- 迁移：2026-09-29 已对本地开发库执行 `0020`；运行中的 8000 端口后端已暴露 4 个新接口。PostgreSQL 往返测试未在开发库上跑（避免对真实数据降级），仍待可丢弃 `TEST_DATABASE_URL`。
+- 未完成：Task 10 真实 GLM 体量/耗时实测（关键帧 6、裁切 640px 仍为估算）；Task 11 Android 真实后端验收；iPhone 未验收。开发库账号 225 的左侧脸事件（5 天、跨度 15 天）已满足趋势门槛，另有 4 个事件可对比。
+
+### 自建产品编辑页按参考图重构 · 2026-09-29
+
+- 按用户确认的 `design/ui-rebuild/products/reference/image.png` 重构自建产品编辑页：全屏米色画布、返回/居中标题/顶部保存、`PRODUCT DETAILS` 分隔标题、产品名称输入、虚线图片框、图片说明和拍照/相册双按钮均已落地；保留改名、换图、移除图片、保存中禁用和错误恢复能力。新增产品表单与后端接口未改动。
+- 根据用户后续反馈，将编辑页右上/左下的圆头底纹替换为带叶脉的尖叶枝条，缩小并避开控件；缺图占位直接使用用户提供的 `design/ui-rebuild/products/reference/background/image.png`，打包至 `mobile/assets/brand/product-placeholder.png`，SHA-256 一致。类型检查与 diff 空白检查通过；Pixel 8 / Expo Go 已核对最终效果，截图为 `artifacts/product-archive-reference-review/product-edit-polished-android.png`，未提交产品修改。
+- Android 弹层启用状态栏和导航栏透出，系统栏背景与页面一致。`npm run typecheck` 通过；Pixel 8 / Expo Go 使用真实账号只读进入 `tongjiyiyuan` 编辑页核对，没有保存或改写产品数据。截图：`artifacts/product-archive-reference-review/product-edit-reference-android.png`。iPhone 尚未验收；唯一 ACTIVE 仍为产品目录 Slice 4A Task 12。
+
+### 观察首页“正在观察”空态不再隐藏 · 2026-09-29
+
+- 按用户明确要求调整：观察首页下半部分“正在观察”标题与区域入口不再随 `events.length` 隐藏，改为始终渲染；无当前区域时区域入口显示“暂无正在观察的区域 / 开始一次观察后可在此查看”占位文案，图标与卡片外观、点击跳转历程的行为保持不变。“记录产品使用”入口本就不受此条件影响，未改动。已同步修订 `design/product/skin_care_app_mvp_spec.md` 第 111 行的信息架构描述，不再是“无当前区域时隐藏区域入口与标题”。
+- 同步更新 `mobile/scripts/ui-visual-review.mjs` 的 `--observe-only` 空态断言：原先断言空态下“CURRENT/正在观察/区域正在记录”文案必须消失，现改为断言标题与占位文案、占位图标必须存在。
+- 验证：`npm run typecheck`、`npm run lint`、`npm run test:unit`（251 项）通过。启动本地 `npx expo start --web --port 8082` 后执行 `node scripts/ui-visual-review.mjs --observe-only`，`artifacts/observe-lower-review/review-results.json` 状态为 `passed-web-native-review-pending`、`errors` 为空，覆盖 320/375/390/430 四宽、`observe-all`/`observe-empty` 两种场景。仅使用隔离 Web 夹具，未连接真实后端或原生设备，Android/iPhone 尚未验收。唯一 ACTIVE 计划不变。
+
+### 历程移除全脸 tab · 2026-09-29
+
+- 按用户明确要求，去掉“历程”页的“全脸/分区”双视图切换；历程只保留分区视图（六区图、当前/历史事件、区域时间点、单区详情）。移除 `buildFullFaceHistory`、`FullFaceHistoryCard`、`historyView` 状态与 tab 切换 UI；`observation-navigation.ts` 同步移除仅服务于该入口的 `history_full_face` 来源分支。
+- 切片 1 遗留的有照片 `full_face` 记录经用户确认彻底不再提供 UI 入口（数据库中的记录不删除、不迁移）；旧无照片全脸原文记录维持独立的“历史文字记录”入口，不受影响。已同步修订 `design/product/skin_care_app_mvp_spec.md`（4.1、5、7.4、切片5、12.1）取消“全脸/分区”双视图要求。
+- 验证：移动端 251 项单测（原 254 项，删除 3 项 `buildFullFaceHistory` 专项测试）、`npm run typecheck`、`npm run lint` 通过。修订 `mobile/scripts/ui-visual-review.mjs` 中 `--journey-only` 场景残留的“全脸/分区”点击及 tab 存在性断言（原断言查找 `[role="tab"]`，改为断言 `[aria-label="历程视图"]` 不存在）；在已启动的 `npx expo start --web --port 8082` 上实跑 `node scripts/ui-visual-review.mjs --journey-only`，`artifacts/journey-final-review/review-results.json` 状态为 `passed-web-native-review-pending`、`errors` 为空，320/375/390/430 四宽无横向溢出；`journey-history-390.png` 截图确认历程页标题下方直接是分区脸图，没有任何 tab 切换控件。仅隔离 Web 夹具，未连接真实后端或原生设备。
+- `--full-face-only` 手动视觉回归场景（约150行，独立的旧全脸列表夹具与断言）本次未修订，下次有人运行该场景前需要先更新或删除。
+- 未验证：Android/iPhone 原生回归、真实账号下旧全脸照片记录不可见的核验。唯一 ACTIVE 仍为产品目录 Slice 4A Task 12，不受本次调整影响。
+
 ### 历程脸图精修 · 2026-09-22
 
 - 经用户确认，按 `design/ui-rebuild/trend/image.png` 重绘既有 SVG 的脸型、眉眼、鼻翼、唇线、耳廓和颈部；收细线条、调整脸颊与下巴选区及标签，保留六区 ID、本人真实左右、状态与原导航。不新增位图、依赖或装饰，不修改其他页面。
@@ -143,13 +210,13 @@
 | 阶段 | 当前状态 | 说明 |
 |---|---|---|
 | 准备阶段与 Slice 1 全脸异步基线 | 已完成 | 保留历史 `full_face` 记录、原图可靠保存、异步 AI、状态恢复和文字降级 |
-| Slice 2 固定区域与按区域 AI | 部分实现 | 六区多选、全脸快捷选择、独立处理、原图概览和人工降级代码已实现；新六区保存主链待设备验收，照片必填约束仍待落实 |
+| Slice 2 固定区域与按区域 AI | 部分实现 | 六区多选、全脸快捷选择、独立处理、原图概览和人工降级代码已实现；前后端照片必填已落实；新六区保存主链待设备验收 |
 | 每日正脸拍摄与 AI 皮肤分析 | 代码完成、设备待验收 | 权限、实时提示、真实拍后质量、关键点选区、扫描、结果、失败重试均已实现；真实设备视觉与性能待验收 |
 | Slice 3 区域事件 | 已完成 | 30 天规则、当前/历史事件、主动结束和时间点回看已实现 |
 | Slice 4 产品使用与个人产品柜 | 代码完成、主链设备证据待补 | 保存照片后进入可跳过步骤，AI 后台状态不抢占；多选、目录/自建、显式未注明、未用/取消、幂等恢复和来源返回已实现并通过自动化与部分 Android 真实后端验收；真实新照片 AI 主链、iPhone 与物理相机待补 |
 | Slice 4A 标准产品目录 | 进行中 | Task 1–11 已实现；Task 12 完整 PostgreSQL/HTTP/Android 出口证据待补 |
-| Slice 5 历程与生活背景 | 部分实现 | 全脸照片/分区事件双视图、旧全脸文字入口、生活贴纸已实现；已有照片原生回看通过，一般产品历史及剩余环境验收仍待补 |
-| Slice 6 全脸前后变化与阶段趋势 | 未实现 | 现有 legacy 皮肤指数趋势不满足 MVP 规格 |
+| Slice 5 历程与生活背景 | 部分实现 | 按区域回看事件与时间点、旧全脸文字入口、生活贴纸已实现；切片 1 遗留的有照片 `full_face` 记录不再提供入口；一般产品历史及剩余环境验收仍待补 |
+| Slice 6 区域对比与阶段趋势 | 代码与自动化完成，环境验收待补 | 2026-09-29 取代原全脸趋势；迁移 0020 待执行，真实 provider 实测与 Android 验收待补 |
 | Slice 7 公开测试就绪 | 未完成 | 隐私、数据导出、真实设备和发布门禁仍需专项验收 |
 
 ## 已验证实现
@@ -166,7 +233,7 @@
 - 产品使用、个人产品、生活背景和统一时间线均使用独立领域模型，不进入 AI、趋势、疗效、相关性或因果判断；
 - 标准目录具备配方版本级产品、别名、图片资产、版本化官方资料、离线包导入、统一搜索、标准产品加入个人柜、用户自建图片和不可变使用快照；
 - 开发环境保留临时标准产品录入接口，生产环境不挂载；
-- 当前 Alembic 代码 head 为 `0019_personal_product_links`，历史迁移保留。
+- 当前 Alembic 代码 head 为 `0020_region_insights`；2026-09-29 经用户同意已对本地开发库 `skin_care` 执行（`0019 → 0020`，表、索引、约束核对一致，既有 20 条观察不变），历史迁移保留。
 
 ### 移动端
 
@@ -182,7 +249,7 @@
 - 自建产品支持可选图片，产品使用支持多选；空选择不提交，只有用户明确选择“用过，但暂不注明产品”才保存零产品关联使用；
 - 左滑归档揭示态已实现，但归档后端接口尚未实现，前端不会伪造归档成功；
 - 产品栏不提供使用记录入口；观察首页、照片保存后的步骤、观察详情和区域当天记录均可进入使用页，并按来源返回原观察、当天记录或观察首页。
-- “历程”提供全脸照片/分区双视图，首次默认分区；抽象脸图保留本人真实左右和显式事件选择。全脸包括部分选区和旧全脸照片，旧全脸无照片原文有入口；一般产品历史的统一展示仍待实现；
+- “历程”按区域回看事件与时间点；抽象脸图保留本人真实左右和显式事件选择。切片 1 遗留的有照片 `full_face` 记录不再提供入口，仅作历史数据保留在数据库中；旧无照片全脸原文仍有入口；一般产品历史的统一展示仍待实现；
 - 区域事件详情按真实发生时间横向排列有效时间点，默认选中最新节点并保留有效选择；有定位的缩略图按实际区域清晰取景，旧照片标记为模糊原图预览，保留签名 URL 自动补签；点击节点更新当天两项简洁证据，原图与完整事实仍通过既有观察详情进入；
 - 产品使用和生活背景只显示为弱化的相邻时间上下文，不连接主时间线；处理中和需要补充文字的目标只回到原观察状态，不伪造区域事件时间点。
 
@@ -219,12 +286,12 @@
 
 产品使用流程：代码与部分 Android 真实后端闭环已完成；隔离账号没有合适的真实皮肤原图，尚未在设备上复现“新照片保存 → 产品步骤”及 AI 慢、即时完成、全失败和部分失败，也未执行 iPhone/物理相机与系统终止图片选择器后的恢复。上述状态已有自动化覆盖，不能替代剩余设备证据。产品验收仍以 spec 7.3、12.1 为准。
 
-新增规格差异（2026-09-15）：后端仍允许无照片新建；需落实照片必填约束，并保留有照片的文字补充与 AI 失败恢复。该项尚未实施，依据见上方代码核对。
+照片必填约束（2026-09-15 规格差异）已于 2026-09-30 在后端落实，见上方“上架前 P0 纯代码项”；有照片的文字补充与 AI 失败恢复保留。
 
 1. 每日面部流程仍需在常见 iPhone 与 Android 真机验收相机权限恢复、预览取样延迟、不同脸型关键点贴合、安全区和减少动态效果；静态 Web 打包不能替代真机相机验收；
 2. 当前后端没有“当天系统必检区域”字段，前端已预留锁定与“本次必检”表达，但实际任务来源需产品/后端确认；
 3. AI 当前只返回区域级七项事实，没有问题级坐标；结果证据只诚实标记本次实际检测区域，不虚构不规则问题位置；
-4. 今日/昨日对比只有禁用占位，等待 Slice 6 后端证据比较；不生成模拟对比；
+4. 今日/昨日对比仍只有禁用占位；区域事件详情的对比与阶段趋势已由切片 6 实现，待迁移执行与设备验收；不生成模拟对比；
 5. 每日面部 PostgreSQL HTTP 闭环和 Slice 4A Task 12 均需有效、可丢弃的 `TEST_DATABASE_URL`；
 6. 产品归档只有前端揭示态，后端接口仍待设计和实现；产品栏视觉第二阶段、Slice 7 数据控制与公开测试门禁尚未实施。
 7. 历程的空状态、排队中、处理中和需要补充文字均已实现，并有纯函数、分页、组件状态机和 UI 契约回归；当前 Pixel 8 登录账号只有 completed 目标，缺少可诚实截图的真实降级记录，待出现真实状态后补设备截图。
@@ -241,9 +308,9 @@
 
 - 每日面部实施计划 `docs/superpowers/plans/2026-08-30-daily-face-capture-analysis.md` 已完成代码与自动化验证，当前不再 ACTIVE；
 - 历程证据回看实施计划 `docs/superpowers/plans/2026-08-30-region-history-evidence.md` 已完成代码、自动化和可用真实数据的 Pixel 8 验证，当前不再 ACTIVE；
-- 唯一 ACTIVE 实施计划恢复为：`docs/superpowers/plans/2026-08-24-standard-product-catalog-slice-4a.md`；
-- 当前执行点：Slice 4A Task 12 出口验证，同时等待每日面部真机与隔离 PostgreSQL 验收条件；
-- 下一步：提供可丢弃的 PostgreSQL 测试连接，运行 Task 12 强制集成和闭环脚本，完成剩余 Android 验收；全部出口门禁通过后再把 Slice 4A 标记为完成；
+- 唯一 ACTIVE 实施计划（2026-09-29 起）：`docs/superpowers/plans/2026-09-29-region-comparison-trend-slice-6.md`；
+- 当前执行点：切片 6 Task 1–9 已完成，迁移 `0020` 已在开发库执行；下一步 Task 10 真实 GLM 实测与 Task 11 Android 验收；
+- 暂停：`docs/superpowers/plans/2026-08-24-standard-product-catalog-slice-4a.md` 的 Task 12 出口验证，出口门禁保留，切片 6 完成后恢复或由用户另行指定；
 - 产品栏视觉第二阶段尚无 ACTIVE 计划，不从历史 SVG 或旧计划自行恢复需求；
 - 禁止把标准产品资料用于推荐、诊断、疗效、相关性或因果判断，也不得把 legacy 趋势冒充 MVP 趋势。
 

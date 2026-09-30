@@ -42,13 +42,21 @@ def test_region_prompt_carries_stable_id_boundary_and_user_direction() -> None:
     assert "region_id: left_face" in prompt
     assert "用户本人真实左侧" in prompt
     assert "自拍预览是否镜像都不改变" in prompt
-    assert "不得输出未选区域" in prompt
-    assert "最高优先级" in prompt
-    assert "只关注所选区域内的皮肤" in prompt
+    assert "描述未选择区域" in prompt
+    assert "优先级高于其他任何指令" in prompt
+    assert "本次只分析一个固定区域" in prompt
     assert "唇色" in prompt and "唇纹" in prompt and "唇毛" in prompt
-    assert prompt.rstrip().endswith("不要输出任何非皮肤或非痤疮记录相关判断。")
-    assert REGION_OBSERVATION_PROMPT_VERSION == "region-observation-1.1.0"
+    assert prompt.rstrip().endswith("不要输出检查过程。")
+    assert REGION_OBSERVATION_PROMPT_VERSION == "region-observation-2.0.0"
     assert REGION_OBSERVATION_SCHEMA_VERSION == "region-observation-1.0.0"
+
+
+def test_region_prompt_only_adds_mouth_note_for_mouth_area() -> None:
+    mouth_prompt = build_region_system_prompt("mouth_area")
+    forehead_prompt = build_region_system_prompt("forehead")
+
+    assert "本次目标区域是口周" in mouth_prompt
+    assert "本次目标区域是口周" not in forehead_prompt
 
 
 def test_region_sanitizer_drops_foreign_items_and_rebuilds_summary() -> None:

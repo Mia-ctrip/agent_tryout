@@ -40,20 +40,32 @@ function statePaint(state: HistoryRegionVisualState) {
   if (state === 'pending' || state === 'needs_input') {
     return `fill="${colors.surface}" stroke="${colors.context}" stroke-dasharray="4 3"`;
   }
-  return `fill="none" stroke="${colors.hairline}"`;
+  return `fill="${colors.hairline}" fill-opacity="0.32" stroke="${colors.hairline}"`;
 }
 
 export function buildHistoryFaceSvg(
   regions: readonly { regionId: RegionId; visualState: HistoryRegionVisualState }[],
+  highlightedRegion: RegionId | null = null,
 ) {
   const stateById = new Map(regions.map((region) => [region.regionId, region.visualState]));
   const shapes = (Object.keys(HISTORY_FACE_REGIONS) as RegionId[]).map((id) =>
-    `<path data-region="${id}" d="${HISTORY_FACE_REGIONS[id].path}" ${statePaint(stateById.get(id) ?? 'neutral')}${(stateById.get(id) ?? 'neutral') === 'neutral' && ['forehead', 'nose_area', 'mouth_area'].includes(id) ? ' stroke-opacity="0"' : ''}/>`).join('');
+    `<path data-region="${id}" d="${HISTORY_FACE_REGIONS[id].path}" ${statePaint(stateById.get(id) ?? 'neutral')}/>`).join('');
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340 366">
-    <defs><clipPath id="face-boundary"><path d="${HISTORY_FACE_BOUNDARY} Z"/></clipPath></defs>
-    <g clip-path="url(#face-boundary)" stroke-width="0.85" stroke-linejoin="round">${shapes}</g>
-    <g fill="none" stroke="${colors.hairline}" stroke-width="0.85" stroke-linecap="round" stroke-linejoin="round">
-      <path d="${HISTORY_FACE_BOUNDARY}"/>
+    <defs>
+      <clipPath id="face-boundary"><path d="${HISTORY_FACE_BOUNDARY} L268 -8 L72 -8 Z"/></clipPath>
+      <linearGradient id="face-paper" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="${journeyColors.background}"/>
+        <stop offset="0.22" stop-color="${colors.paper}"/>
+        <stop offset="1" stop-color="${colors.ground}"/>
+      </linearGradient>
+    </defs>
+    <g clip-path="url(#face-boundary)" stroke-width="0.85" stroke-linejoin="round">
+      <path d="${HISTORY_FACE_BOUNDARY} L268 -8 L72 -8 Z" fill="url(#face-paper)"/>
+      ${shapes}
+      ${highlightedRegion ? `<path data-highlight="${highlightedRegion}" d="${HISTORY_FACE_REGIONS[highlightedRegion].path}" fill="${journeyColors.sage}" fill-opacity="0.6" stroke="${journeyColors.moss}" stroke-width="1.5"/>` : ''}
+    </g>
+    <g fill="none" stroke="${colors.muted}" stroke-opacity="0.65" stroke-width="0.85" stroke-linecap="round" stroke-linejoin="round">
+      <path d="${HISTORY_FACE_BOUNDARY}" stroke-width="1.15"/>
       <path d="M29 14 C17 42 18 78 34 111 M311 14 C323 42 322 78 306 111"/>
       <path d="M64 17 C48 43 37 72 37 100 M276 17 C292 43 303 72 303 100" stroke-opacity="0.65"/>
       <path d="M36 120 C29 104 22 97 15 101 C3 107 8 136 14 157 C20 180 29 207 41 207 C44 207 46 203 47 199 M304 120 C311 104 318 97 325 101 C337 107 332 136 326 157 C320 180 311 207 299 207 C296 207 294 203 293 199"/>

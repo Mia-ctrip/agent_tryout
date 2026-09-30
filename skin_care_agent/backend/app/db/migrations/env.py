@@ -3,7 +3,7 @@ from __future__ import annotations
 from logging.config import fileConfig
 
 from alembic import context
-from sqlalchemy import engine_from_config, pool
+from sqlalchemy import engine_from_config, pool, text
 
 from app.config import get_settings
 from app.models import Base  # noqa: F401  ensure models loaded
@@ -19,6 +19,7 @@ settings = get_settings()
 config.set_main_option("sqlalchemy.url", settings.database_url)
 
 target_metadata = Base.metadata
+_MIGRATION_LOCK_KEY = 0x5C_A6E7  # 本项目固定的 advisory lock 编号
 
 
 def run_migrations_offline() -> None:
@@ -41,13 +42,25 @@ def run_migrations_online() -> None:
     )
 
     with connectable.connect() as connection:
-        context.configure(
-            connection=connection,
-            target_metadata=target_metadata,
-        )
+        locked = connection.dialect.name == "postgresql"
+        if locked:
+            # 多副本同时启动时串行执行迁移；后到者拿到锁后看到已是 head，不重复执行。
+            connection.execute(text("SELECT pg_advisory_lock(:key)"), {"key": _MIGRATION_LOCK_KEY})
+            connection.commit()
+        try:
+            context.configure(
+                connection=connection,
+                target_metadata=target_metadata,
+            )
 
-        with context.begin_transaction():
-            context.run_migrations()
+            with context.begin_transaction():
+                context.run_migrations()
+        finally:
+            if locked:
+                connection.execute(
+                    text("SELECT pg_advisory_unlock(:key)"), {"key": _MIGRATION_LOCK_KEY}
+                )
+                connection.commit()
 
 
 if context.is_offline_mode():

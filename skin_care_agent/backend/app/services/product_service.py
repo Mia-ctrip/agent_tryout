@@ -469,6 +469,7 @@ def list_products(db: Session, *, user_id: int) -> list[ProductOut]:
         .where(
             PersonalProduct.user_id == user_id,
             PersonalProduct.deleted_at.is_(None),
+            PersonalProduct.archived_at.is_(None),
         )
         .group_by(PersonalProduct.id)
         .order_by(
@@ -709,3 +710,27 @@ def get_product_detail(db: Session, *, user_id: int, product_id: int) -> Product
                 for product_use in uses
             ],
         )
+
+
+def archive_product(
+    db: Session,
+    *,
+    user_id: int,
+    product_id: int,
+) -> ProductOut:
+    product = db.scalar(
+        select(PersonalProduct).where(
+            PersonalProduct.id == product_id,
+            PersonalProduct.user_id == user_id,
+            PersonalProduct.deleted_at.is_(None),
+        )
+    )
+    if product is None:
+        raise HTTPException(status_code=404, detail="product not found")
+    if product.archived_at is not None:
+        raise HTTPException(status_code=410, detail="product is already archived")
+
+    from datetime import datetime, timezone
+    product.archived_at = datetime.now(timezone.utc)
+    db.commit()
+    return _product_out(db, product)

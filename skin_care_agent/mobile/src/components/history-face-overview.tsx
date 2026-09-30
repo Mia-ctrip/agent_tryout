@@ -10,30 +10,28 @@ import {
   historyFaceAccessibilityLabel,
   resolveRegionEntry,
 } from '@/lib/history-flow';
-import type {
-  HistoryRegionVisualState,
-  RegionOverviewItem,
-} from '@/lib/history-flow';
+import type { RegionOverviewItem } from '@/lib/history-flow';
 import type { RegionId } from '@/lib/region-catalog';
 
 type HistoryFaceOverviewProps = {
   regions: readonly RegionOverviewItem[];
   onPressRegion: (regionId: RegionId) => void;
+  selectedRegionId?: RegionId | null;
 };
-
-function labelStyle(state: HistoryRegionVisualState) {
-  return state === 'active' ? styles.labelActive : styles.label;
-}
 
 export function HistoryFaceOverview({
   regions,
   onPressRegion,
+  selectedRegionId = null,
 }: HistoryFaceOverviewProps) {
   const [canvasWidth, setCanvasWidth] = useState(340);
+  const [pressedRegion, setPressedRegion] = useState<RegionId | null>(null);
+  const [focusedRegion, setFocusedRegion] = useState<RegionId | null>(null);
   // Native maxWidth can clamp width after aspectRatio has computed height.
   // Size both the portrait and its targets from the actual measured width.
   const scale = canvasWidth / 340;
-  const portraitLines = buildHistoryFaceSvg(regions);
+  const highlightedRegion = pressedRegion ?? focusedRegion ?? selectedRegionId;
+  const portraitLines = buildHistoryFaceSvg(regions, highlightedRegion);
   return (
     <View>
       <View
@@ -51,6 +49,7 @@ export function HistoryFaceOverview({
         />
         {regions.map((region) => {
           const interactive = resolveRegionEntry(region) !== null;
+          const highlighted = highlightedRegion === region.regionId;
           const shape = HISTORY_FACE_REGIONS[region.regionId];
           const targetWidth = Math.max(44, shape.width * scale);
           const targetHeight = Math.max(44, shape.height * scale);
@@ -64,10 +63,14 @@ export function HistoryFaceOverview({
                 region.visualState,
                 region.pendingRecords,
               )}
-              accessibilityRole={interactive ? 'button' : undefined}
-              accessibilityState={{ disabled: !interactive }}
-              disabled={!interactive}
+              accessibilityRole="button"
+              accessibilityHint={interactive ? '查看这个区域的记录' : '选择区域，查看开始记录的入口'}
+              accessibilityState={{ selected: selectedRegionId === region.regionId }}
               key={region.regionId}
+              onPressIn={() => setPressedRegion(region.regionId)}
+              onPressOut={() => setPressedRegion(null)}
+              onFocus={() => setFocusedRegion(region.regionId)}
+              onBlur={() => setFocusedRegion(null)}
               onPress={() => onPressRegion(region.regionId)}
               style={({ pressed }) => [
                 styles.region,
@@ -79,7 +82,11 @@ export function HistoryFaceOverview({
                 },
                 pressed && interactive && styles.pressed,
               ]}>
-              <Text style={labelStyle(region.visualState)}>{region.label}</Text>
+              <View style={[styles.labelSurface, highlighted && styles.labelSurfaceSelected]}>
+                <Text style={[styles.label, highlighted && styles.labelSelected]}>
+                  {region.label}
+                </Text>
+              </View>
               {region.pendingRecords.length ? (
                 <Text
                   accessibilityElementsHidden
@@ -95,6 +102,7 @@ export function HistoryFaceOverview({
           );
         })}
       </View>
+      <Text style={styles.hint}>轻触一个区域，查看它的历程</Text>
     </View>
   );
 }
@@ -114,20 +122,24 @@ const styles = StyleSheet.create({
     minHeight: 44,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: spacing.xs,
   },
   label: {
-    color: journeyColors.ink,
-    fontSize: 12,
-    fontWeight: '400',
-    textAlign: 'center',
-  },
-  labelActive: {
-    color: journeyColors.ink,
+    color: colors.textMuted,
     fontSize: 12,
     fontWeight: '500',
     textAlign: 'center',
   },
+  labelSurface: {
+    borderRadius: radii.pill,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: colors.hairline,
+    backgroundColor: journeyColors.surface,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+  },
+  labelSurfaceSelected: { borderColor: journeyColors.moss },
+  labelSelected: { color: journeyColors.moss, fontWeight: '600', textDecorationLine: 'underline' },
+  hint: { color: colors.textMuted, fontSize: 12, lineHeight: 18, textAlign: 'center', marginTop: spacing.xs },
   statusBadge: {
     position: 'absolute',
     top: -8,

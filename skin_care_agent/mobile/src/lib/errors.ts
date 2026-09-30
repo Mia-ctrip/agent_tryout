@@ -16,5 +16,8 @@ export function userFacingError(error: unknown): string {
   if (error.status === 422) {
     return '提交内容不符合要求，请检查后再试。';
   }
+  if (error.status === 429) {
+    return '今天的使用次数已达上限，请明天再试。已保存的照片和记录不受影响。';
+  }
   return error.message;
 }

@@ -23,9 +23,6 @@ from app.services.product_image_service import validate_product_image
 products_router = APIRouter(prefix="/products", tags=["products"])
 product_uses_router = APIRouter(prefix="/product-uses", tags=["product-uses"])
 
-# TODO(product-archive): add an authenticated soft-archive endpoint and exclude archived
-# personal products from cabinet/search selection while preserving historical use snapshots.
-
 
 @products_router.post(
     "/from-standard",
@@ -134,6 +131,19 @@ async def update_custom_product_endpoint(
     return product_service.update_custom_product(
         db, user_id=current_user.id, product_id=product_id,
         name=name, image=image, remove_image=remove_image,
+    )
+
+
+@products_router.post("/{product_id}/archive", response_model=ProductOut, status_code=status.HTTP_200_OK)
+def archive_product_endpoint(
+    product_id: int,
+    current_user: User = Depends(get_current_app_user),
+    db: Session = Depends(get_db),
+) -> ProductOut:
+    return product_service.archive_product(
+        db,
+        user_id=current_user.id,
+        product_id=product_id,
     )
 
 

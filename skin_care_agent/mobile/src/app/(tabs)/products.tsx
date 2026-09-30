@@ -12,7 +12,7 @@ import { SwipeableProductRow } from '@/components/swipeable-product-row';
 import { productColors } from '@/constants/product-theme';
 import { colors, radii, spacing } from '@/constants/theme';
 import { userFacingError } from '@/lib/errors';
-import { listPersonalProducts } from '@/lib/product-api';
+import { listPersonalProducts, archiveProduct } from '@/lib/product-api';
 import type { PersonalProduct } from '@/lib/product-api';
 import { productCabinetSummary, sortPersonalProducts } from '@/lib/product-ui';
 import { useSession } from '@/providers/session-provider';
@@ -90,9 +90,14 @@ export default function ProductsScreen() {
           {orderedProducts.map((product) => (
             <SwipeableProductRow
               key={product.product_id}
-              onArchive={() => {
-                // TODO(product-archive): call the backend soft-archive endpoint once available.
-                setArchiveNotice(`“${product.name}”暂未归档：后端归档接口待完成。`);
+              onArchive={async () => {
+                try {
+                  await archiveProduct(request, product.product_id);
+                  setProducts((prev) => prev.filter((p) => p.product_id !== product.product_id));
+                  setArchiveNotice(`已归档”${product.name}”`);
+                } catch (archiveError) {
+                  setArchiveNotice(`归档失败: ${userFacingError(archiveError)}`);
+                }
               }}>
               <PersonalProductCard
                 onPress={() => router.push(`/product/${product.product_id}` as Href)}

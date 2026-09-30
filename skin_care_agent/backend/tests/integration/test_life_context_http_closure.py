@@ -1,12 +1,15 @@
 from __future__ import annotations
 
-import json
 from uuid import uuid4
 
 from fastapi.testclient import TestClient
 
 from app.config import get_settings
 from app.main import app
+from tests.integration.observation_http_support import (
+    create_region_timepoint,
+    patch_photo_pipeline,
+)
 
 
 def _register(client: TestClient, label: str) -> tuple[dict[str, str], str]:
@@ -43,31 +46,27 @@ def _register(client: TestClient, label: str) -> tuple[dict[str, str], str]:
 
 def test_life_context_selection_and_skip_survive_observation_and_event_reload(
     migrated_database_url: str | None,
+    monkeypatch,
 ) -> None:
     if migrated_database_url is None:
         import pytest
 
         pytest.skip("use --local-postgres for the life-context HTTP closure")
 
+    patch_photo_pipeline(monkeypatch)
     with TestClient(app) as client:
         owner_headers, owner_password = _register(client, "owner")
         other_headers, other_password = _register(client, "other")
-        created = client.post(
-            "/api/v1/observations",
-            headers=owner_headers,
-            data={
-                "client_request_id": str(uuid4()),
-                "recorded_at": "2026-08-24T08:00:00+08:00",
-                "recorded_timezone_offset_minutes": "480",
-                "targets_json": json.dumps(
-                    [{"region_id": "forehead", "user_note": "额头状态记录"}]
-                ),
-            },
+        created = create_region_timepoint(
+            client,
+            owner_headers,
+            region_id="forehead",
+            note="额头状态记录",
+            recorded_at="2026-08-24T08:00:00+08:00",
         )
-        assert created.status_code == 201
-        observation_id = created.json()["observation_id"]
-        assert created.json()["life_context_ids"] == []
-        assert created.json()["life_context_completed_at"] is None
+        observation_id = created["observation_id"]
+        assert created["life_context_ids"] == []
+        assert created["life_context_completed_at"] is None
 
         selected = client.put(
             f"/api/v1/observations/{observation_id}/life-contexts",

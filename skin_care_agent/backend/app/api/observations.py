@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections.abc import Callable
 from datetime import datetime
 from uuid import UUID
 
@@ -30,12 +31,17 @@ from app.schemas.observation import (
 from app.schemas.observation_quality import ObservationQualityOut
 from app.services import observation_service
 from app.services import observation_quality_service
+from app.services.ai_gateway import rate_limit as rl
 from app.services.observation_worker import run_observation_target
-from app.services.region_event_service import activate_valid_target_event
 
 
 router = APIRouter(prefix="/observations", tags=["observations"])
 _REGION_TARGETS_ADAPTER = TypeAdapter(list[RegionTargetCreate])
+
+
+def _reschedule(background_tasks: BackgroundTasks) -> Callable[[int], None]:
+    """读取时发现超时任务后，把回收的目标重新交给 worker。"""
+    return lambda target_id: background_tasks.add_task(run_observation_target, target_id)
 
 
 def _parse_region_targets(value: str) -> list[RegionTargetCreate]:
@@ -49,8 +55,12 @@ def _parse_region_targets(value: str) -> list[RegionTargetCreate]:
 async def check_observation_photo_quality_endpoint(
     file: UploadFile = File(...),
     current_user: User = Depends(get_current_app_user),
+    db: Session = Depends(get_db),
 ) -> ObservationQualityOut:
-    del current_user
+    try:
+        rl.require(db, user_id=current_user.id, kind="photo_quality")
+    except rl.QuotaExceeded as exc:
+        raise rl.quota_http_error(exc) from exc
     data = await file.read()
     observation_service.validate_photo_input(
         observation_service.ObservationPhotoInput(
@@ -103,17 +113,19 @@ async def create_observation_endpoint(
         photo_input=photo_input,
     )
     response.status_code = status.HTTP_201_CREATED if created else status.HTTP_200_OK
-    if created and record.photo_id is not None:
-        for target in targets:
-            background_tasks.add_task(run_observation_target, target.id)
-    elif created:
-        for target in targets:
-            activate_valid_target_event(db, target.id)
+    if created:
+        # 原图已可靠保存；额度用完时不丢记录，区域直接进入可重试/可补文字状态。
+        if rl.try_consume(db, current_user.id, "observation").allowed:
+            for target in targets:
+                background_tasks.add_task(run_observation_target, target.id)
+        else:
+            observation_service.mark_targets_quota_exceeded(db, targets)
     return observation_service.to_observation_out(db, record, targets)
 
 
 @router.get("", response_model=list[ObservationOut])
 def list_observation_endpoint(
+    background_tasks: BackgroundTasks,
     limit: int = Query(default=30, ge=1),
     before_id: int | None = Query(default=None, ge=1),
     current_user: User = Depends(get_current_app_user),
@@ -124,12 +136,14 @@ def list_observation_endpoint(
         user_id=current_user.id,
         limit=limit,
         before_id=before_id,
+        schedule=_reschedule(background_tasks),
     )
 
 
 @router.get("/{observation_id}", response_model=ObservationOut)
 def get_observation_endpoint(
     observation_id: int,
+    background_tasks: BackgroundTasks,
     current_user: User = Depends(get_current_app_user),
     db: Session = Depends(get_db),
 ) -> ObservationOut:
@@ -137,6 +151,7 @@ def get_observation_endpoint(
         db,
         user_id=current_user.id,
         observation_id=observation_id,
+        schedule=_reschedule(background_tasks),
     )
 
 
@@ -165,6 +180,10 @@ def retry_observation_target_endpoint(
     current_user: User = Depends(get_current_app_user),
     db: Session = Depends(get_db),
 ) -> ObservationOut:
+    try:
+        rl.require_available(db, user_id=current_user.id, kind="observation")
+    except rl.QuotaExceeded as exc:
+        raise rl.quota_http_error(exc) from exc
     record, targets, started = observation_service.retry_failed_observation_target(
         db,
         user_id=current_user.id,
@@ -172,6 +191,7 @@ def retry_observation_target_endpoint(
         target_id=target_id,
     )
     if started:
+        rl.try_consume(db, current_user.id, "observation")
         background_tasks.add_task(run_observation_target, target_id)
     del record, targets
     return observation_service.get_observation_out(
