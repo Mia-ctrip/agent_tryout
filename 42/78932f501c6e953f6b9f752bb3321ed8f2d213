@@ -1,0 +1,515 @@
+skin_care_agent/backend/app/services/prompt/skin_compare.md
+  s_3ca3a0fe60646a::t_0ee64d2b951493 3-5,27,36,39-48,395,400-401,455-467,470,497,502,535-536
+skin_care_agent/backend/tests/test_region_insight_selection.py
+  s_3ca3a0fe60646a::t_a4624a8b62528a 1-152,154,158-196
+  s_3ca3a0fe60646a::t_2ded906cdbd2f9 153,155-157
+skin_care_agent/mobile/src/providers/session-provider.tsx
+  s_fa7153dafba466::t_56338000b86a6a 232-264
+  s_fa7153dafba466::t_ace353c79304ef 19
+  s_fa7153dafba466::t_df986888454588 319-320,327,334
+  s_fa7153dafba466::t_be4d6ccbd85294 47-48
+skin_care_agent/backend/app/schemas/region_event.py
+  s_3ca3a0fe60646a::t_589955eb49afab 4
+  s_3ca3a0fe60646a::t_752421263ed660 75-157
+skin_care_agent/artifacts/photo-quality-review/review-results.json
+  s_3cecc556859e9a::t_3870bb663cb0a4 1-112
+skin_care_agent/artifacts/history-face-presence-review/review-results.json
+  s_b1b4879099544a::t_1c4073b14e46a4 3,124-131,165-166
+  s_b1b4879099544a::t_7c4addd5fd090d 132-163,167
+  s_b1b4879099544a::t_3685413b29a040 1-2,4-123,164,168-170
+skin_care_agent/mobile/tests/region-insight-flow.test.mjs
+  s_6ae19d575f6b2e::t_470f638af0a99e 91-94
+  s_3ca3a0fe60646a::t_bea2050e76ba08 1-90,95-176
+skin_care_agent/mobile/scripts/ui-visual-review.mjs
+  s_b3cbf7f3b63598::t_bf075babf477f4 482
+  s_3ca3a0fe60646a::t_5e5ac5753f601d 268-270
+  s_3ca3a0fe60646a::t_470cd1093f591a 464-467,469-475
+  s_3cecc556859e9a::t_0001577935724c 340-343,868
+  s_b1b4879099544a::t_cb8b444afa3b58 487-490
+  s_c3baceaa2c78ac::t_08d2813cb18bdb 29
+  s_5b4bffe8c0927c::t_b6ef063f373e56 533-535
+  s_3cecc556859e9a::t_2fda8f8519355a 15,17-18,180,262-266,362,368-398
+  s_3cecc556859e9a::t_71246ce931afa3 6,16,30,226,256,319-339,344-359,879-881
+  s_b1b4879099544a::t_ed136195711555 27,132,483-486,491-498
+  s_3ca3a0fe60646a::t_9e2a8c3615be74 144-177
+  s_3ca3a0fe60646a::t_b12a69d9e4efca 468
+  s_b3cbf7f3b63598::t_e416ce351af2bf 429
+skin_care_agent/backend/app/main.py
+  s_6ae19d575f6b2e::t_47ea80f8b307d7 86
+  s_6ae19d575f6b2e::t_89b2ee3c02e8bf 85,87-91
+  s_6ae19d575f6b2e::t_d855175a3b1d07 44-47
+tools/vision-prompt-lab/prompt/skin_trend.md
+  s_3ca3a0fe60646a::t_ea67a80f0a831b 113
+  s_3ca3a0fe60646a::t_6cd91bc82e9d4e 727
+  s_3ca3a0fe60646a::t_de44ee94793f91 41-43,47-64,66-76,82
+  s_3ca3a0fe60646a::t_e549e009e46fc9 646,651-653,656
+  s_3ca3a0fe60646a::t_0ddbc3b3aeac08 778,782-784
+  s_3ca3a0fe60646a::t_583189bf6991ba 607-608,616-623
+  s_3ca3a0fe60646a::t_e71c80d7b9c385 708
+  s_3ca3a0fe60646a::t_48c21890b575be 687-697
+  s_3ca3a0fe60646a::t_2f8147a9d4e51e 722
+  s_3ca3a0fe60646a::t_b77df941d9ddfb 3-5
+  s_3ca3a0fe60646a::t_70979168111e92 753-754,759,763-765
+  s_3ca3a0fe60646a::t_b2b55b9bcdec63 735-738
+  s_3ca3a0fe60646a::t_c6f5442ae1197e 586,591-593
+  s_3ca3a0fe60646a::t_c0e1d4362b7e36 263,265-267
+skin_care_agent/mobile/src/lib/history-flow.ts
+  s_b3cbf7f3b63598::t_47f7a8051efc69 1
+skin_care_agent/backend/tests/integration/test_timeline_http_closure.py
+  s_6ae19d575f6b2e::t_524c7d23c7a2e7 78,85
+  s_6ae19d575f6b2e::t_5c32f4a1dc1904 91-96
+  s_6ae19d575f6b2e::t_301d270b4b0381 13-16
+skin_care_agent/backend/tests/test_region_observation.py
+  s_392894f42adb5e::t_e54dc330a4aa03 45-47,49-50,54-59
+skin_care_agent/backend/app/services/region_observation_prompt.py
+  s_392894f42adb5e::t_0f577292615386 8,11-21,25-33,36-38,40,42-50,53-130,133-139,142-149,151-153,157-166
+skin_care_agent/mobile/src/components/region-comparison.tsx
+  s_3ca3a0fe60646a::t_0861d9b7b831e6 1-4,12-13,15-31,34-35,38-53,56-60,66-69,71-77,79-108,110-128,138,141-147,150,154-155,159-160
+  s_3ca3a0fe60646a::t_bad3b6044a6371 61-65,70
+skin_care_agent/mobile/src/lib/face-analysis-flow.ts
+  s_3cecc556859e9a::t_eaaecd56e3bc3d 157
+skin_care_agent/backend/app/services/ai_gateway/rate_limit.py
+  s_6ae19d575f6b2e::t_d7e914cfd81cb1 140-149,151-160
+  s_6ae19d575f6b2e::t_61f4b831161f2e 15
+  s_6ae19d575f6b2e::t_165561f13eacd9 22
+  s_6ae19d575f6b2e::t_8f523369b9726a 82-87
+  s_6ae19d575f6b2e::t_00bb3eb97428f5 150
+skin_care_agent/backend/app/services/region_insight_selection.py
+  s_3ca3a0fe60646a::t_f844ade8ddddf8 1-207
+skin_care_agent/backend/app/services/observation_worker.py
+  s_6ae19d575f6b2e::t_2d858cfe096df9 94-99
+  s_6ae19d575f6b2e::t_eb0d30afaee0d2 66
+skin_care_agent/backend/app/services/region_insight_service.py
+  s_3ca3a0fe60646a::t_2f117e4b3377e5 245-280
+  s_3ca3a0fe60646a::t_f118fffc456a34 25-30
+  s_3ca3a0fe60646a::t_d7866e91969af6 1-24,31-244,281-293
+skin_care_agent/mobile/src/app/(tabs)/observe.tsx
+  s_5b4bffe8c0927c::t_360c2a1968a9bc 84-112
+skin_care_agent/backend/tests/test_region_trend.py
+  s_3ca3a0fe60646a::t_b393df7710b5b2 1-66,73-186
+  s_3ca3a0fe60646a::t_904ef8d741c65d 67-72
+skin_care_agent/mobile/src/lib/region-event-api.ts
+  s_3ca3a0fe60646a::t_d6fbdabedcc882 80-235
+skin_care_agent/mobile/tests/history-face-visual.test.mjs
+  s_b1b4879099544a::t_e7e479f17926a2 31-41
+skin_care_agent/mobile/src/lib/product-api.ts
+  s_225fa0be45c1c2::t_09fdf43d004460 297-305
+skin_care_agent/docs/2026-09-google-play-launch-calendar.md
+  s_3ca3a0fe60646a::t_3c6ef6886b3aca 56
+skin_care_agent/backend/app/services/vision/image_prep.py
+  s_3ca3a0fe60646a::t_eed2ac54718163 40-74,85-90,93-98,101-117,119-194
+  s_3ca3a0fe60646a::t_4c23a6398fcd7d 13,15,22-26
+skin_care_agent/backend/tests/test_observations.py
+  s_6ae19d575f6b2e::t_41503a3734bbc4 600
+  s_6ae19d575f6b2e::t_5547d88a5075b4 377,387-403,406-407
+  s_6ae19d575f6b2e::t_a37165dd338e97 430-431,437-442,445-446,450-454,456,459-470,473-479
+skin_care_agent/backend/tests/integration/test_product_http_closure.py
+  s_6ae19d575f6b2e::t_3f5fff5e98fe31 14-17
+  s_6ae19d575f6b2e::t_c5b3a635e7094a 306,313
+  s_6ae19d575f6b2e::t_4ef1a30a700725 364-370
+  s_6ae19d575f6b2e::t_a5bdabc8ffed6e 377-383
+skin_care_agent/backend/tests/integration/observation_http_support.py
+  s_6ae19d575f6b2e::t_a88085a08287bc 11
+  s_6ae19d575f6b2e::t_482a257e9316ca 1-10,12-112
+skin_care_agent/mobile/src/app/(tabs)/me.tsx
+  s_fa7153dafba466::t_c037ae61938402 1,7,9-13,15-16,20-21,25-26,31-41,47-48,81-85,87-132,162-167,173,184,187,190,192-194,205,207-210,212-215,217-218,229-235,237-242,244-246,281,294
+  s_3cecc556859e9a::t_33c73c0333527e 2,27-30,42-46,49-68,86,137,139-140,143-161,168-172,174-183,185-186,188-189,191,195-204,206,211,216,219-228,236,243,247,253-268,270,273,275-280,282-293,295-296,298-304
+skin_care_agent/artifacts/journey-final-review/review-results.json
+  s_b3cbf7f3b63598::t_b61f81ad5dd788 3,42-114,118
+skin_care_agent/mobile/tests/export-api.test.mjs
+  s_fa7153dafba466::t_39b002abc152fc 1-34
+skin_care_agent/mobile/src/lib/history-face-visual.ts
+  s_b1b4879099544a::t_e7e479f17926a2 57-58
+  s_b1b4879099544a::t_95ac07a178834a 43,48,52,54-56,59-68
+skin_care_agent/backend/app/models/region_insight.py
+  s_3ca3a0fe60646a::t_28ccf6aa3f380d 1-5,7-63,66-91
+  s_3ca3a0fe60646a::t_5fa1250993bc0b 6
+  s_3ca3a0fe60646a::t_0a56e94b15791b 64-65
+skin_care_agent/backend/tests/integration/test_life_context_http_closure.py
+  s_6ae19d575f6b2e::t_6a39eb8ee3ccdd 9-12
+  s_6ae19d575f6b2e::t_48e70eef6e2e87 68-69
+  s_6ae19d575f6b2e::t_494d25b667585b 49,56,60-65,67
+skin_care_agent/artifacts/observe-lower-review/review-results.json
+  s_5b4bffe8c0927c::t_d2fbfd6b9fa202 82
+skin_care_agent/mobile/tests/region-insight-ui-contract.test.mjs
+  s_3ca3a0fe60646a::t_05465713f97cff 28-29
+  s_3ca3a0fe60646a::t_58aa762e477588 1-27,30-44
+skin_care_agent/backend/app/config.py
+  s_6ae19d575f6b2e::t_7f308519327932 11-12
+  s_6ae19d575f6b2e::t_97aa2fb40e9012 32
+  s_6ae19d575f6b2e::t_b42b594a605be8 53-58
+  s_6ae19d575f6b2e::t_b5259bf6ade515 120-144
+  s_6ae19d575f6b2e::t_d41e3bc5d3d546 38
+skin_care_agent/backend/app/db/migrations/env.py
+  s_6ae19d575f6b2e::t_77a8bb97eced91 6
+  s_6ae19d575f6b2e::t_e331e2af8e5b43 22
+  s_6ae19d575f6b2e::t_a6296534591a50 45-63
+skin_care_agent/mobile/src/lib/export-api.ts
+  s_fa7153dafba466::t_d8136f05d98cb9 1-75
+skin_care_agent/backend/app/models/product.py
+  s_225fa0be45c1c2::t_a21a7357581c70 73-77
+skin_care_agent/backend/tests/sqlite_support.py
+  s_3ca3a0fe60646a::t_92798ec3dbccc4 70
+  s_3ca3a0fe60646a::t_48968fdae815a4 10
+  s_3ca3a0fe60646a::t_10347ad91e06aa 30-53
+  s_3ca3a0fe60646a::t_5843089344a6c6 65-68
+  s_3ca3a0fe60646a::t_b0f51d8fd0388d 1-9,11-29,54-64,69,71
+skin_care_agent/backend/app/services/product_search_service.py
+  s_225fa0be45c1c2::t_8421daee13d538 334
+skin_care_agent/backend/tests/test_observation_recovery.py
+  s_6ae19d575f6b2e::t_a5bcea2c2c54b2 119-123,126-127
+  s_6ae19d575f6b2e::t_b231375480780f 1-6,8-22,25-64,66-71,90-118,124-125,128-129,131-132,134-135,142-143,146-158
+  s_6ae19d575f6b2e::t_028be2e9255c59 7
+  s_6ae19d575f6b2e::t_cc6ef90de26262 65,72-89
+  s_6ae19d575f6b2e::t_d99266f0343ac5 130,133,136-141,144-145
+  s_6ae19d575f6b2e::t_236a03cb3672e2 23-24
+skin_care_agent/backend/tests/region_insight_support.py
+  s_3ca3a0fe60646a::t_1d5b003f211c16 1-182
+skin_care_agent/backend/app/services/prompt/skin_trend.md
+  s_3ca3a0fe60646a::t_0ee64d2b951493 3-5,41-43,47-64,66-76,82-83,113,263,265-267,586,591-594,607-608,616-623,646,651-653,656-657,687-697,708,722,727,735-738,753-754,759,763-765,778,782-784
+skin_care_agent/docs/superpowers/plans/2026-09-29-region-comparison-trend-slice-6.md
+  s_3ca3a0fe60646a::t_6a3dfd5e542580 80-87,91-103,106-118,121
+  s_3ca3a0fe60646a::t_c83afde71beeb0 90
+  s_3ca3a0fe60646a::t_02fa818eebfd4d 53-54,62-63,77-78,88-89,104-105,119-120,128-129,135-137,143-144
+  s_3ca3a0fe60646a::t_d3e983a81cd11e 38-52,55-61,64-76,79
+  s_3ca3a0fe60646a::t_b68c3fa860df3e 1-37
+  s_3ca3a0fe60646a::t_7b663225a35547 122-127,130-134,138-142,145-166
+skin_care_agent/artifacts/me-refresh-review/review-results.json
+  s_3cecc556859e9a::t_78821689216a16 1-64
+skin_care_agent/mobile/src/components/history-face-overview.tsx
+  s_b1b4879099544a::t_95ac07a178834a 13,19,25,28-29,33-34,52,66-68,70-73,85-86,88-89,105,127,132-140,142
+  s_b1b4879099544a::t_5c0467d0f6a223 87,141
+skin_care_agent/mobile/src/app/observation/[observationId].tsx
+  s_3cdf1992a4af4b::t_d6f2773ed24e96 52
+  s_b3cbf7f3b63598::t_2e675cedc7d9f7 76,78
+  s_3cdf1992a4af4b::t_5d7409c5a12dee 221
+skin_care_agent/mobile/src/lib/data-export-file.ts
+  s_fa7153dafba466::t_65dbbcb0f01f01 1-33
+skin_care_agent/backend/app/schemas/export.py
+  s_fa7153dafba466::t_5772acf2ea4db2 1-65
+skin_care_agent/mobile/src/app/(tabs)/products.tsx
+  s_225fa0be45c1c2::t_dd47b56f394150 15
+  s_225fa0be45c1c2::t_b6167f0543d362 93-100
+skin_care_agent/backend/app/api/observations.py
+  s_6ae19d575f6b2e::t_d2574ae953081c 116-122
+  s_6ae19d575f6b2e::t_8c730c12a6d049 128,139,146,154
+  s_6ae19d575f6b2e::t_f101b305e81abf 183-186
+  s_6ae19d575f6b2e::t_03038affe03fb1 3
+  s_6ae19d575f6b2e::t_55a2776e3cb3ac 42-46
+  s_6ae19d575f6b2e::t_13bbe0a9e3ad8b 194
+  s_6ae19d575f6b2e::t_bb4ac04428af16 34
+  s_6ae19d575f6b2e::t_e83e9df5c1faff 58,60-63
+skin_care_agent/backend/app/api/me.py
+  s_fa7153dafba466::t_b0476e42206bf9 22-23
+  s_fa7153dafba466::t_47bc6d75ea50b4 83-90
+skin_care_agent/mobile/src/components/custom-product-form.tsx
+  s_9aee0a29ceb68f::t_ecd032502a9880 2,192-204,211,363,380
+  s_9aee0a29ceb68f::t_98e3549110b3a7 273,275
+  s_9aee0a29ceb68f::t_c6980c958f31ed 295-297
+  s_9aee0a29ceb68f::t_ed08480bce8287 308
+  s_9aee0a29ceb68f::t_d205ac944a642e 133-138,205-210,332,364-379
+  s_9aee0a29ceb68f::t_10432bf41b8133 3,7,130-132,139-191,212-259,262,287-288,294,298-307,309-331,333-348
+skin_care_agent/backend/tests/integration/test_me_export_http.py
+  s_fa7153dafba466::t_da1b79b13eb5c1 1-88
+skin_care_agent/backend/app/services/region_trend_service.py
+  s_3ca3a0fe60646a::t_9393303ffb9e74 1-312
+skin_care_agent/mobile/src/components/region-trend-card.tsx
+  s_3ca3a0fe60646a::t_20b68d20d23cd0 3-9,11-22,24-69,73-91
+skin_care_agent/backend/tests/test_app.py
+  s_6ae19d575f6b2e::t_0a16ef199cb4b1 40-41
+  s_6ae19d575f6b2e::t_fda2dae2dae6e8 87-106,114-160
+  s_6ae19d575f6b2e::t_e5dcf44d715a34 1
+skin_care_agent/mobile/eas.json
+  s_6ae19d575f6b2e::t_cf6bc9f3048e39 1-25
+skin_care_agent/mobile/src/lib/errors.ts
+  s_6ae19d575f6b2e::t_8e053024610824 19-21
+skin_care_agent/mobile/tests/history-ui-contract.test.mjs
+  s_b3cbf7f3b63598::t_0144e21db1a414 27
+  s_b3cbf7f3b63598::t_65aa5b1ae71ebc 25,28-30
+skin_care_agent/backend/tests/test_image_prep_region_crop.py
+  s_3ca3a0fe60646a::t_f703a0ae3154fd 1,3-4,6-7,9,12-13,16-17,20-127
+skin_care_agent/backend/app/api/region_events.py
+  s_6ae19d575f6b2e::t_9f6eddfafe11c8 117-118
+  s_6ae19d575f6b2e::t_c7830f515f5e5b 29
+  s_3ca3a0fe60646a::t_4e09b340a23590 94-116,119-147,151-170
+  s_3ca3a0fe60646a::t_40aeaddaafa5df 5,12-13,19,23-28,30
+  s_6ae19d575f6b2e::t_5fb0a9eb8f9179 148-150
+  s_6ae19d575f6b2e::t_10e05fd7d90f63 21
+  s_6ae19d575f6b2e::t_c6131c406d1575 43-57
+skin_care_agent/mobile/src/lib/consent-copy.ts
+  s_fa7153dafba466::t_42ffa3a2d917ae 1-20
+skin_care_agent/mobile/app.config.js
+  s_6ae19d575f6b2e::t_8d68ef3afafa9c 1-14
+skin_care_agent/backend/app/db/migrations/versions/0020_region_insights.py
+  s_3ca3a0fe60646a::t_016d3f8f7b4015 1-41,43-106
+  s_3ca3a0fe60646a::t_5d5d754052eb4a 42
+skin_care_agent/mobile/tests/face-analysis-flow.test.mjs
+  s_3cecc556859e9a::t_a2397da115c533 140-161
+skin_care_agent/artifacts/region-insight-provider-review/results.json
+  s_3ca3a0fe60646a::t_e470fa2b6ba0b2 1-66
+skin_care_agent/backend/app/services/region_comparison_service.py
+  s_3ca3a0fe60646a::t_d9dff2c1285813 1-175
+skin_care_agent/backend/tests/test_region_insight_validation.py
+  s_3ca3a0fe60646a::t_1ecbb61158c03e 113
+  s_3ca3a0fe60646a::t_d4a6bf55ce5f57 1-112,114-262
+skin_care_agent/docs/current_status.md
+  s_6ae19d575f6b2e::t_ccc5b09311fd37 13-24
+  s_3ca3a0fe60646a::t_c73b20899a26f8 236
+  s_3ca3a0fe60646a::t_dfe05630601478 311,313
+  s_9aee0a29ceb68f::t_01ba9eba8e0210 62-63
+  s_b3cbf7f3b63598::t_0da501afed46e2 72-75,78-79
+  s_b3cbf7f3b63598::t_d6ca1ec03280f0 76-77
+  s_b3cbf7f3b63598::t_359e39d672e23b 252
+  s_9aee0a29ceb68f::t_7cdb6d946619a9 60-61,64-65
+  s_6ae19d575f6b2e::t_9166c976938e5e 213
+  s_3ca3a0fe60646a::t_96884ac752c239 219
+  s_6ae19d575f6b2e::t_cd7bcb2d9d985c 289
+  s_3cecc556859e9a::t_29b335e4c61207 25-32
+  s_3ca3a0fe60646a::t_d03a293f0b0381 294
+  s_3ca3a0fe60646a::t_2f92b15b020b73 312
+  s_b3cbf7f3b63598::t_86a9722546cfcd 218
+  s_fa7153dafba466::t_598ff005a1d734 40-49
+  s_3cecc556859e9a::t_7a479f4b320868 33-39
+  s_5b4bffe8c0927c::t_dd8077d43dfb9e 66-71
+  s_3ca3a0fe60646a::t_f3b3cf046bb807 54-56
+  s_3ca3a0fe60646a::t_2fa4f8f27366e7 57-58
+  s_3ca3a0fe60646a::t_ba551a13974759 50-53,59
+skin_care_agent/backend/tests/test_region_insight_models.py
+  s_3ca3a0fe60646a::t_db06194dad8e95 1-98
+skin_care_agent/backend/tests/test_observation_worker.py
+  s_392894f42adb5e::t_d5bdb790624360 137
+  s_6ae19d575f6b2e::t_19e76dc657f39a 394-420
+skin_care_agent/backend/scripts/verify_region_insight_provider.py
+  s_3ca3a0fe60646a::t_b589d045ffa0d5 1-244
+skin_care_agent/backend/app/schemas/region_insight.py
+  s_3ca3a0fe60646a::t_fe0eb06e06ebeb 1-139
+skin_care_agent/artifacts/history-face-presence-review/android-selected.xml
+  s_b1b4879099544a::t_86e4f0b140df02 1
+skin_care_agent/backend/app/services/product_service.py
+  s_225fa0be45c1c2::t_2f0a8d76602d55 472
+  s_225fa0be45c1c2::t_1e7fc623aed682 713-736
+skin_care_agent/backend/app/services/region_insight_ai.py
+  s_3ca3a0fe60646a::t_3260369c5be08f 57
+  s_3ca3a0fe60646a::t_39d8207e52b676 21
+  s_3ca3a0fe60646a::t_6596813ddccd7c 1-20,22-56,58-152
+skin_care_agent/backend/app/services/observation_service.py
+  s_6ae19d575f6b2e::t_d9fa2f157e9243 532-537
+  s_6ae19d575f6b2e::t_870ad2f58167a8 514
+  s_6ae19d575f6b2e::t_cd508e6ba7d442 565,572
+  s_6ae19d575f6b2e::t_a83fc3d5d0e3dd 185-198,200-220,228
+  s_6ae19d575f6b2e::t_7f3642d26b53f2 273,280-384
+  s_6ae19d575f6b2e::t_33d6a8537acd64 5,8,12
+  s_6ae19d575f6b2e::t_58acd6664b0ef3 171-174
+  s_6ae19d575f6b2e::t_89ce3032f0cb02 248-249,251
+  s_6ae19d575f6b2e::t_682aa832974d30 69
+skin_care_agent/backend/tests/integration/test_region_insight_migration_roundtrip.py
+  s_3ca3a0fe60646a::t_43cfd994624da5 1-36
+skin_care_agent/artifacts/region-insight-review/review-results.json
+  s_3ca3a0fe60646a::t_095863b9af4dd3 3,76-123,126
+  s_3ca3a0fe60646a::t_1d100d64cc4cd9 1-2,4-75,124-125,127-128
+skin_care_agent/mobile/src/lib/observation-navigation.ts
+  s_b3cbf7f3b63598::t_2dcd3f563b6e53 1,23
+skin_care_agent/mobile/src/lib/region-insight-flow.ts
+  s_3ca3a0fe60646a::t_9767f652e7ea7d 1-139,143-245
+  s_6ae19d575f6b2e::t_8fcff648e53f7e 140-142
+model_compare/prompt.md
+  h_e5cd53142b29a8 2,4-11
+skin_care_agent/mobile/src/app/_layout.tsx
+  s_6ae19d575f6b2e::t_9f11bbd7d78769 34-36
+skin_care_agent/mobile/scripts/photo-quality-review-entry.tsx
+  s_3cecc556859e9a::t_71246ce931afa3 1-29
+skin_care_agent/mobile/src/components/photo-quality-review.tsx
+  s_3cecc556859e9a::t_462a510de249f9 1-39,43-113
+  s_3cecc556859e9a::t_71246ce931afa3 40-42
+skin_care_agent/mobile/src/app/consents.tsx
+  s_fa7153dafba466::t_c612fdec577fe3 9-11
+skin_care_agent/mobile/src/app/region-event/[eventId].tsx
+  s_3ca3a0fe60646a::t_f590c50c7fbc07 217
+  s_3ca3a0fe60646a::t_de076137ead693 174-175,177-182,188-190,195,200,202
+  s_3ca3a0fe60646a::t_1674fa872beca9 13
+  s_3ca3a0fe60646a::t_76d56953dc7976 50-52
+  s_3ca3a0fe60646a::t_e94eb78a5656a9 28-46
+  s_3ca3a0fe60646a::t_4c521d6449e4c5 161,163-164,169-173,176,183-187,191-194,196-199,201,203-205,207-216,218-248,250-252,254
+  s_3ca3a0fe60646a::t_417a68239d828c 162,165-168
+  s_3ca3a0fe60646a::t_8173c01844089d 268-273
+  s_3ca3a0fe60646a::t_a973887a67ced3 3
+  s_3ca3a0fe60646a::t_ec2b940c4566f0 292-295
+  s_3ca3a0fe60646a::t_cda99133a8777e 327
+skin_care_agent/mobile/src/app/product/[productId].tsx
+  s_9aee0a29ceb68f::t_64cffd7a8bd686 90-95
+skin_care_agent/backend/app/services/region_insight_validation.py
+  s_3ca3a0fe60646a::t_5a66c4e884e43f 1-153
+skin_care_agent/project_background.md
+  s_3ca3a0fe60646a::t_ad0c6e6ac8c039 34
+skin_care_agent/backend/app/models/__init__.py
+  s_3ca3a0fe60646a::t_c65c3bd5f0018f 14
+  s_3ca3a0fe60646a::t_ce318dbc19f369 46
+skin_care_agent/backend/app/services/region_insight_prompt.py
+  s_3ca3a0fe60646a::t_7f517146d52580 1-189
+skin_care_agent/backend/Dockerfile
+  s_6ae19d575f6b2e::t_46b54b648d0f71 18-19
+skin_care_agent/backend/app/api/products.py
+  s_225fa0be45c1c2::t_dff9f0508cc290 137-149
+skin_care_agent/mobile/src/app/(tabs)/history.tsx
+  s_3cdf1992a4af4b::t_fc0f4520f00644 293
+  s_d6b8616ccd338c::t_4ad06726cdc281 385-387,391-396,398-402
+  s_3cdf1992a4af4b::t_ecac9b6ae71755 32
+  s_b3cbf7f3b63598::t_0aef167c61bc55 118,124,127
+  s_b1b4879099544a::t_95ac07a178834a 98,102,134-146,284-285,384,389-390,397
+  s_d6b8616ccd338c::t_04f4dbac58275d 286-287,289-292,294-296
+  s_b3cbf7f3b63598::t_e90e045bcc38ba 1,3,54,64,77-78,81
+skin_care_agent/mobile/app.json
+  s_6ae19d575f6b2e::t_d49a24b473f27a 18
+skin_care_agent/mobile/src/app/observation/new.tsx
+  s_3cecc556859e9a::t_0001577935724c 783,785
+  s_3cecc556859e9a::t_462a510de249f9 27,139,258-259,283-284,606-609,611-622
+  s_3cecc556859e9a::t_6216c1ce167d2c 623
+skin_care_agent/backend/app/api/photos.py
+  s_6ae19d575f6b2e::t_156701d3b64f66 106
+  s_6ae19d575f6b2e::t_00c69218c70e12 29-30
+skin_care_agent/backend/app/services/export_service.py
+  s_fa7153dafba466::t_9a559e7c2b6f4f 1-136,142-205
+  s_225fa0be45c1c2::t_501aab4d4a1262 137-141
+skin_care_agent/backend/tests/test_region_comparison.py
+  s_3ca3a0fe60646a::t_0970250262515b 106-107
+  s_3ca3a0fe60646a::t_0bafd040fd1b20 1-88,90-105,108-109,111-120,123-129,131-251
+  s_3ca3a0fe60646a::t_ae8502771143a9 89,110,121-122,130
+tools/vision-prompt-lab/prompt/skin_compare.md
+  s_3ca3a0fe60646a::t_a8aa140aab7b45 27,36,39-48
+  s_3ca3a0fe60646a::t_fabb63e672f575 535-536
+  s_3ca3a0fe60646a::t_070875ba180ab6 455-467,470
+  s_3ca3a0fe60646a::t_a961ce1b32d6a8 395,400
+  s_3ca3a0fe60646a::t_36d072bba3ac16 3-5
+  s_3ca3a0fe60646a::t_ce7d16f7eede84 497,502
+skin_care_agent/design/product/skin_care_app_mvp_spec.md
+  s_3ca3a0fe60646a::t_a6e1f8d665e88d 542
+  s_3ca3a0fe60646a::t_2f62945ab10e52 665
+  s_3ca3a0fe60646a::t_ad1f8d8a00ef21 533,535
+  s_3ca3a0fe60646a::t_f3e98f8cc8f9f9 604-608
+  s_3ca3a0fe60646a::t_d3bb7ddb27186f 620
+  s_3ca3a0fe60646a::t_e2c9f32a873876 5,25-26,31,83-85,91,113-114,260-275,277-281,283,285-288,290-296,358,360,362-364,366,370,375,377,485-486,494
+  s_3ca3a0fe60646a::t_5d5832189964cd 448
+  s_3ca3a0fe60646a::t_c677c59858a763 491,493,495-501,503
+  s_3ca3a0fe60646a::t_897f98cf191c13 374,376,378-382,384,386
+  s_3ca3a0fe60646a::t_a78338cada9c3e 639-640
+skin_care_agent/backend/app/db/migrations/versions/0021_product_archive.py
+  s_225fa0be45c1c2::t_47568a7b828be3 1-15,17-30
+  s_6ae19d575f6b2e::t_ac71659a15a61b 16
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.45-trip",
+  "base_commit_sha": "4278932f501c6e953f6b9f752bb3321ed8f2d213",
+  "prompts": {},
+  "humans": {
+    "h_e5cd53142b29a8": {
+      "author": "yumeifeng <yumeifeng@trip.com>"
+    }
+  },
+  "sessions": {
+    "s_225fa0be45c1c2": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "e1ce036a-e6a5-4aa4-b6a5-4e6b139ebe74",
+        "model": "claude-haiku-4-5-20251001"
+      },
+      "human_author": "yumeifeng <yumeifeng@trip.com>"
+    },
+    "s_392894f42adb5e": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f2939cfb-bdb2-451b-ad76-48eec7ba8200",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "yumeifeng <yumeifeng@trip.com>"
+    },
+    "s_3ca3a0fe60646a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "faf4b982-1df7-4002-9a64-5c83a705e893",
+        "model": "claude-opus-5.5"
+      },
+      "human_author": "yumeifeng <yumeifeng@trip.com>"
+    },
+    "s_3cdf1992a4af4b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "5b679f29-d0c5-432a-9224-3a0676eee455",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "yumeifeng <yumeifeng@trip.com>"
+    },
+    "s_3cecc556859e9a": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0ed2a-d6f5-70e2-a1ab-cca25c21d027",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "yumeifeng <yumeifeng@trip.com>"
+    },
+    "s_5b4bffe8c0927c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "08ed7f0e-692a-4a69-af17-0d518d7c3e6e",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "yumeifeng <yumeifeng@trip.com>"
+    },
+    "s_6ae19d575f6b2e": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "befb458e-bd05-45ed-b45d-0c43ca32b735",
+        "model": "claude-opus-5.5"
+      },
+      "human_author": "yumeifeng <yumeifeng@trip.com>"
+    },
+    "s_9aee0a29ceb68f": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0ec09-6cc6-7131-8204-b5aef7848b49",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "yumeifeng <yumeifeng@trip.com>"
+    },
+    "s_b1b4879099544a": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0f05b-1cf5-7422-90a1-f58e37034adb",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "yumeifeng <yumeifeng@trip.com>"
+    },
+    "s_b3cbf7f3b63598": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "e3000a9a-cd0f-4a15-80c7-0f00d2d4a6ec",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "yumeifeng <yumeifeng@trip.com>"
+    },
+    "s_c3baceaa2c78ac": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0ec46-7140-7051-baad-af7b8065688f",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "yumeifeng <yumeifeng@trip.com>"
+    },
+    "s_d6b8616ccd338c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "07f82837-f5cb-4b5f-9964-99d7569c1083",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "yumeifeng <yumeifeng@trip.com>"
+    },
+    "s_fa7153dafba466": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "810fd061-1aa3-4627-83e8-6dfbdea33adc",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "yumeifeng <yumeifeng@trip.com>"
+    }
+  }
+}
